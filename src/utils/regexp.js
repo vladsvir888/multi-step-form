@@ -1,0 +1,1 @@
+export const onlyLetterRegexp = /^[a-zA-Zа-яА-Я]+$/;

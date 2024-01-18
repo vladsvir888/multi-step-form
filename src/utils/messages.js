@@ -1,0 +1,1 @@
+export const onlyLetterMessage = 'Разрешаются только буквы (А-Я;A-Z)';
