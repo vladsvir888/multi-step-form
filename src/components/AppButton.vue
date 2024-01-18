@@ -1,5 +1,5 @@
 <template>
-  <button class="button" :class="className">
+  <button class="button" :class="className" type="button">
     <slot></slot>
   </button>
 </template>
@@ -15,7 +15,6 @@ const variants = {
 const props = defineProps({
   variant: {
     type: String,
-    default: 'primary',
     validator: (value) => ['primary', 'secondary'].includes(value)
   }
 })
@@ -36,27 +35,19 @@ const className = computed(() => variants[props.variant])
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition-property: background-color, box-shadow;
+  transition-property: background-color, box-shadow, color;
   transition-duration: 0.3s;
-
-  &:focus {
-    outline: none;
-  }
 
   &.button--primary {
     color: #fff;
     background-color: #00c4b3;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: #3fdeca;
       box-shadow: 0px 0px 16px #3fdeca4d;
     }
 
-    &:active {
-      background-color: #00a99a;
-    }
-
-    &:focus-visible {
+    &:active:not(:disabled) {
       background-color: #00a99a;
     }
   }
@@ -66,18 +57,20 @@ const className = computed(() => variants[props.variant])
     background-color: transparent;
     border: 1px solid #ddd;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: #f5f5f5;
       box-shadow: none;
     }
 
-    &:active {
+    &:active:not(:disabled) {
       background-color: #ddd;
     }
+  }
 
-    &:focus-visible {
-      background-color: #ddd;
-    }
+  &:disabled {
+    background-color: rgba(221, 221, 221, 0.4);
+    color: rgba(96, 96, 96, 0.3);
+    cursor: not-allowed;
   }
 }
 </style>
