@@ -1,0 +1,120 @@
+<template>
+  <div class="select">
+    <p class="select__text">{{ text }}</p>
+    <Dropdown
+      v-model="value"
+      :options="options"
+      :placeholder="placeholder"
+      :name="name"
+      :filter="filter"
+      :disabled="disabled"
+      :pt="{
+        input: 'select__input',
+        trigger: 'select__trigger',
+        panel: 'select-panel',
+        item: 'select-panel__item'
+      }"
+      class="select__header"
+      empty-filter-message="Результатов не найдено"
+    />
+  </div>
+</template>
+
+<script setup>
+import Dropdown from 'primevue/dropdown'
+import { useField } from 'vee-validate'
+
+const props = defineProps({
+  name: {
+    type: String,
+    required: true
+  },
+  options: {
+    type: Array,
+    required: true
+  },
+  placeholder: {
+    type: String
+  },
+  filter: {
+    type: Boolean,
+    default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  text: {
+    type: String
+  }
+})
+
+const { value } = useField(() => props.name)
+</script>
+
+<style>
+.select {
+  .select__text {
+    margin-bottom: 12px;
+  }
+
+  .select__header {
+    width: 100%;
+    border-color: #ddd;
+    border-radius: 10px;
+
+    &:hover {
+      border-color: #9ee2dc;
+
+      .select__trigger {
+        color: #606060;
+      }
+    }
+
+    &:not(.p-disabled).p-focus {
+      box-shadow: 0px 0px 6px #00c4b329;
+      border-color: #00c4b3;
+    }
+
+    &.p-overlay-open {
+      box-shadow: 0px 0px 6px #00c4b329;
+      border-color: #00c4b3;
+
+      .select__trigger {
+        color: #606060;
+      }
+    }
+  }
+
+  .select__input {
+    padding: 14px 20px;
+    color: #13284a;
+
+    @media (width <= 600px) {
+      width: 200px;
+      padding: 14px 10px;
+    }
+  }
+
+  .select__trigger {
+    color: #ddd;
+    transition: color 0.3s;
+  }
+}
+
+.select-panel {
+  border: 1px solid #ddd;
+  box-shadow: none;
+  color: #13284a;
+
+  @media (width <= 600px) {
+    font-size: 14px;
+  }
+
+  .select-panel__item {
+    @media (width <= 600px) {
+      padding: 10px;
+    }
+  }
+}
+</style>

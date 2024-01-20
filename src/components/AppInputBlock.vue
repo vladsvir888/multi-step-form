@@ -82,6 +82,10 @@ const { value, errorMessage } = useField(() => props.name)
     cursor: default;
     outline: none;
 
+    @media (width <= 600px) {
+      padding: 14px 10px;
+    }
+
     &::placeholder {
       opacity: 0.5;
     }

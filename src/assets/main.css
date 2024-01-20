@@ -1,13 +1,21 @@
+:root {
+    --font-family: 'Montserrat', sans-serif;
+}
+
 *,
 *::before,
 *::after {
     box-sizing: border-box;
 }
 
+html,
 body {
-    font-family: 'Montserrat', sans-serif;
+    scrollbar-gutter: stable;
+}
+
+body {
+    font-family: var(--font-family);
     color: #13284a;
-    background-color: #fcfcfc;
 }
 
 body,
@@ -16,16 +24,46 @@ p {
     margin: 0;
 }
 
+fieldset {
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+legend {
+    padding: 0;
+}
+
 .container {
-    max-width: 800px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    max-width: 1295px;
     margin: 0 auto;
     padding: 20px;
+
+    .container__wrapper {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+
+        @media (width <=1024px) {
+            position: unset;
+        }
+    }
+
+    @media (width <=1024px) {
+        grid-template-columns: 1fr;
+    }
+
+    @media (width <=600px) {
+        padding: 20px 10px;
+    }
 }
 
 h1 {
     font-size: 50px;
     margin-bottom: 26px;
-    text-align: center;
 
     @media (width <=600px) {
         font-size: 35px;
@@ -33,11 +71,34 @@ h1 {
 }
 
 .text-block {
-    margin-bottom: 30px;
-
     >p {
         &:not(:last-child) {
             margin-bottom: 20px;
         }
+    }
+}
+
+.accordion-tab {
+    .accordion-tab__header-action {
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        padding-right: 0;
+        padding-left: 0;
+        color: #13284a;
+        font-size: 21px;
+        line-height: 1.33;
+        font-weight: 600;
+        border: none;
+        background-color: #fff;
+    }
+
+    .accordion-tab__icon {
+        margin-right: 0;
+    }
+
+    .accordion-tab__content {
+        padding: 0;
+        border: none;
+        color: inherit;
     }
 }
