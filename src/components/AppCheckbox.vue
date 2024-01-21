@@ -27,7 +27,7 @@ const props = defineProps({
     required: true
   },
   checkedValue: {
-    type: [String, Boolean],
+    type: String,
     required: true
   },
   labelText: {

@@ -3,13 +3,16 @@
     <label :for="name" class="input-block__label">
       {{ label }}
     </label>
-    <input
-      v-model="value"
+    <component
+      :is="tag"
+      :value="value"
+      @input="value = $event.target.value"
       :name="name"
       :id="name"
       :type="type"
       :required="required"
       :placeholder="placeholder"
+      :rows="rows"
       class="input-block__input"
       v-bind="$attrs"
     />
@@ -44,6 +47,13 @@ const props = defineProps({
     default: false
   },
   placeholder: {
+    type: String
+  },
+  tag: {
+    type: [String, Object, Function],
+    default: 'input'
+  },
+  rows: {
     type: String
   }
 })
@@ -81,6 +91,7 @@ const { value, errorMessage } = useField(() => props.name)
     line-height: 1;
     cursor: default;
     outline: none;
+    resize: none;
 
     @media (width <= 600px) {
       padding: 14px 10px;

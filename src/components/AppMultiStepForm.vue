@@ -1,7 +1,10 @@
 <template>
   <form @submit="onSubmit" class="form" novalidate>
     <pre>
-      {{ values }}
+      values - {{ values }}
+    </pre>
+    <pre>
+      meta - {{ meta }}
     </pre>
     <nav class="form__nav">
       <AppButton
@@ -21,21 +24,21 @@
       <AppStep :step-number="0" :current-step="currentStep">
         <fieldset class="form__fieldset">
           <legend class="form__legend">Ваши контакты</legend>
-          <AppInputBlock label="Фамилия" name="surname" required />
-          <AppInputBlock label="Имя" name="name" required />
-          <AppInputBlock label="Отчество" name="patronymic" required />
+          <AppInputBlock label="Фамилия" name="personalData.surname" required />
+          <AppInputBlock label="Имя" name="personalData.name" required />
+          <AppInputBlock label="Отчество" name="personalData.patronymic" required />
           <AppInputBlock
             v-maska
             data-maska="+375 (##) ###-##-##"
             placeholder="+375"
             label="Номер телефона"
-            name="phone"
+            name="personalData.phone"
             type="tel"
             required
           />
           <AppInputBlock
             label="Адрес электронной почты"
-            name="email"
+            name="personalData.email"
             placeholder="test-email@gmail.com"
             type="email"
             required
@@ -51,26 +54,29 @@
             :options="tariffPlans"
             placeholder="Выберите тарифный план"
             text="Выберите тарифный план"
-            name="tariffPlan"
+            name="order.tariffPlan"
           />
         </fieldset>
+
         <fieldset class="form__fieldset">
           <legend class="form__legend">Дополнительные услуги</legend>
           <AppCheckbox
-            name="addServices"
+            name="order.addServices"
             checked-value="Маршрутизатор (Роутер)"
             help-text="Сетевое оборудование будет подобрано под ваши потребности. Ряд моделей доступны за дополнительную плату."
             label-text="Маршрутизатор (Роутер)"
             label-add-text="0р./Мес."
           />
           <AppCheckbox
-            name="addServices"
+            name="order.addServices"
             checked-value="Статический IP-адрес"
             help-text="Позволяет присвоить абоненту постоянный IP-адрес. Для выхода в интернет этот адрес не используется."
             label-text="Статический IP-адрес"
             label-add-text="4,20 руб./мес."
           />
         </fieldset>
+
+        <!-- todo: аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает -->
         <Accordion>
           <AccordionTab
             header="Адрес подключения"
@@ -82,14 +88,14 @@
             }"
           >
             <fieldset class="form__fieldset">
-              <AppInputBlock label="Индекс" name="postalCode" />
+              <AppInputBlock label="Индекс" name="order.connectionAddress.postalCode" />
 
               <AppSelect
                 v-model="selectedRegion"
                 :options="regions"
                 placeholder="Выберите область"
                 text="Область"
-                name="region"
+                name="order.connectionAddress.region"
               />
 
               <AppSelect
@@ -97,7 +103,7 @@
                 :options="settlementsType"
                 placeholder="Выберите тип населенного пункта"
                 text="Тип населенного пункта"
-                name="settlementType"
+                name="order.connectionAddress.settlementType"
               />
 
               <AppSelect
@@ -105,7 +111,7 @@
                 :options="settlements"
                 placeholder="Выберите населенный пункт"
                 text="Населенный пункт"
-                name="settlement"
+                name="order.connectionAddress.settlement"
                 filter
               />
 
@@ -114,7 +120,7 @@
                 :options="streetsType"
                 placeholder="Выберите тип улицы"
                 text="Тип улицы"
-                name="streetType"
+                name="order.connectionAddress.streetType"
               />
 
               <AppSelect
@@ -122,23 +128,73 @@
                 :options="streets"
                 placeholder="Выберите улицу"
                 text="Улица"
-                name="street"
+                name="order.connectionAddress.street"
                 filter
-                :disabled="values.AddressDoesNotHaveStreet"
               />
 
               <AppCheckbox
-                name="AddressDoesNotHaveStreet"
-                :checked-value="true"
+                name="order.connectionAddress.street"
+                checked-value="В адресе отсутствует название улицы"
                 label-text="В адресе отсутствует название улицы"
-                @change="setFieldValue('street', undefined)"
+              />
+
+              <div class="form__fieldset-wrapper">
+                <AppInputBlock label="Дом" name="order.connectionAddress.house" placeholder="51В" />
+                <AppInputBlock
+                  label="Корпус / Строение"
+                  name="order.connectionAddress.building"
+                  placeholder="1"
+                />
+              </div>
+
+              <AppSelect
+                v-model="selectedTypeRoom"
+                :options="roomsType"
+                placeholder="Выберите тип помещения"
+                text="Тип помещения"
+                name="order.connectionAddress.typeRoom"
+              />
+
+              <AppInputBlock
+                label="Помещение"
+                name="order.connectionAddress.room"
+                placeholder="196"
+              />
+
+              <AppCheckbox
+                name="order.connectionAddress.room"
+                checked-value="Это единое строение, помещения нет"
+                label-text="Это единое строение, помещения нет"
+              />
+
+              <AppInputBlock
+                tag="textarea"
+                label="Комментарий по адресу"
+                name="order.connectionAddress.addressCommentary"
+                placeholder="3 этаж, справа от входа"
+                rows="5"
               />
             </fieldset>
           </AccordionTab>
         </Accordion>
       </AppStep>
 
-      <AppStep :step-number="2" :current-step="currentStep"> 3 </AppStep>
+      <AppStep :step-number="2" :current-step="currentStep">
+        <fieldset class="form__fieldset">
+          <legend class="form__legend">Ваш менеджер</legend>
+          <AppSelect v-model="selectedManager" :options="manager" name="passportData.manager" />
+        </fieldset>
+
+        <fieldset class="form__fieldset">
+          <legend class="form__legend">Иные пожелания</legend>
+          <AppInputBlock
+            tag="textarea"
+            label="Комментарий"
+            name="passportData.otherWishes"
+            rows="5"
+          />
+        </fieldset>
+      </AppStep>
     </div>
 
     <div class="form__buttons">
@@ -157,6 +213,7 @@
 </template>
 
 <script setup>
+import '@/utils/locale.js'
 import { computed, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -168,9 +225,20 @@ import AppButton from '@/components/AppButton.vue'
 import AppStep from '@/components/AppStep.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import AppCheckbox from '@/components/AppCheckbox.vue'
-import '@/utils/locale.js'
-import { onlyLetterRegexp, phoneRegexp, postalCodeRegexp } from '@/utils/regexp.js'
-import { onlyLetterMessage, phoneMessage, postalCodeMessage } from '@/utils/messages.js'
+import {
+  onlyLettersRegexp,
+  phoneRegexp,
+  exactlySixNumbersRegexp,
+  cyrillicAndNumbersRegexp,
+  onlyNumbersRegexp
+} from '@/utils/regexp.js'
+import {
+  onlyLettersMessage,
+  phoneMessage,
+  exactlySixNumbersMessage,
+  cyrillicAndNumbersMessage,
+  onlyNumbersMessage
+} from '@/utils/messages.js'
 
 const selectedTariffPlan = ref('')
 const tariffPlans = ref([
@@ -218,6 +286,12 @@ const streetsType = ref([
 const selectedStreet = ref('')
 const streets = ref(['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'])
 
+const selectedTypeRoom = ref('')
+const roomsType = ref(['Офис', 'Квартира'])
+
+const selectedManager = ref('')
+const manager = ref(['Да', 'Нет'])
+
 const navButtons = ref([
   {
     text: 'Личные данные'
@@ -232,16 +306,27 @@ const navButtons = ref([
 
 const schemas = [
   yup.object({
-    surname: yup.string().required().matches(onlyLetterRegexp, onlyLetterMessage),
-    name: yup.string().required().matches(onlyLetterRegexp, onlyLetterMessage),
-    patronymic: yup.string().required().matches(onlyLetterRegexp, onlyLetterMessage),
-    phone: yup.string().required().matches().matches(phoneRegexp, phoneMessage),
-    email: yup.string().required().email()
+    personalData: yup.object({
+      surname: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      name: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      patronymic: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      phone: yup.string().required().matches().matches(phoneRegexp, phoneMessage),
+      email: yup.string().required().email()
+    })
   }),
   yup.object({
-    postalCode: yup.string().matches(postalCodeRegexp, postalCodeMessage)
+    order: yup.object({
+      connectionAddress: yup.object({
+        postalCode: yup.string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
+        house: yup.string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
+        building: yup.string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
+        room: yup.string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
+      })
+    })
   }),
-  null
+  yup.object({
+    passportData: yup.object({})
+  })
 ]
 
 const currentStep = ref(0)
@@ -258,7 +343,7 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, values, setFieldValue } = useForm({
+const { handleSubmit, meta, values } = useForm({
   validationSchema: currentSchema,
   keepValuesOnUnmount: true
 })
@@ -349,6 +434,16 @@ const onSubmit = handleSubmit((values) => {
     row-gap: 20px;
   }
 
+  .form__fieldset-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 30px;
+
+    @media (width <= 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .form__legend {
     font-size: 21px;
     line-height: 1.33;
@@ -366,6 +461,7 @@ const onSubmit = handleSubmit((values) => {
     @media (width <= 600px) {
       flex-direction: column;
       width: 100%;
+      margin-top: 20px;
     }
   }
 

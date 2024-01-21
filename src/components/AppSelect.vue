@@ -1,6 +1,6 @@
 <template>
   <div class="select">
-    <p class="select__text">{{ text }}</p>
+    <p v-if="text" class="select__text">{{ text }}</p>
     <Dropdown
       v-model="value"
       :options="options"
@@ -12,7 +12,8 @@
         input: 'select__input',
         trigger: 'select__trigger',
         panel: 'select-panel',
-        item: 'select-panel__item'
+        item: 'select-panel__item',
+        filterInput: 'select-panel__filter-input'
       }"
       class="select__header"
       empty-filter-message="Результатов не найдено"
@@ -114,6 +115,21 @@ const { value } = useField(() => props.name)
   .select-panel__item {
     @media (width <= 600px) {
       padding: 10px;
+    }
+  }
+
+  .select-panel__filter-input {
+    border-color: #ddd;
+    border-radius: 10px;
+    cursor: default;
+
+    &:enabled:hover {
+      border-color: #9ee2dc;
+    }
+
+    &:enabled:focus {
+      box-shadow: 0px 0px 6px #00c4b329;
+      border-color: #00c4b3;
     }
   }
 }
