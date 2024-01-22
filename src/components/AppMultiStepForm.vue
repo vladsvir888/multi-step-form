@@ -76,8 +76,12 @@
           />
         </fieldset>
 
-        <!-- todo: аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает -->
-        <Accordion>
+        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает. Решаю проблему через ref активного таба и emits -->
+        <Accordion
+          :active-index="connectionAddressActiveIndex"
+          @tab-open="connectionAddressActiveIndex = 0"
+          @tab-close="connectionAddressActiveIndex = null"
+        >
           <AccordionTab
             header="Адрес подключения"
             :pt="{
@@ -303,6 +307,8 @@ const navButtons = ref([
     text: 'Паспортные данные'
   }
 ])
+
+const connectionAddressActiveIndex = ref(null)
 
 const schemas = [
   yup.object({
