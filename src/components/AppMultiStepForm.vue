@@ -1,45 +1,56 @@
 <template>
-  <form @submit="onSubmit" class="form" novalidate>
-    <pre>
-      values - {{ values }}
-    </pre>
-    <pre>
-      meta - {{ meta }}
-    </pre>
+  <form v-if="data" @submit="onSubmit" class="form" novalidate>
     <nav class="form__nav">
       <AppButton
-        v-for="(navButton, index) in navButtons"
-        :key="navButton.text"
+        v-for="(tab, index) in data.tabs"
+        :key="tab.text"
         @click="onClickNavButton(index)"
         class="form__nav-button"
         :class="{ active: currentStep === index }"
         :type="meta.valid ? 'button' : 'submit'"
         :aria-pressed="currentStep === index"
       >
-        {{ navButton.text }}
+        {{ tab.text }}
       </AppButton>
     </nav>
 
     <div class="form__fields">
       <AppStep :step-number="0" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <legend class="form__legend">Ваши контакты</legend>
-          <AppInputBlock label="Фамилия" name="personalData.surname" required />
-          <AppInputBlock label="Имя" name="personalData.name" required />
-          <AppInputBlock label="Отчество" name="personalData.patronymic" required />
+          <legend class="form__legend">{{ data.steps.step1.personalData.title }}</legend>
+
+          <AppInputBlock
+            :label="data.steps.step1.personalData.fields.surname.label"
+            :name="data.steps.step1.personalData.fields.surname.name"
+            required
+          />
+
+          <AppInputBlock
+            :label="data.steps.step1.personalData.fields.name.label"
+            :name="data.steps.step1.personalData.fields.name.name"
+            required
+          />
+
+          <AppInputBlock
+            :label="data.steps.step1.personalData.fields.patronymic.label"
+            :name="data.steps.step1.personalData.fields.patronymic.name"
+            required
+          />
+
           <AppInputBlock
             v-maska
-            data-maska="+375 (##) ###-##-##"
-            placeholder="+375"
-            label="Номер телефона"
-            name="personalData.phone"
+            :data-maska="data.steps.step1.personalData.fields.phone.mask"
+            :placeholder="data.steps.step1.personalData.fields.phone.placeholder"
+            :label="data.steps.step1.personalData.fields.phone.label"
+            :name="data.steps.step1.personalData.fields.phone.name"
             type="tel"
             required
           />
+
           <AppInputBlock
-            label="Адрес электронной почты"
-            name="personalData.email"
-            placeholder="test-email@gmail.com"
+            :label="data.steps.step1.personalData.fields.email.label"
+            :name="data.steps.step1.personalData.fields.email.name"
+            :placeholder="data.steps.step1.personalData.fields.email.placeholder"
             type="email"
             required
           />
@@ -48,42 +59,45 @@
 
       <AppStep :step-number="1" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <legend class="form__legend">Тарифный план</legend>
+          <legend class="form__legend">{{ data.steps.step2.tariffPlan.title }}</legend>
+
           <AppSelect
             v-model="selectedTariffPlan"
-            :options="tariffPlans"
-            placeholder="Выберите тарифный план"
-            text="Выберите тарифный план"
-            name="order.tariffPlan"
+            :options="data.steps.step2.tariffPlan.fields.tariffPlan.options"
+            :label="data.steps.step2.tariffPlan.fields.tariffPlan.label"
+            :name="data.steps.step2.tariffPlan.fields.tariffPlan.name"
+            :placeholder="data.steps.step2.tariffPlan.fields.tariffPlan.placeholder"
           />
         </fieldset>
 
         <fieldset class="form__fieldset">
-          <legend class="form__legend">Дополнительные услуги</legend>
+          <legend class="form__legend">{{ data.steps.step2.addServices.title }}</legend>
+
           <AppCheckbox
-            name="order.addServices"
-            checked-value="Маршрутизатор (Роутер)"
-            help-text="Сетевое оборудование будет подобрано под ваши потребности. Ряд моделей доступны за дополнительную плату."
-            label-text="Маршрутизатор (Роутер)"
-            label-add-text="0р./Мес."
+            :name="data.steps.step2.addServices.fields.router.name"
+            :checked-value="data.steps.step2.addServices.fields.router.label"
+            :label="data.steps.step2.addServices.fields.router.label"
+            :label-add="data.steps.step2.addServices.fields.router.labelAdd"
+            :help-text="data.steps.step2.addServices.fields.router.helpText"
           />
+
           <AppCheckbox
-            name="order.addServices"
-            checked-value="Статический IP-адрес"
-            help-text="Позволяет присвоить абоненту постоянный IP-адрес. Для выхода в интернет этот адрес не используется."
-            label-text="Статический IP-адрес"
-            label-add-text="4,20 руб./мес."
+            :name="data.steps.step2.addServices.fields.staticIPAddress.name"
+            :checked-value="data.steps.step2.addServices.fields.staticIPAddress.label"
+            :label="data.steps.step2.addServices.fields.staticIPAddress.label"
+            :label-add="data.steps.step2.addServices.fields.staticIPAddress.labelAdd"
+            :help-text="data.steps.step2.addServices.fields.staticIPAddress.helpText"
           />
         </fieldset>
 
-        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает. Решаю проблему через ref активного таба и emits -->
+        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает. Решаю проблему через ref с активным табом и emits из api primevue -->
         <Accordion
           :active-index="connectionAddressActiveIndex"
           @tab-open="connectionAddressActiveIndex = 0"
           @tab-close="connectionAddressActiveIndex = null"
         >
           <AccordionTab
-            header="Адрес подключения"
+            :header="data.steps.step2.connectionAddress.title"
             :pt="{
               root: 'accordion-tab',
               headerAction: 'accordion-tab__header-action',
@@ -92,90 +106,100 @@
             }"
           >
             <fieldset class="form__fieldset">
-              <AppInputBlock label="Индекс" name="order.connectionAddress.postalCode" />
+              <AppInputBlock
+                :label="data.steps.step2.connectionAddress.fields.postalCode.label"
+                :name="data.steps.step2.connectionAddress.fields.postalCode.name"
+              />
 
               <AppSelect
                 v-model="selectedRegion"
-                :options="regions"
-                placeholder="Выберите область"
-                text="Область"
-                name="order.connectionAddress.region"
+                :options="data.steps.step2.connectionAddress.fields.region.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.region.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.region.label"
+                :name="data.steps.step2.connectionAddress.fields.region.name"
               />
 
               <AppSelect
                 v-model="selectedSettlementType"
-                :options="settlementsType"
-                placeholder="Выберите тип населенного пункта"
-                text="Тип населенного пункта"
-                name="order.connectionAddress.settlementType"
+                :options="data.steps.step2.connectionAddress.fields.settlementType.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.settlementType.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.settlementType.label"
+                :name="data.steps.step2.connectionAddress.fields.settlementType.name"
               />
 
               <AppSelect
                 v-model="selectedSettlement"
-                :options="settlements"
-                placeholder="Выберите населенный пункт"
-                text="Населенный пункт"
-                name="order.connectionAddress.settlement"
+                :options="data.steps.step2.connectionAddress.fields.settlement.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.settlement.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.settlement.label"
+                :name="data.steps.step2.connectionAddress.fields.settlement.name"
                 filter
               />
 
               <AppSelect
                 v-model="selectedStreetType"
-                :options="streetsType"
-                placeholder="Выберите тип улицы"
-                text="Тип улицы"
-                name="order.connectionAddress.streetType"
+                :options="data.steps.step2.connectionAddress.fields.streetType.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.streetType.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.streetType.label"
+                :name="data.steps.step2.connectionAddress.fields.streetType.name"
               />
 
               <AppSelect
                 v-model="selectedStreet"
-                :options="streets"
-                placeholder="Выберите улицу"
-                text="Улица"
-                name="order.connectionAddress.street"
+                :options="data.steps.step2.connectionAddress.fields.street.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.street.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.street.label"
+                :name="data.steps.step2.connectionAddress.fields.street.name"
                 filter
               />
 
               <AppCheckbox
-                name="order.connectionAddress.street"
-                checked-value="В адресе отсутствует название улицы"
-                label-text="В адресе отсутствует название улицы"
+                :name="data.steps.step2.connectionAddress.fields.noStreet.name"
+                :checked-value="data.steps.step2.connectionAddress.fields.noStreet.label"
+                :label="data.steps.step2.connectionAddress.fields.noStreet.label"
               />
 
               <div class="form__fieldset-wrapper">
-                <AppInputBlock label="Дом" name="order.connectionAddress.house" placeholder="51В" />
                 <AppInputBlock
-                  label="Корпус / Строение"
-                  name="order.connectionAddress.building"
-                  placeholder="1"
+                  :label="data.steps.step2.connectionAddress.fields.house.label"
+                  :name="data.steps.step2.connectionAddress.fields.house.name"
+                  :placeholder="data.steps.step2.connectionAddress.fields.house.placeholder"
+                />
+
+                <AppInputBlock
+                  :label="data.steps.step2.connectionAddress.fields.building.label"
+                  :name="data.steps.step2.connectionAddress.fields.building.name"
+                  :placeholder="data.steps.step2.connectionAddress.fields.building.placeholder"
                 />
               </div>
 
               <AppSelect
                 v-model="selectedTypeRoom"
-                :options="roomsType"
-                placeholder="Выберите тип помещения"
-                text="Тип помещения"
-                name="order.connectionAddress.typeRoom"
+                :options="data.steps.step2.connectionAddress.fields.typeRoom.options"
+                :placeholder="data.steps.step2.connectionAddress.fields.typeRoom.placeholder"
+                :label="data.steps.step2.connectionAddress.fields.typeRoom.label"
+                :name="data.steps.step2.connectionAddress.fields.typeRoom.name"
               />
 
               <AppInputBlock
-                label="Помещение"
-                name="order.connectionAddress.room"
-                placeholder="196"
+                :label="data.steps.step2.connectionAddress.fields.room.label"
+                :name="data.steps.step2.connectionAddress.fields.room.name"
+                :placeholder="data.steps.step2.connectionAddress.fields.room.placeholder"
               />
 
               <AppCheckbox
-                name="order.connectionAddress.room"
-                checked-value="Это единое строение, помещения нет"
-                label-text="Это единое строение, помещения нет"
+                :name="data.steps.step2.connectionAddress.fields.noRoom.name"
+                :checked-value="data.steps.step2.connectionAddress.fields.noRoom.label"
+                :label="data.steps.step2.connectionAddress.fields.noRoom.label"
               />
 
               <AppInputBlock
                 tag="textarea"
-                label="Комментарий по адресу"
-                name="order.connectionAddress.addressCommentary"
-                placeholder="3 этаж, справа от входа"
+                :label="data.steps.step2.connectionAddress.fields.addressCommentary.label"
+                :name="data.steps.step2.connectionAddress.fields.addressCommentary.name"
+                :placeholder="
+                  data.steps.step2.connectionAddress.fields.addressCommentary.placeholder
+                "
                 rows="5"
               />
             </fieldset>
@@ -185,16 +209,22 @@
 
       <AppStep :step-number="2" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <legend class="form__legend">Ваш менеджер</legend>
-          <AppSelect v-model="selectedManager" :options="manager" name="passportData.manager" />
+          <legend class="form__legend">{{ data.steps.step3.manager.title }}</legend>
+
+          <AppSelect
+            v-model="selectedManager"
+            :options="data.steps.step3.manager.options"
+            :name="data.steps.step3.manager.name"
+          />
         </fieldset>
 
         <fieldset class="form__fieldset">
-          <legend class="form__legend">Иные пожелания</legend>
+          <legend class="form__legend">{{ data.steps.step3.otherWishes.title }}</legend>
+
           <AppInputBlock
             tag="textarea"
-            label="Комментарий"
-            name="passportData.otherWishes"
+            :label="data.steps.step3.otherWishes.label"
+            :name="data.steps.step3.otherWishes.name"
             rows="5"
           />
         </fieldset>
@@ -214,11 +244,12 @@
       }}</AppButton>
     </div>
   </form>
+  <AppSkeletonForm v-else />
 </template>
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { vMaska } from 'maska'
@@ -229,6 +260,7 @@ import AppButton from '@/components/AppButton.vue'
 import AppStep from '@/components/AppStep.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import AppCheckbox from '@/components/AppCheckbox.vue'
+import AppSkeletonForm from '@/components/AppSkeletonForm.vue'
 import {
   onlyLettersRegexp,
   phoneRegexp,
@@ -244,69 +276,16 @@ import {
   onlyNumbersMessage
 } from '@/utils/messages.js'
 
+const data = ref(null)
+
 const selectedTariffPlan = ref('')
-const tariffPlans = ref([
-  'iDOM100+Megogo, 25,50 руб./мес.',
-  'Мой бизнес PRO 100, 43 руб./мес.',
-  'Мой бизнес PRO 80, 25,50 руб./мес.'
-])
-
 const selectedRegion = ref('')
-const regions = ref([
-  'Брестская область',
-  'Витебская область',
-  'Гомельская область',
-  'Гродненская область',
-  'Минская область',
-  'Могилевская область'
-])
-
 const selectedSettlementType = ref('')
-const settlementsType = ref(['Город', 'Поселок городского типа', 'Сельский населенный пункт'])
-
 const selectedSettlement = ref('')
-const settlements = ref([
-  'Минск',
-  'Гомель',
-  'Могилёв',
-  'Витебск',
-  'Гродно',
-  'Брест',
-  'Барановичи',
-  'Мозырь',
-  'Бобруйск',
-  'Слуцк'
-])
-
 const selectedStreetType = ref('')
-const streetsType = ref([
-  'Центральная улица',
-  'Жилые улицы',
-  'Промышленные улицы',
-  'Торговые улицы',
-  'Туристические улицы'
-])
-
 const selectedStreet = ref('')
-const streets = ref(['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'])
-
 const selectedTypeRoom = ref('')
-const roomsType = ref(['Офис', 'Квартира'])
-
 const selectedManager = ref('')
-const manager = ref(['Да', 'Нет'])
-
-const navButtons = ref([
-  {
-    text: 'Личные данные'
-  },
-  {
-    text: 'Заказ'
-  },
-  {
-    text: 'Паспортные данные'
-  }
-])
 
 const connectionAddressActiveIndex = ref(null)
 
@@ -349,7 +328,7 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, values } = useForm({
+const { handleSubmit, meta } = useForm({
   validationSchema: currentSchema,
   keepValuesOnUnmount: true
 })
@@ -371,6 +350,11 @@ const onSubmit = handleSubmit((values) => {
   }
 
   currentStep.value += 1
+})
+
+onMounted(async () => {
+  const response = await fetch('http://localhost:3000/data')
+  data.value = await response.json()
 })
 </script>
 

@@ -1,5 +1,6 @@
 <template>
   <div class="checkbox">
+    <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField()  -->
     <input
       :id="checkedValue"
       :value="checkedValue"
@@ -9,9 +10,9 @@
       type="checkbox"
     />
     <label :for="checkedValue" class="checkbox__label">
-      <span class="checkbox__label-text">{{ labelText }}</span>
-      <span v-if="labelAddText" class="checkbox__label-text checkbox__label-text--2">{{
-        labelAddText
+      <span class="checkbox__label-text">{{ label }}</span>
+      <span v-if="labelAdd" class="checkbox__label-text checkbox__label-text--2">{{
+        labelAdd
       }}</span>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
@@ -30,11 +31,11 @@ const props = defineProps({
     type: String,
     required: true
   },
-  labelText: {
+  label: {
     type: String,
     required: true
   },
-  labelAddText: {
+  labelAdd: {
     type: String
   },
   helpText: {

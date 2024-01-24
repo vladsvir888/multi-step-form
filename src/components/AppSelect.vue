@@ -1,6 +1,6 @@
 <template>
   <div class="select">
-    <p v-if="text" class="select__text">{{ text }}</p>
+    <p v-if="label" class="select__text">{{ label }}</p>
     <Dropdown
       v-model="value"
       :options="options"
@@ -45,7 +45,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  text: {
+  label: {
     type: String
   }
 })
