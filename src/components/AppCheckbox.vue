@@ -1,19 +1,18 @@
 <template>
+  <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField()  -->
   <div class="checkbox">
-    <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField()  -->
-    <input
-      :id="checkedValue"
-      :value="checkedValue"
-      :checked="checked"
-      @change="handleChange"
-      class="checkbox__input"
-      type="checkbox"
-    />
-    <label :for="checkedValue" class="checkbox__label">
-      <span class="checkbox__label-text">{{ label }}</span>
-      <span v-if="labelAdd" class="checkbox__label-text checkbox__label-text--2">{{
+    <label class="checkbox__label">
+      <input
+        :value="checkedValue"
+        :checked="checked"
+        @change="handleChange"
+        class="checkbox__input"
+        type="checkbox"
+      />
+      <p class="checkbox__label-text">{{ label }}</p>
+      <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{
         labelAdd
-      }}</span>
+      }}</p>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
   </div>
@@ -28,7 +27,7 @@ const props = defineProps({
     required: true
   },
   checkedValue: {
-    type: String,
+    type: [String, Boolean],
     required: true
   },
   label: {
@@ -51,15 +50,11 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
 
 <style>
 .checkbox {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 12px;
-  align-items: center;
-
   .checkbox__input {
     margin: 0;
     width: 30px;
     height: 30px;
+    margin-right: 12px;
     flex-shrink: 0;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -88,17 +83,24 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
 
   .checkbox__label {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
   }
 
-  .checkbox__label-text--2 {
+  .checkbox__label-text--add {
+    margin-left: auto;
     opacity: 0.7;
   }
 
   .checkbox__text {
     grid-column: 1 / 3;
     opacity: 0.7;
+  }
+
+  .checkbox__error {
+    grid-column: span 2;
+    font-size: 12px;
+    color: #ec2b59;
   }
 }
 </style>

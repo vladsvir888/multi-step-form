@@ -9,23 +9,23 @@
     <div class="skeleton__fields">
       <div class="skeleton__field">
         <Skeleton class="skeleton__field-label" width="80px" height="19px"></Skeleton>
-        <Skeleton width="100%" height="50px"></Skeleton>
+        <Skeleton height="50px"></Skeleton>
       </div>
       <div class="skeleton__field">
         <Skeleton class="skeleton__field-label" width="40px" height="19px"></Skeleton>
-        <Skeleton width="100%" height="50px"></Skeleton>
+        <Skeleton height="50px"></Skeleton>
       </div>
       <div class="skeleton__field">
         <Skeleton class="skeleton__field-label" width="80px" height="19px"></Skeleton>
-        <Skeleton width="100%" height="50px"></Skeleton>
+        <Skeleton height="50px"></Skeleton>
       </div>
       <div class="skeleton__field">
         <Skeleton class="skeleton__field-label" width="140px" height="19px"></Skeleton>
-        <Skeleton width="100%" height="50px"></Skeleton>
+        <Skeleton height="50px"></Skeleton>
       </div>
       <div class="skeleton__field">
         <Skeleton class="skeleton__field-label" width="220px" height="19px"></Skeleton>
-        <Skeleton width="100%" height="50px"></Skeleton>
+        <Skeleton height="50px"></Skeleton>
       </div>
     </div>
     <Skeleton class="skeleton__button" width="191px" height="50px"></Skeleton>
@@ -53,6 +53,7 @@ import Skeleton from 'primevue/skeleton'
     display: flex;
     flex-direction: column;
     row-gap: 20px;
+    max-width: 400px;
   }
 
   .skeleton__field-label {
@@ -61,7 +62,6 @@ import Skeleton from 'primevue/skeleton'
 
   .skeleton__button {
     margin-top: 40px;
-    margin-left: auto;
   }
 }
 </style>

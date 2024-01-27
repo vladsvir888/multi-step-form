@@ -209,12 +209,110 @@
 
       <AppStep :step-number="2" :current-step="currentStep">
         <fieldset class="form__fieldset">
+          <AppRadioGroup :label="data.steps.step3.passportData.fields.resident.title">
+            <div class="form__fieldset-wrapper">
+              <AppRadioButton
+                :name="data.steps.step3.passportData.fields.resident.fields.yes.name"
+                :checked-value="data.steps.step3.passportData.fields.resident.fields.yes.label"
+                :label="data.steps.step3.passportData.fields.resident.fields.yes.label"
+                @change="onChangeResidentYes"
+              />
+              <AppRadioButton
+                :name="data.steps.step3.passportData.fields.resident.fields.no.name"
+                :checked-value="data.steps.step3.passportData.fields.resident.fields.no.label"
+                :label="data.steps.step3.passportData.fields.resident.fields.no.label"
+                @change="isResidentBelarus = 'no'"
+              />
+            </div>
+          </AppRadioGroup>
+
+          <div class="form__fieldset" v-show="isResidentBelarus === 'no'">
+            <AppInputBlock
+              :label="data.steps.step3.passportData.fields.citizenship.label"
+              :name="data.steps.step3.passportData.fields.citizenship.name"
+              :placeholder="data.steps.step3.passportData.fields.citizenship.placeholder"
+            />
+
+            <AppRadioGroup
+              :label="data.steps.step3.passportData.fields.temporaryRegistration.title"
+            >
+              <div class="form__fieldset-wrapper">
+                <AppRadioButton
+                  :name="data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.name"
+                  :checked-value="
+                    data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
+                  "
+                  :label="
+                    data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
+                  "
+                />
+                <AppRadioButton
+                  :name="data.steps.step3.passportData.fields.temporaryRegistration.fields.no.name"
+                  :checked-value="
+                    data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
+                  "
+                  :label="
+                    data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
+                  "
+                />
+              </div>
+            </AppRadioGroup>
+          </div>
+
+          <AppSelect
+            v-model="selectedDocumentType"
+            :options="data.steps.step3.passportData.fields.documentType.options"
+            :name="data.steps.step3.passportData.fields.documentType.name"
+            :label="data.steps.step3.passportData.fields.documentType.label"
+            :placeholder="data.steps.step3.passportData.fields.documentType.placeholder"
+          />
+
+          <div class="form__fieldset-wrapper">
+            <AppInputBlock
+              :label="data.steps.step3.passportData.fields.series.label"
+              :name="data.steps.step3.passportData.fields.series.name"
+              :placeholder="data.steps.step3.passportData.fields.series.placeholder"
+            />
+
+            <AppInputBlock
+              :label="data.steps.step3.passportData.fields.number.label"
+              :name="data.steps.step3.passportData.fields.number.name"
+              :placeholder="data.steps.step3.passportData.fields.number.placeholder"
+            />
+          </div>
+
+          <AppInputBlock
+            :label="data.steps.step3.passportData.fields.dateOfIssue.label"
+            :name="data.steps.step3.passportData.fields.dateOfIssue.name"
+            type="date"
+          />
+
+          <AppInputBlock
+            :label="data.steps.step3.passportData.fields.dateOfExpiry.label"
+            :name="data.steps.step3.passportData.fields.dateOfExpiry.name"
+            :placeholder="data.steps.step3.passportData.fields.dateOfExpiry.placeholder"
+            type="date"
+          />
+
+          <AppInputBlock
+            :label="data.steps.step3.passportData.fields.identificationNumber.label"
+            :name="data.steps.step3.passportData.fields.identificationNumber.name"
+          />
+
+          <AppInputBlock
+            :label="data.steps.step3.passportData.fields.passportIssuedBy.label"
+            :name="data.steps.step3.passportData.fields.passportIssuedBy.name"
+            :placeholder="data.steps.step3.passportData.fields.passportIssuedBy.placeholder"
+          />
+        </fieldset>
+
+        <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step3.manager.title }}</legend>
 
           <AppSelect
             v-model="selectedManager"
-            :options="data.steps.step3.manager.options"
-            :name="data.steps.step3.manager.name"
+            :options="data.steps.step3.manager.fields.manager.options"
+            :name="data.steps.step3.manager.fields.manager.name"
           />
         </fieldset>
 
@@ -223,8 +321,8 @@
 
           <AppInputBlock
             tag="textarea"
-            :label="data.steps.step3.otherWishes.label"
-            :name="data.steps.step3.otherWishes.name"
+            :label="data.steps.step3.otherWishes.fields.otherWishes.label"
+            :name="data.steps.step3.otherWishes.fields.otherWishes.name"
             rows="5"
           />
         </fieldset>
@@ -249,7 +347,7 @@
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { vMaska } from 'maska'
@@ -261,20 +359,27 @@ import AppStep from '@/components/AppStep.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import AppCheckbox from '@/components/AppCheckbox.vue'
 import AppSkeletonForm from '@/components/AppSkeletonForm.vue'
+import AppRadioGroup from '@/components/AppRadioGroup.vue'
+import AppRadioButton from '@/components/AppRadioButton.vue'
 import {
   onlyLettersRegexp,
   phoneRegexp,
   exactlySixNumbersRegexp,
   cyrillicAndNumbersRegexp,
-  onlyNumbersRegexp
+  onlyNumbersRegexp,
+  latinAndNumbersRegexp
 } from '@/utils/regexp.js'
 import {
   onlyLettersMessage,
   phoneMessage,
   exactlySixNumbersMessage,
   cyrillicAndNumbersMessage,
-  onlyNumbersMessage
+  onlyNumbersMessage,
+  latinAndNumbersMessage,
+  endDateMessages
 } from '@/utils/messages.js'
+
+const emit = defineEmits(['change-text'])
 
 const data = ref(null)
 
@@ -286,8 +391,10 @@ const selectedStreetType = ref('')
 const selectedStreet = ref('')
 const selectedTypeRoom = ref('')
 const selectedManager = ref('')
+const selectedDocumentType = ref('')
 
 const connectionAddressActiveIndex = ref(null)
+const isResidentBelarus = ref(null)
 
 const schemas = [
   yup.object({
@@ -310,7 +417,23 @@ const schemas = [
     })
   }),
   yup.object({
-    passportData: yup.object({})
+    passportData: yup.object({
+      passportData: yup.object({
+        series: yup.string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+        number: yup.string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+        identificationNumber: yup
+          .string()
+          .trim()
+          .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+        dateOfIssue: yup.date(),
+        dateOfExpiry: yup
+          .date()
+          .transform(function (value) {
+            if (this.isType(value)) return value
+          })
+          .min(yup.ref('dateOfIssue'), endDateMessages)
+      })
+    })
   })
 ]
 
@@ -328,19 +451,40 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta } = useForm({
+const { handleSubmit, meta, setValues } = useForm({
   validationSchema: currentSchema,
   keepValuesOnUnmount: true
 })
+
+const onChangeResidentYes = () => {
+  isResidentBelarus.value = 'yes'
+
+  setValues({
+    passportData: {
+      passportData: {
+        citizenship: undefined,
+        temporaryRegistration: undefined
+      }
+    }
+  })
+}
+
+const emitChangedText = () => {
+  emit('change-text', data.value.texts[currentStep.value])
+}
 
 const onClickNavButton = (value) => {
   if (!meta.value.valid) return
 
   currentStep.value = value
+
+  emitChangedText()
 }
 
 const onClickPreviousButton = () => {
   currentStep.value -= 1
+
+  emitChangedText()
 }
 
 const onSubmit = handleSubmit((values) => {
@@ -350,12 +494,30 @@ const onSubmit = handleSubmit((values) => {
   }
 
   currentStep.value += 1
+
+  emitChangedText()
 })
 
+// todo: временный вариант, лучше реализовать работу через localStorage
+const onBeforeUnload = (event) => {
+  event.preventDefault()
+  event.returnValue = ''
+}
+
 onMounted(async () => {
-  const response = await fetch('http://localhost:3000/data')
-  data.value = await response.json()
+  try {
+    const response = await fetch('http://localhost:3000/data')
+    data.value = await response.json()
+
+    emitChangedText()
+  } catch (err) {
+    alert('Произошла ошибка в результате запроса на сервер.')
+  }
+
+  window.addEventListener('beforeunload', onBeforeUnload)
 })
+
+onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
 </script>
 
 <style>
@@ -417,6 +579,7 @@ onMounted(async () => {
   .form__fields {
     display: grid;
     row-gap: 30px;
+    max-width: 400px;
   }
 
   .form__fieldset {
@@ -446,7 +609,6 @@ onMounted(async () => {
     flex-wrap: wrap;
     gap: 10px 20px;
     margin-top: 40px;
-    margin-left: auto;
 
     @media (width <= 600px) {
       flex-direction: column;

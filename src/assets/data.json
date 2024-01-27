@@ -1,5 +1,10 @@
 {
     "data": {
+        "texts": [
+            "<p><b>Не уверены, какой тариф лучше выбрать?</b></p><p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>",
+            "В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.",
+            "<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>"
+        ],
         "tabs": [
             {
                 "text": "Личные данные"
@@ -146,15 +151,91 @@
                 }
             },
             "step3": {
+                "passportData": {
+                    "fields": {
+                        "resident": {
+                            "title": "Являетесь ли Вы резидентом Республики Беларусь?",
+                            "fields": {
+                                "yes": {
+                                    "name": "passportData.passportData.resident",
+                                    "label": "Да"
+                                },
+                                "no": {
+                                    "name": "passportData.passportData.resident",
+                                    "label": "Нет"
+                                }
+                            }
+                        },
+                        "citizenship": {
+                            "name": "passportData.passportData.citizenship",
+                            "label": "Гражданство",
+                            "placeholder": "Испания"
+                        },
+                        "temporaryRegistration": {
+                            "title": "Есть ли у вас временная регистрация?",
+                            "fields": {
+                                "yes": {
+                                    "name": "passportData.passportData.temporaryRegistration",
+                                    "label": "Да"
+                                },
+                                "no": {
+                                    "name": "passportData.passportData.temporaryRegistration",
+                                    "label": "Нет"
+                                }
+                            }
+                        },
+                        "documentType": {
+                            "name": "passportData.passportData.documentType",
+                            "label": "Вид документа",
+                            "placeholder": "Выберите вид документа",
+                            "options": ["Паспорт", "Удостоверение"]
+                        },
+                        "series": {
+                            "name": "passportData.passportData.series",
+                            "label": "Серия",
+                            "placeholder": "MP"
+                        },
+                        "number": {
+                            "name": "passportData.passportData.number",
+                            "label": "Номер паспорта",
+                            "placeholder": "2024468"
+                        },
+                        "dateOfIssue": {
+                            "name": "passportData.passportData.dateOfIssue",
+                            "label": "Дата выдачи паспорта"
+                        },
+                        "dateOfExpiry": {
+                            "name": "passportData.passportData.dateOfExpiry",
+                            "label": "Срок действия паспорта"
+                        },
+                        "passportIssuedBy": {
+                            "name": "passportData.passportData.passportIssuedBy",
+                            "label": "Кем выдан паспорт",
+                            "placeholder": "Московским РУВД"
+                        },
+                        "identificationNumber": {
+                            "name": "passportData.passportData.identificationNumber",
+                            "label": "Идентификационный номер"
+                        }
+                    }
+                },
                 "manager": {
                     "title": "Ваш менеджер",
-                    "name": "passportData.manager",
-                    "options": ["Да", "Нет"]
+                    "fields": {
+                        "manager": {
+                            "name": "passportData.manager",
+                            "options": ["Да", "Нет"]
+                        }
+                    }
                 },
                 "otherWishes": {
                     "title": "Иные пожелания",
-                    "label": "Комментарий",
-                    "name": "passportData.otherWishes"
+                    "fields": {
+                        "otherWishes": {
+                            "label": "Комментарий",
+                            "name": "passportData.otherWishes"
+                        }
+                    }
                 }
             }
         }

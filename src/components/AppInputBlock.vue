@@ -16,9 +16,9 @@
       class="input-block__input"
       v-bind="$attrs"
     />
-    <div v-show="errorMessage" class="input-block__error">
+    <p v-show="errorMessage" class="input-block__error">
       {{ errorMessage }}
-    </div>
+    </p>
   </div>
 </template>
 

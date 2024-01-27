@@ -3,3 +3,5 @@ export const phoneMessage = 'Введите телефон в соответст
 export const exactlySixNumbersMessage = 'Введите ровно 6 цифр';
 export const cyrillicAndNumbersMessage = 'Введите только цифры либо буквы кириллического алфавита';
 export const onlyNumbersMessage = 'Введите только цифры';
+export const latinAndNumbersMessage = 'Введите только цифры, буквы кириллического/латинского алфавита';
+export const endDateMessages = 'Дата окончания действия паспорта не может быть меньше даты выдачи паспорта';

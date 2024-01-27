@@ -2,19 +2,17 @@
   <div class="container">
     <div class="container__wrapper">
       <h1>Заявление на подключение</h1>
-      <div class="text-block">
-        <p>
-          <b>Не уверены, какой тариф лучше выбрать?</b>
-        </p>
-        <p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>
-      </div>
+      <div v-html="text" class="text-block"></div>
     </div>
-    <AppMultiStepForm />
+    <AppMultiStepForm @change-text="text = $event" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import AppMultiStepForm from '@/components/AppMultiStepForm.vue'
+
+const text = ref('')
 </script>
 
 <style></style>
