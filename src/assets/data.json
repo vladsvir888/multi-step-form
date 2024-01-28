@@ -236,6 +236,14 @@
                             "name": "passportData.otherWishes"
                         }
                     }
+                },
+                "privacyPolicy": {
+                    "fields": {
+                        "privacyPolicy": {
+                            "label": "Я ознакомился(-лась) с Политикой конфиденциальности",
+                            "name": "passportData.privacyPolicy"
+                        }
+                    }
                 }
             }
         }

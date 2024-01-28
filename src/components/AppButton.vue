@@ -69,6 +69,7 @@ const className = computed(() => variants[props.variant])
 
   &:disabled {
     background-color: rgba(221, 221, 221, 0.4);
+    border-color: transparent;
     color: rgba(96, 96, 96, 0.3);
     cursor: not-allowed;
   }

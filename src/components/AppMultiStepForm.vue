@@ -90,7 +90,7 @@
           />
         </fieldset>
 
-        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помогает. Решаю проблему через ref с активным табом и emits из api primevue -->
+        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помог. Решаю проблему через ref с активным табом и emits из api primevue -->
         <Accordion
           :active-index="connectionAddressActiveIndex"
           @tab-open="connectionAddressActiveIndex = 0"
@@ -326,6 +326,15 @@
             rows="5"
           />
         </fieldset>
+
+        <div class="form__checkbox-wrapper">
+          <AppCheckbox
+            :name="data.steps.step3.privacyPolicy.fields.privacyPolicy.name"
+            :checked-value="true"
+            :label="data.steps.step3.privacyPolicy.fields.privacyPolicy.label"
+            :required="true"
+          />
+        </div>
       </AppStep>
     </div>
 
@@ -335,6 +344,7 @@
         @click="onClickPreviousButton"
         class="form__button"
         variant="secondary"
+        :disabled="!meta.valid"
         >Назад</AppButton
       >
       <AppButton class="form__button" type="submit" :disabled="!meta.valid" variant="primary">{{
@@ -349,7 +359,7 @@
 import '@/utils/locale.js'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
-import * as yup from 'yup'
+import { string, object, date, boolean } from "yup";
 import { vMaska } from 'maska'
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
@@ -397,42 +407,41 @@ const connectionAddressActiveIndex = ref(null)
 const isResidentBelarus = ref(null)
 
 const schemas = [
-  yup.object({
-    personalData: yup.object({
-      surname: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      name: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      patronymic: yup.string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      phone: yup.string().required().matches().matches(phoneRegexp, phoneMessage),
-      email: yup.string().required().email()
+  object({
+    personalData: object({
+      surname: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      name: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      patronymic: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+      phone: string().required().matches(phoneRegexp, phoneMessage),
+      email: string().required().email()
     })
   }),
-  yup.object({
-    order: yup.object({
-      connectionAddress: yup.object({
-        postalCode: yup.string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
-        house: yup.string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
-        building: yup.string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
-        room: yup.string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
+  object({
+    order: object({
+      connectionAddress: object({
+        postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
+        house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
+        building: string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
+        room: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
       })
     })
   }),
-  yup.object({
-    passportData: yup.object({
-      passportData: yup.object({
-        series: yup.string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        number: yup.string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        identificationNumber: yup
-          .string()
+  object({
+    passportData: object({
+      passportData: object({
+        series: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+        number: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+        identificationNumber:
+          string()
           .trim()
           .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        dateOfIssue: yup.date(),
-        dateOfExpiry: yup
-          .date()
-          .transform(function (value) {
-            if (this.isType(value)) return value
-          })
-          .min(yup.ref('dateOfIssue'), endDateMessages)
-      })
+        dateOfIssue: date(),
+        dateOfExpiry:
+          date()
+          // изначально решение было через yup.ref(), но после оптимизации (подключения из yup только того, что надо с целью сокращения размера бандла) происходил конфликт с ref из vue. Решаю проблему через yup.when()
+          .when('dateOfIssue', ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages))
+      }),
+      privacyPolicy: boolean().required()
     })
   })
 ]

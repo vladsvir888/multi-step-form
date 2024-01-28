@@ -1,11 +1,12 @@
 <template>
-  <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField()  -->
+  <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField(). -->
   <div class="checkbox">
     <label class="checkbox__label">
       <input
         :value="checkedValue"
         :checked="checked"
         @change="handleChange"
+        :required="required"
         class="checkbox__input"
         type="checkbox"
       />
@@ -15,6 +16,7 @@
       }}</p>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
+    <p v-if="errorMessage" class="checkbox__error">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -39,12 +41,16 @@ const props = defineProps({
   },
   helpText: {
     type: String
+  },
+  required: {
+    type: Boolean,
+    default: false
   }
 })
 
-const { handleChange, checked } = useField(() => props.name, undefined, {
+const { handleChange, checked, errorMessage } = useField(() => props.name, undefined, {
   type: 'checkbox',
-  checkedValue: props.checkedValue
+  checkedValue: props.checkedValue,
 })
 </script>
 
@@ -79,6 +85,15 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
     &:hover:not(:checked) {
       border-color: #9ee2dc;
     }
+
+    &[required] ~ .checkbox__label-text {
+      &::after {
+        display: inline-flex;
+        margin-left: 5px;
+        color: #ec2b59;
+        content: '*';
+      }
+    }
   }
 
   .checkbox__label {
@@ -93,12 +108,10 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
   }
 
   .checkbox__text {
-    grid-column: 1 / 3;
     opacity: 0.7;
   }
 
   .checkbox__error {
-    grid-column: span 2;
     font-size: 12px;
     color: #ec2b59;
   }
