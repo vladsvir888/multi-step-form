@@ -1,5 +1,4 @@
 <template>
-  <!-- Есть некоторая проблема, если я хочу сделать по умолчанию чекбокс как checked. Сейчас я checked получаю из useField(). -->
   <div class="checkbox">
     <label class="checkbox__label">
       <input
@@ -9,11 +8,10 @@
         :required="required"
         class="checkbox__input"
         type="checkbox"
+        v-bind="$attrs"
       />
       <p class="checkbox__label-text">{{ label }}</p>
-      <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{
-        labelAdd
-      }}</p>
+      <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{ labelAdd }}</p>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
     <p v-if="errorMessage" class="checkbox__error">{{ errorMessage }}</p>
@@ -22,6 +20,10 @@
 
 <script setup>
 import { useField } from 'vee-validate'
+
+defineOptions({
+  inheritAttrs: false
+})
 
 const props = defineProps({
   name: {
@@ -50,7 +52,7 @@ const props = defineProps({
 
 const { handleChange, checked, errorMessage } = useField(() => props.name, undefined, {
   type: 'checkbox',
-  checkedValue: props.checkedValue,
+  checkedValue: props.checkedValue
 })
 </script>
 

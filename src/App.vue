@@ -4,13 +4,13 @@
       <h1>Заявление на подключение</h1>
       <div v-html="text" class="text-block"></div>
     </div>
-    <AppMultiStepForm @change-text="text = $event" />
+    <AppFormWizard @change-text="text = $event" />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import AppMultiStepForm from '@/components/AppMultiStepForm.vue'
+import AppFormWizard from '@/components/AppFormWizard.vue'
 
 const text = ref('')
 </script>

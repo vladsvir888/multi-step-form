@@ -1,23 +1,23 @@
 <template>
-    <div class="radio-group">
-        <p class="radio-group__label">{{ label }}</p>
-        <slot />
-    </div>
+  <div class="radio-group">
+    <p class="radio-group__label">{{ label }}</p>
+    <slot />
+  </div>
 </template>
 
 <script setup>
 defineProps({
-    label: {
-        type: String,
-        required: true,
-    }
+  label: {
+    type: String,
+    required: true
+  }
 })
 </script>
 
 <style>
 .radio-group {
-    .radio-group__label {
-        margin-bottom: 12px;
-    }
+  .radio-group__label {
+    margin-bottom: 12px;
+  }
 }
 </style>

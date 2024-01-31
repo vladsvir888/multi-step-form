@@ -7,6 +7,7 @@
         @change="handleChange"
         class="radio-button__input"
         type="radio"
+        v-bind="$attrs"
       />
       {{ label }}
     </label>
@@ -15,6 +16,10 @@
 
 <script setup>
 import { useField } from 'vee-validate'
+
+defineOptions({
+  inheritAttrs: false
+})
 
 const props = defineProps({
   name: {
@@ -59,6 +64,12 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
     }
 
     &:has(.radio-button__input:checked) {
+      border-color: #00c4b3;
+      background-color: #00c4b3;
+      color: #fff;
+    }
+
+    &:has(.radio-button__input:focus) {
       border-color: #00c4b3;
       background-color: #00c4b3;
       color: #fff;

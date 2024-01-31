@@ -114,7 +114,7 @@
                             "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
                         },
                         "noStreet": {
-                            "name": "order.connectionAddress.street",
+                            "name": "order.connectionAddress.noStreet",
                             "label": "В адресе отсутствует название улицы"
                         },
                         "house": {
@@ -139,7 +139,7 @@
                             "placeholder": "196"
                         },
                         "noRoom": {
-                            "name": "order.connectionAddress.room",
+                            "name": "order.connectionAddress.noRoom",
                             "label": "Это единое строение, помещения нет"
                         },
                         "addressCommentary": {
@@ -208,14 +208,14 @@
                             "name": "passportData.passportData.dateOfExpiry",
                             "label": "Срок действия паспорта"
                         },
+                        "identificationNumber": {
+                            "name": "passportData.passportData.identificationNumber",
+                            "label": "Идентификационный номер"
+                        },
                         "passportIssuedBy": {
                             "name": "passportData.passportData.passportIssuedBy",
                             "label": "Кем выдан паспорт",
                             "placeholder": "Московским РУВД"
-                        },
-                        "identificationNumber": {
-                            "name": "passportData.passportData.identificationNumber",
-                            "label": "Идентификационный номер"
                         }
                     }
                 },

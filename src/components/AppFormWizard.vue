@@ -19,25 +19,25 @@
         <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step1.personalData.title }}</legend>
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step1.personalData.fields.surname.label"
             :name="data.steps.step1.personalData.fields.surname.name"
             required
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step1.personalData.fields.name.label"
             :name="data.steps.step1.personalData.fields.name.name"
             required
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step1.personalData.fields.patronymic.label"
             :name="data.steps.step1.personalData.fields.patronymic.name"
             required
           />
 
-          <AppInputBlock
+          <AppInput
             v-maska
             :data-maska="data.steps.step1.personalData.fields.phone.mask"
             :placeholder="data.steps.step1.personalData.fields.phone.placeholder"
@@ -47,7 +47,7 @@
             required
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step1.personalData.fields.email.label"
             :name="data.steps.step1.personalData.fields.email.name"
             :placeholder="data.steps.step1.personalData.fields.email.placeholder"
@@ -62,7 +62,7 @@
           <legend class="form__legend">{{ data.steps.step2.tariffPlan.title }}</legend>
 
           <AppSelect
-            v-model="selectedTariffPlan"
+            v-model="values.order.tariffPlan"
             :options="data.steps.step2.tariffPlan.fields.tariffPlan.options"
             :label="data.steps.step2.tariffPlan.fields.tariffPlan.label"
             :name="data.steps.step2.tariffPlan.fields.tariffPlan.name"
@@ -90,7 +90,7 @@
           />
         </fieldset>
 
-        <!-- Аккордеон закрывается при размонтировании (при переключении на другой step), <KeepAlive /> не помог. Решаю проблему через ref с активным табом и emits из api primevue -->
+        <!-- Аккордеон закрывается при размонтировании компонента (при переключении на другой step), <KeepAlive /> не помог. Решаю проблему через ref с активным табом и emits из api primevue -->
         <Accordion
           :active-index="connectionAddressActiveIndex"
           @tab-open="connectionAddressActiveIndex = 0"
@@ -106,13 +106,13 @@
             }"
           >
             <fieldset class="form__fieldset">
-              <AppInputBlock
+              <AppInput
                 :label="data.steps.step2.connectionAddress.fields.postalCode.label"
                 :name="data.steps.step2.connectionAddress.fields.postalCode.name"
               />
 
               <AppSelect
-                v-model="selectedRegion"
+                v-model="values.order.connectionAddress.region"
                 :options="data.steps.step2.connectionAddress.fields.region.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.region.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.region.label"
@@ -120,7 +120,7 @@
               />
 
               <AppSelect
-                v-model="selectedSettlementType"
+                v-model="values.order.connectionAddress.settlementType"
                 :options="data.steps.step2.connectionAddress.fields.settlementType.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.settlementType.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.settlementType.label"
@@ -128,7 +128,7 @@
               />
 
               <AppSelect
-                v-model="selectedSettlement"
+                v-model="values.order.connectionAddress.settlement"
                 :options="data.steps.step2.connectionAddress.fields.settlement.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.settlement.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.settlement.label"
@@ -137,7 +137,7 @@
               />
 
               <AppSelect
-                v-model="selectedStreetType"
+                v-model="values.order.connectionAddress.streetType"
                 :options="data.steps.step2.connectionAddress.fields.streetType.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.streetType.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.streetType.label"
@@ -145,28 +145,30 @@
               />
 
               <AppSelect
-                v-model="selectedStreet"
+                v-model="values.order.connectionAddress.street"
                 :options="data.steps.step2.connectionAddress.fields.street.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.street.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.street.label"
                 :name="data.steps.step2.connectionAddress.fields.street.name"
+                :disabled="values.order.connectionAddress.noStreet"
                 filter
               />
 
               <AppCheckbox
                 :name="data.steps.step2.connectionAddress.fields.noStreet.name"
-                :checked-value="data.steps.step2.connectionAddress.fields.noStreet.label"
+                :checked-value="true"
                 :label="data.steps.step2.connectionAddress.fields.noStreet.label"
+                @change="setFieldValue('order.connectionAddress.street', '')"
               />
 
               <div class="form__fieldset-wrapper">
-                <AppInputBlock
+                <AppInput
                   :label="data.steps.step2.connectionAddress.fields.house.label"
                   :name="data.steps.step2.connectionAddress.fields.house.name"
                   :placeholder="data.steps.step2.connectionAddress.fields.house.placeholder"
                 />
 
-                <AppInputBlock
+                <AppInput
                   :label="data.steps.step2.connectionAddress.fields.building.label"
                   :name="data.steps.step2.connectionAddress.fields.building.name"
                   :placeholder="data.steps.step2.connectionAddress.fields.building.placeholder"
@@ -174,26 +176,28 @@
               </div>
 
               <AppSelect
-                v-model="selectedTypeRoom"
+                v-model="values.order.connectionAddress.typeRoom"
                 :options="data.steps.step2.connectionAddress.fields.typeRoom.options"
                 :placeholder="data.steps.step2.connectionAddress.fields.typeRoom.placeholder"
                 :label="data.steps.step2.connectionAddress.fields.typeRoom.label"
                 :name="data.steps.step2.connectionAddress.fields.typeRoom.name"
               />
 
-              <AppInputBlock
+              <AppInput
                 :label="data.steps.step2.connectionAddress.fields.room.label"
                 :name="data.steps.step2.connectionAddress.fields.room.name"
                 :placeholder="data.steps.step2.connectionAddress.fields.room.placeholder"
+                :disabled="values.order.connectionAddress.noRoom"
               />
 
               <AppCheckbox
                 :name="data.steps.step2.connectionAddress.fields.noRoom.name"
-                :checked-value="data.steps.step2.connectionAddress.fields.noRoom.label"
+                :checked-value="true"
                 :label="data.steps.step2.connectionAddress.fields.noRoom.label"
+                @change="setFieldValue('order.connectionAddress.room', '')"
               />
 
-              <AppInputBlock
+              <AppInput
                 tag="textarea"
                 :label="data.steps.step2.connectionAddress.fields.addressCommentary.label"
                 :name="data.steps.step2.connectionAddress.fields.addressCommentary.name"
@@ -211,23 +215,24 @@
         <fieldset class="form__fieldset">
           <AppRadioGroup :label="data.steps.step3.passportData.fields.resident.title">
             <div class="form__fieldset-wrapper">
+              <!-- Почему-то эта радиокнопка триггерит валидацию на чекбоксе с политикой конфиденциальности, пока просто по умолчанию сделал чекбокс как checked -->
               <AppRadioButton
                 :name="data.steps.step3.passportData.fields.resident.fields.yes.name"
                 :checked-value="data.steps.step3.passportData.fields.resident.fields.yes.label"
                 :label="data.steps.step3.passportData.fields.resident.fields.yes.label"
-                @change="onChangeResidentYes"
+                @change="isResidentBelarus = true"
               />
               <AppRadioButton
                 :name="data.steps.step3.passportData.fields.resident.fields.no.name"
                 :checked-value="data.steps.step3.passportData.fields.resident.fields.no.label"
                 :label="data.steps.step3.passportData.fields.resident.fields.no.label"
-                @change="isResidentBelarus = 'no'"
+                @change="isResidentBelarus = false"
               />
             </div>
           </AppRadioGroup>
 
-          <div class="form__fieldset" v-show="isResidentBelarus === 'no'">
-            <AppInputBlock
+          <div class="form__fieldset" v-show="isResidentBelarus === false">
+            <AppInput
               :label="data.steps.step3.passportData.fields.citizenship.label"
               :name="data.steps.step3.passportData.fields.citizenship.name"
               :placeholder="data.steps.step3.passportData.fields.citizenship.placeholder"
@@ -260,7 +265,7 @@
           </div>
 
           <AppSelect
-            v-model="selectedDocumentType"
+            v-model="values.passportData.passportData.documentType"
             :options="data.steps.step3.passportData.fields.documentType.options"
             :name="data.steps.step3.passportData.fields.documentType.name"
             :label="data.steps.step3.passportData.fields.documentType.label"
@@ -268,38 +273,38 @@
           />
 
           <div class="form__fieldset-wrapper">
-            <AppInputBlock
+            <AppInput
               :label="data.steps.step3.passportData.fields.series.label"
               :name="data.steps.step3.passportData.fields.series.name"
               :placeholder="data.steps.step3.passportData.fields.series.placeholder"
             />
 
-            <AppInputBlock
+            <AppInput
               :label="data.steps.step3.passportData.fields.number.label"
               :name="data.steps.step3.passportData.fields.number.name"
               :placeholder="data.steps.step3.passportData.fields.number.placeholder"
             />
           </div>
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step3.passportData.fields.dateOfIssue.label"
             :name="data.steps.step3.passportData.fields.dateOfIssue.name"
             type="date"
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step3.passportData.fields.dateOfExpiry.label"
             :name="data.steps.step3.passportData.fields.dateOfExpiry.name"
             :placeholder="data.steps.step3.passportData.fields.dateOfExpiry.placeholder"
             type="date"
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step3.passportData.fields.identificationNumber.label"
             :name="data.steps.step3.passportData.fields.identificationNumber.name"
           />
 
-          <AppInputBlock
+          <AppInput
             :label="data.steps.step3.passportData.fields.passportIssuedBy.label"
             :name="data.steps.step3.passportData.fields.passportIssuedBy.name"
             :placeholder="data.steps.step3.passportData.fields.passportIssuedBy.placeholder"
@@ -310,7 +315,7 @@
           <legend class="form__legend">{{ data.steps.step3.manager.title }}</legend>
 
           <AppSelect
-            v-model="selectedManager"
+            v-model="values.passportData.manager"
             :options="data.steps.step3.manager.fields.manager.options"
             :name="data.steps.step3.manager.fields.manager.name"
           />
@@ -319,7 +324,7 @@
         <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step3.otherWishes.title }}</legend>
 
-          <AppInputBlock
+          <AppInput
             tag="textarea"
             :label="data.steps.step3.otherWishes.fields.otherWishes.label"
             :name="data.steps.step3.otherWishes.fields.otherWishes.name"
@@ -332,7 +337,7 @@
             :name="data.steps.step3.privacyPolicy.fields.privacyPolicy.name"
             :checked-value="true"
             :label="data.steps.step3.privacyPolicy.fields.privacyPolicy.label"
-            :required="true"
+            required
           />
         </div>
       </AppStep>
@@ -351,19 +356,24 @@
         isLastStep ? 'Готово' : 'Отправить'
       }}</AppButton>
     </div>
+
+    <pre>
+      values - {{ values }}
+    </pre>
   </form>
   <AppSkeletonForm v-else />
 </template>
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
-import { string, object, date, boolean } from "yup";
+import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
+import { useFetch } from '@vueuse/core'
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
-import AppInputBlock from '@/components/AppInputBlock.vue'
+import AppInput from '@/components/AppInput.vue'
 import AppButton from '@/components/AppButton.vue'
 import AppStep from '@/components/AppStep.vue'
 import AppSelect from '@/components/AppSelect.vue'
@@ -393,16 +403,6 @@ const emit = defineEmits(['change-text'])
 
 const data = ref(null)
 
-const selectedTariffPlan = ref('')
-const selectedRegion = ref('')
-const selectedSettlementType = ref('')
-const selectedSettlement = ref('')
-const selectedStreetType = ref('')
-const selectedStreet = ref('')
-const selectedTypeRoom = ref('')
-const selectedManager = ref('')
-const selectedDocumentType = ref('')
-
 const connectionAddressActiveIndex = ref(null)
 const isResidentBelarus = ref(null)
 
@@ -431,15 +431,16 @@ const schemas = [
       passportData: object({
         series: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
         number: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        identificationNumber:
-          string()
+        identificationNumber: string()
           .trim()
           .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
         dateOfIssue: date(),
-        dateOfExpiry:
-          date()
-          // изначально решение было через yup.ref(), но после оптимизации (подключения из yup только того, что надо с целью сокращения размера бандла) происходил конфликт с ref из vue. Решаю проблему через yup.when()
-          .when('dateOfIssue', ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages))
+        dateOfExpiry: date()
+          // изначально решение было через yup.ref(), но после оптимизации (подключения из yup только нужного с целью сокращения размера бандла) происходил конфликт с ref из vue. Решаю проблему через yup.when()
+          .when(
+            'dateOfIssue',
+            ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages)
+          )
       }),
       privacyPolicy: boolean().required()
     })
@@ -460,23 +461,70 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values, validate, setErrors } = useForm({
   validationSchema: currentSchema,
-  keepValuesOnUnmount: true
-})
-
-const onChangeResidentYes = () => {
-  isResidentBelarus.value = 'yes'
-
-  setValues({
+  keepValuesOnUnmount: true,
+  initialValues: {
+    personalData: {
+      surname: '',
+      name: '',
+      patronymic: '',
+      phone: '',
+      email: ''
+    },
+    order: {
+      tariffPlan: '',
+      addServices: [],
+      connectionAddress: {
+        postalCode: '',
+        region: '',
+        settlementType: '',
+        settlement: '',
+        streetType: '',
+        street: '',
+        noStreet: null,
+        house: '',
+        building: '',
+        typeRoom: '',
+        room: '',
+        noRoom: null,
+        addressCommentary: ''
+      }
+    },
     passportData: {
       passportData: {
-        citizenship: undefined,
-        temporaryRegistration: undefined
-      }
+        resident: '',
+        citizenship: '',
+        temporaryRegistration: '',
+        documentType: '',
+        series: '',
+        number: '',
+        dateOfIssue: undefined,
+        dateOfExpiry: undefined,
+        identificationNumber: '',
+        passportIssuedBy: ''
+      },
+      manager: '',
+      otherWishes: '',
+      privacyPolicy: true
     }
-  })
-}
+  }
+  // не работает, скорее всего это связано с тем, что я данные получаю в onMounted и vee-validate вызывает валидацию тоже при onMounted
+  // validateOnMount: true
+})
+
+watch(isResidentBelarus, (value) => {
+  if (value) {
+    setValues({
+      passportData: {
+        passportData: {
+          citizenship: '',
+          temporaryRegistration: ''
+        }
+      }
+    })
+  }
+})
 
 const emitChangedText = () => {
   emit('change-text', data.value.texts[currentStep.value])
@@ -496,7 +544,7 @@ const onClickPreviousButton = () => {
   emitChangedText()
 }
 
-const onSubmit = handleSubmit((values) => {
+const onSubmit = handleSubmit(async (values) => {
   if (isLastStep.value) {
     console.log('Данные формы:', values)
     return
@@ -514,14 +562,8 @@ const onBeforeUnload = (event) => {
 }
 
 onMounted(async () => {
-  try {
-    const response = await fetch('http://localhost:3000/data')
-    data.value = await response.json()
-
-    emitChangedText()
-  } catch (err) {
-    alert('Произошла ошибка в результате запроса на сервер.')
-  }
+  const { data: responseData } = await useFetch('http://localhost:3000/data').json()
+  data.value = responseData.value
 
   window.addEventListener('beforeunload', onBeforeUnload)
 })

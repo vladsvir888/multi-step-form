@@ -3,9 +3,9 @@
     <p v-if="label" class="select__text">{{ label }}</p>
     <Dropdown
       v-model="value"
+      :name="name"
       :options="options"
       :placeholder="placeholder"
-      :name="name"
       :filter="filter"
       :disabled="disabled"
       :pt="{
@@ -26,9 +26,15 @@ import Dropdown from 'primevue/dropdown'
 import { useField } from 'vee-validate'
 
 const props = defineProps({
+  label: {
+    type: String
+  },
   name: {
     type: String,
     required: true
+  },
+  modelValue: {
+    type: String
   },
   options: {
     type: Array,
@@ -44,13 +50,12 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
-  },
-  label: {
-    type: String
   }
 })
 
-const { value } = useField(() => props.name)
+const { value } = useField(() => props.name, undefined, {
+  syncVModel: true
+})
 </script>
 
 <style>
