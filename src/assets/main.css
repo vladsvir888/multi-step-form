@@ -80,28 +80,3 @@ h1 {
         }
     }
 }
-
-.accordion-tab {
-    .accordion-tab__header-action {
-        flex-direction: row-reverse;
-        justify-content: space-between;
-        padding-right: 0;
-        padding-left: 0;
-        color: #13284a;
-        font-size: 21px;
-        line-height: 1.33;
-        font-weight: 600;
-        border: none;
-        background-color: #fff;
-    }
-
-    .accordion-tab__icon {
-        margin-right: 0;
-    }
-
-    .accordion-tab__content {
-        padding: 0;
-        border: none;
-        color: inherit;
-    }
-}

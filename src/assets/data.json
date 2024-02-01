@@ -219,6 +219,83 @@
                         }
                     }
                 },
+                "registrationAddress": {
+                    "title": "Адрес регистрации",
+                    "fields": {
+                        "sameAsConnectionAddress": {
+                            "name": "passportData.registrationAddress.sameAsConnectionAddress",
+                            "label": "Совпадает с адресом подключения"
+                        },
+                        "postalCode": {
+                            "name": "passportData.registrationAddress.postalCode",
+                            "label": "Индекс"
+                        },
+                        "region": {
+                            "name": "passportData.registrationAddress.region",
+                            "label": "Область",
+                            "placeholder": "Выберите область",
+                            "options": ["Брестская область", "Витебская область", "Гомельская область", "Гродненская область", "Минская область", "Могилевская область"]
+                        },
+                        "settlementType": {
+                            "name": "passportData.registrationAddress.settlementType",
+                            "label": "Тип населенного пункта",
+                            "placeholder": "Выберите тип населенного пункта",
+                            "options": ["Город", "Поселок городского типа", "Сельский населенный пункт"]
+                        },
+                        "settlement": {
+                            "name": "passportData.registrationAddress.settlement",
+                            "label": "Населенный пункт",
+                            "placeholder": "Выберите населенный пункт",
+                            "options": ["Минск", "Гомель", "Могилёв", "Витебск", "Гродно", "Брест", "Барановичи", "Мозырь", "Бобруйск", "Слуцк"]
+                        },
+                        "streetType": {
+                            "name": "passportData.registrationAddress.streetType",
+                            "label": "Тип улицы",
+                            "placeholder": "Выберите тип улицы",
+                            "options": ["Центральная улица", "Жилые улицы", "Промышленные улицы", "Торговые улицы", "Туристические улицы"]
+                        },
+                        "street": {
+                            "name": "passportData.registrationAddress.street",
+                            "label": "Улица",
+                            "placeholder": "Выберите улицу",
+                            "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
+                        },
+                        "noStreet": {
+                            "name": "passportData.registrationAddress.noStreet",
+                            "label": "В адресе отсутствует название улицы"
+                        },
+                        "house": {
+                            "name": "passportData.registrationAddress.house",
+                            "label": "Дом",
+                            "placeholder": "51В"
+                        },
+                        "building": {
+                            "name": "passportData.registrationAddress.building",
+                            "label": "Корпус / Строение",
+                            "placeholder": "1"
+                        },
+                        "typeRoom": {
+                            "name": "passportData.registrationAddress.typeRoom",
+                            "label": "Тип помещения",
+                            "placeholder": "Выберите тип помещения",
+                            "options": ["Офис", "Квартира"]
+                        },
+                        "room": {
+                            "name": "passportData.registrationAddress.room",
+                            "label": "Помещение",
+                            "placeholder": "196"
+                        },
+                        "noRoom": {
+                            "name": "passportData.registrationAddress.noRoom",
+                            "label": "Это единое строение, помещения нет"
+                        },
+                        "addressCommentary": {
+                            "name": "passportData.registrationAddress.addressCommentary",
+                            "label": "Комментарий по адресу",
+                            "placeholder": "3 этаж, справа от входа"
+                        }
+                    }
+                },
                 "manager": {
                     "title": "Ваш менеджер",
                     "fields": {

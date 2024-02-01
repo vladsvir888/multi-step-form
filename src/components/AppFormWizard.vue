@@ -91,124 +91,112 @@
         </fieldset>
 
         <!-- Аккордеон закрывается при размонтировании компонента (при переключении на другой step), <KeepAlive /> не помог. Решаю проблему через ref с активным табом и emits из api primevue -->
-        <Accordion
+        <AppCollapse
           :active-index="connectionAddressActiveIndex"
-          @tab-open="connectionAddressActiveIndex = 0"
-          @tab-close="connectionAddressActiveIndex = null"
+          @change-index-active-tab="connectionAddressActiveIndex = $event"
+          header="Адрес подключения"
         >
-          <AccordionTab
-            :header="data.steps.step2.connectionAddress.title"
-            :pt="{
-              root: 'accordion-tab',
-              headerAction: 'accordion-tab__header-action',
-              headerIcon: 'accordion-tab__icon',
-              content: 'accordion-tab__content'
-            }"
-          >
-            <fieldset class="form__fieldset">
+          <fieldset class="form__fieldset">
+            <AppInput
+              :label="data.steps.step2.connectionAddress.fields.postalCode.label"
+              :name="data.steps.step2.connectionAddress.fields.postalCode.name"
+            />
+
+            <AppSelect
+              v-model="values.order.connectionAddress.region"
+              :options="data.steps.step2.connectionAddress.fields.region.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.region.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.region.label"
+              :name="data.steps.step2.connectionAddress.fields.region.name"
+            />
+
+            <AppSelect
+              v-model="values.order.connectionAddress.settlementType"
+              :options="data.steps.step2.connectionAddress.fields.settlementType.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.settlementType.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.settlementType.label"
+              :name="data.steps.step2.connectionAddress.fields.settlementType.name"
+            />
+
+            <AppSelect
+              v-model="values.order.connectionAddress.settlement"
+              :options="data.steps.step2.connectionAddress.fields.settlement.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.settlement.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.settlement.label"
+              :name="data.steps.step2.connectionAddress.fields.settlement.name"
+              filter
+            />
+
+            <AppSelect
+              v-model="values.order.connectionAddress.streetType"
+              :options="data.steps.step2.connectionAddress.fields.streetType.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.streetType.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.streetType.label"
+              :name="data.steps.step2.connectionAddress.fields.streetType.name"
+            />
+
+            <AppSelect
+              v-model="values.order.connectionAddress.street"
+              :options="data.steps.step2.connectionAddress.fields.street.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.street.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.street.label"
+              :name="data.steps.step2.connectionAddress.fields.street.name"
+              :disabled="values.order.connectionAddress.noStreet"
+              filter
+            />
+
+            <AppCheckbox
+              :name="data.steps.step2.connectionAddress.fields.noStreet.name"
+              :checked-value="true"
+              :label="data.steps.step2.connectionAddress.fields.noStreet.label"
+              @change="setFieldValue('order.connectionAddress.street', '')"
+            />
+
+            <div class="form__fieldset-wrapper">
               <AppInput
-                :label="data.steps.step2.connectionAddress.fields.postalCode.label"
-                :name="data.steps.step2.connectionAddress.fields.postalCode.name"
-              />
-
-              <AppSelect
-                v-model="values.order.connectionAddress.region"
-                :options="data.steps.step2.connectionAddress.fields.region.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.region.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.region.label"
-                :name="data.steps.step2.connectionAddress.fields.region.name"
-              />
-
-              <AppSelect
-                v-model="values.order.connectionAddress.settlementType"
-                :options="data.steps.step2.connectionAddress.fields.settlementType.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.settlementType.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.settlementType.label"
-                :name="data.steps.step2.connectionAddress.fields.settlementType.name"
-              />
-
-              <AppSelect
-                v-model="values.order.connectionAddress.settlement"
-                :options="data.steps.step2.connectionAddress.fields.settlement.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.settlement.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.settlement.label"
-                :name="data.steps.step2.connectionAddress.fields.settlement.name"
-                filter
-              />
-
-              <AppSelect
-                v-model="values.order.connectionAddress.streetType"
-                :options="data.steps.step2.connectionAddress.fields.streetType.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.streetType.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.streetType.label"
-                :name="data.steps.step2.connectionAddress.fields.streetType.name"
-              />
-
-              <AppSelect
-                v-model="values.order.connectionAddress.street"
-                :options="data.steps.step2.connectionAddress.fields.street.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.street.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.street.label"
-                :name="data.steps.step2.connectionAddress.fields.street.name"
-                :disabled="values.order.connectionAddress.noStreet"
-                filter
-              />
-
-              <AppCheckbox
-                :name="data.steps.step2.connectionAddress.fields.noStreet.name"
-                :checked-value="true"
-                :label="data.steps.step2.connectionAddress.fields.noStreet.label"
-                @change="setFieldValue('order.connectionAddress.street', '')"
-              />
-
-              <div class="form__fieldset-wrapper">
-                <AppInput
-                  :label="data.steps.step2.connectionAddress.fields.house.label"
-                  :name="data.steps.step2.connectionAddress.fields.house.name"
-                  :placeholder="data.steps.step2.connectionAddress.fields.house.placeholder"
-                />
-
-                <AppInput
-                  :label="data.steps.step2.connectionAddress.fields.building.label"
-                  :name="data.steps.step2.connectionAddress.fields.building.name"
-                  :placeholder="data.steps.step2.connectionAddress.fields.building.placeholder"
-                />
-              </div>
-
-              <AppSelect
-                v-model="values.order.connectionAddress.typeRoom"
-                :options="data.steps.step2.connectionAddress.fields.typeRoom.options"
-                :placeholder="data.steps.step2.connectionAddress.fields.typeRoom.placeholder"
-                :label="data.steps.step2.connectionAddress.fields.typeRoom.label"
-                :name="data.steps.step2.connectionAddress.fields.typeRoom.name"
+                :label="data.steps.step2.connectionAddress.fields.house.label"
+                :name="data.steps.step2.connectionAddress.fields.house.name"
+                :placeholder="data.steps.step2.connectionAddress.fields.house.placeholder"
               />
 
               <AppInput
-                :label="data.steps.step2.connectionAddress.fields.room.label"
-                :name="data.steps.step2.connectionAddress.fields.room.name"
-                :placeholder="data.steps.step2.connectionAddress.fields.room.placeholder"
-                :disabled="values.order.connectionAddress.noRoom"
+                :label="data.steps.step2.connectionAddress.fields.building.label"
+                :name="data.steps.step2.connectionAddress.fields.building.name"
+                :placeholder="data.steps.step2.connectionAddress.fields.building.placeholder"
               />
+            </div>
 
-              <AppCheckbox
-                :name="data.steps.step2.connectionAddress.fields.noRoom.name"
-                :checked-value="true"
-                :label="data.steps.step2.connectionAddress.fields.noRoom.label"
-                @change="setFieldValue('order.connectionAddress.room', '')"
-              />
+            <AppSelect
+              v-model="values.order.connectionAddress.typeRoom"
+              :options="data.steps.step2.connectionAddress.fields.typeRoom.options"
+              :placeholder="data.steps.step2.connectionAddress.fields.typeRoom.placeholder"
+              :label="data.steps.step2.connectionAddress.fields.typeRoom.label"
+              :name="data.steps.step2.connectionAddress.fields.typeRoom.name"
+            />
 
-              <AppInput
-                tag="textarea"
-                :label="data.steps.step2.connectionAddress.fields.addressCommentary.label"
-                :name="data.steps.step2.connectionAddress.fields.addressCommentary.name"
-                :placeholder="
-                  data.steps.step2.connectionAddress.fields.addressCommentary.placeholder
-                "
-                rows="5"
-              />
-            </fieldset>
-          </AccordionTab>
-        </Accordion>
+            <AppInput
+              :label="data.steps.step2.connectionAddress.fields.room.label"
+              :name="data.steps.step2.connectionAddress.fields.room.name"
+              :placeholder="data.steps.step2.connectionAddress.fields.room.placeholder"
+              :disabled="values.order.connectionAddress.noRoom"
+            />
+
+            <AppCheckbox
+              :name="data.steps.step2.connectionAddress.fields.noRoom.name"
+              :checked-value="true"
+              :label="data.steps.step2.connectionAddress.fields.noRoom.label"
+              @change="setFieldValue('order.connectionAddress.room', '')"
+            />
+
+            <AppInput
+              tag="textarea"
+              :label="data.steps.step2.connectionAddress.fields.addressCommentary.label"
+              :name="data.steps.step2.connectionAddress.fields.addressCommentary.name"
+              :placeholder="data.steps.step2.connectionAddress.fields.addressCommentary.placeholder"
+              rows="5"
+            />
+          </fieldset>
+        </AppCollapse>
       </AppStep>
 
       <AppStep :step-number="2" :current-step="currentStep">
@@ -250,6 +238,7 @@
                   :label="
                     data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
                   "
+                  @change="isTemporaryRegistration = true"
                 />
                 <AppRadioButton
                   :name="data.steps.step3.passportData.fields.temporaryRegistration.fields.no.name"
@@ -259,6 +248,7 @@
                   :label="
                     data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
                   "
+                  @change="isTemporaryRegistration = false"
                 />
               </div>
             </AppRadioGroup>
@@ -310,6 +300,123 @@
             :placeholder="data.steps.step3.passportData.fields.passportIssuedBy.placeholder"
           />
         </fieldset>
+
+        <AppCollapse
+          v-show="isTemporaryRegistration !== false"
+          :active-index="registrationAddressActiveIndex"
+          @change-index-active-tab="registrationAddressActiveIndex = $event"
+          header="Адрес регистрации"
+        >
+          <AppCheckbox
+            :name="data.steps.step3.registrationAddress.fields.sameAsConnectionAddress.name"
+            :checked-value="true"
+            :label="data.steps.step3.registrationAddress.fields.sameAsConnectionAddress.label"
+            @change="isSameAsConnectionAddress = !isSameAsConnectionAddress"
+          />
+
+          <fieldset v-show="!isSameAsConnectionAddress" class="form__fieldset">
+            <AppInput
+              :label="data.steps.step3.registrationAddress.fields.postalCode.label"
+              :name="data.steps.step3.registrationAddress.fields.postalCode.name"
+            />
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.region"
+              :options="data.steps.step3.registrationAddress.fields.region.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.region.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.region.label"
+              :name="data.steps.step3.registrationAddress.fields.region.name"
+            />
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.settlementType"
+              :options="data.steps.step3.registrationAddress.fields.settlementType.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.settlementType.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.settlementType.label"
+              :name="data.steps.step3.registrationAddress.fields.settlementType.name"
+            />
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.settlement"
+              :options="data.steps.step3.registrationAddress.fields.settlement.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.settlement.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.settlement.label"
+              :name="data.steps.step3.registrationAddress.fields.settlement.name"
+              filter
+            />
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.streetType"
+              :options="data.steps.step3.registrationAddress.fields.streetType.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.streetType.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.streetType.label"
+              :name="data.steps.step3.registrationAddress.fields.streetType.name"
+            />
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.street"
+              :options="data.steps.step3.registrationAddress.fields.street.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.street.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.street.label"
+              :name="data.steps.step3.registrationAddress.fields.street.name"
+              :disabled="values.passportData.registrationAddress.noStreet"
+              filter
+            />
+
+            <AppCheckbox
+              :name="data.steps.step3.registrationAddress.fields.noStreet.name"
+              :checked-value="true"
+              :label="data.steps.step3.registrationAddress.fields.noStreet.label"
+              @change="setFieldValue('passportData.registrationAddress.street', '')"
+            />
+
+            <div class="form__fieldset-wrapper">
+              <AppInput
+                :label="data.steps.step3.registrationAddress.fields.house.label"
+                :name="data.steps.step3.registrationAddress.fields.house.name"
+                :placeholder="data.steps.step3.registrationAddress.fields.house.placeholder"
+              />
+
+              <AppInput
+                :label="data.steps.step3.registrationAddress.fields.building.label"
+                :name="data.steps.step3.registrationAddress.fields.building.name"
+                :placeholder="data.steps.step3.registrationAddress.fields.building.placeholder"
+              />
+            </div>
+
+            <AppSelect
+              v-model="values.passportData.registrationAddress.typeRoom"
+              :options="data.steps.step3.registrationAddress.fields.typeRoom.options"
+              :placeholder="data.steps.step3.registrationAddress.fields.typeRoom.placeholder"
+              :label="data.steps.step3.registrationAddress.fields.typeRoom.label"
+              :name="data.steps.step3.registrationAddress.fields.typeRoom.name"
+            />
+
+            <AppInput
+              :label="data.steps.step3.registrationAddress.fields.room.label"
+              :name="data.steps.step3.registrationAddress.fields.room.name"
+              :placeholder="data.steps.step3.registrationAddress.fields.room.placeholder"
+              :disabled="values.passportData.registrationAddress.noRoom"
+            />
+
+            <AppCheckbox
+              :name="data.steps.step3.registrationAddress.fields.noRoom.name"
+              :checked-value="true"
+              :label="data.steps.step3.registrationAddress.fields.noRoom.label"
+              @change="setFieldValue('passportData.registrationAddress.room', '')"
+            />
+
+            <AppInput
+              tag="textarea"
+              :label="data.steps.step3.registrationAddress.fields.addressCommentary.label"
+              :name="data.steps.step3.registrationAddress.fields.addressCommentary.name"
+              :placeholder="
+                data.steps.step3.registrationAddress.fields.addressCommentary.placeholder
+              "
+              rows="5"
+            />
+          </fieldset>
+        </AppCollapse>
 
         <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step3.manager.title }}</legend>
@@ -371,8 +478,6 @@ import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
 import { useFetch } from '@vueuse/core'
-import Accordion from 'primevue/accordion'
-import AccordionTab from 'primevue/accordiontab'
 import AppInput from '@/components/AppInput.vue'
 import AppButton from '@/components/AppButton.vue'
 import AppStep from '@/components/AppStep.vue'
@@ -381,6 +486,7 @@ import AppCheckbox from '@/components/AppCheckbox.vue'
 import AppSkeletonForm from '@/components/AppSkeletonForm.vue'
 import AppRadioGroup from '@/components/AppRadioGroup.vue'
 import AppRadioButton from '@/components/AppRadioButton.vue'
+import AppCollapse from '@/components/AppCollapse.vue'
 import {
   onlyLettersRegexp,
   phoneRegexp,
@@ -404,8 +510,17 @@ const emit = defineEmits(['change-text'])
 const data = ref(null)
 
 const connectionAddressActiveIndex = ref(null)
+const registrationAddressActiveIndex = ref(null)
 const isResidentBelarus = ref(null)
+const isTemporaryRegistration = ref(null)
+const isSameAsConnectionAddress = ref(null)
 
+const addressSchema = object({
+  postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
+  house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
+  building: string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
+  room: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
+})
 const schemas = [
   object({
     personalData: object({
@@ -418,12 +533,7 @@ const schemas = [
   }),
   object({
     order: object({
-      connectionAddress: object({
-        postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
-        house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
-        building: string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
-        room: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
-      })
+      connectionAddress: addressSchema
     })
   }),
   object({
@@ -442,6 +552,7 @@ const schemas = [
             ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages)
           )
       }),
+      registrationAddress: addressSchema,
       privacyPolicy: boolean().required()
     })
   })
@@ -504,6 +615,22 @@ const { handleSubmit, meta, setValues, setFieldValue, values, validate, setError
         identificationNumber: '',
         passportIssuedBy: ''
       },
+      registrationAddress: {
+        sameAsConnectionAddress: null,
+        postalCode: '',
+        region: '',
+        settlementType: '',
+        settlement: '',
+        streetType: '',
+        street: '',
+        noStreet: null,
+        house: '',
+        building: '',
+        typeRoom: '',
+        room: '',
+        noRoom: null,
+        addressCommentary: ''
+      },
       manager: '',
       otherWishes: '',
       privacyPolicy: true
@@ -513,17 +640,26 @@ const { handleSubmit, meta, setValues, setFieldValue, values, validate, setError
   // validateOnMount: true
 })
 
-watch(isResidentBelarus, (value) => {
-  if (value) {
-    setValues({
-      passportData: {
-        passportData: {
-          citizenship: '',
-          temporaryRegistration: ''
-        }
+watch(isSameAsConnectionAddress, () => {
+  setValues({
+    passportData: {
+      registrationAddress: {
+        postalCode: values.order.connectionAddress.postalCode,
+        region: values.order.connectionAddress.region,
+        settlementType: values.order.connectionAddress.settlementType,
+        settlement: values.order.connectionAddress.settlement,
+        streetType: values.order.connectionAddress.streetType,
+        street: values.order.connectionAddress.street,
+        noStreet: values.order.connectionAddress.noStreet,
+        house: values.order.connectionAddress.house,
+        building: values.order.connectionAddress.building,
+        typeRoom: values.order.connectionAddress.typeRoom,
+        room: values.order.connectionAddress.room,
+        noRoom: values.order.connectionAddress.noRoom,
+        addressCommentary: values.order.connectionAddress.addressCommentary
       }
-    })
-  }
+    }
+  })
 })
 
 const emitChangedText = () => {
@@ -562,8 +698,15 @@ const onBeforeUnload = (event) => {
 }
 
 onMounted(async () => {
-  const { data: responseData } = await useFetch('http://localhost:3000/data').json()
+  const { data: responseData, error } = await useFetch('http://localhost:3000/data').json()
+
+  if (error.value) {
+    alert('Произошла ошибка в результате ответа сервера.')
+    return
+  }
+
   data.value = responseData.value
+  emitChangedText()
 
   window.addEventListener('beforeunload', onBeforeUnload)
 })

@@ -58,6 +58,10 @@ const { handleChange, checked, errorMessage } = useField(() => props.name, undef
 
 <style>
 .checkbox {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+
   .checkbox__input {
     margin: 0;
     width: 30px;
@@ -101,7 +105,6 @@ const { handleChange, checked, errorMessage } = useField(() => props.name, undef
   .checkbox__label {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
   }
 
   .checkbox__label-text--add {
