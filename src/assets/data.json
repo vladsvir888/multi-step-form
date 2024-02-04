@@ -6,310 +6,304 @@
             "<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>"
         ],
         "tabs": ["Личные данные", "Заказ", "Паспортные данные"],
-        "steps": {
-            "step1": {
-                "personalData": {
-                    "title": "Ваши контакты",
-                    "fields": {
-                        "surname": {
-                            "name": "personalData.contacts.surname",
-                            "label": "Фамилия"
-                        },
-                        "name": {
-                            "name": "personalData.contacts.name",
-                            "label": "Имя"
-                        },
-                        "patronymic": {
-                            "name": "personalData.contacts.patronymic",
-                            "label": "Отчество"
-                        },
-                        "phone": {
-                            "name": "personalData.contacts.phone",
-                            "label": "Номер телефона",
-                            "placeholder": "+375",
-                            "mask": "+375 (##) ###-##-##"
-                        },
-                        "email": {
-                            "name": "personalData.contacts.email",
-                            "label": "Адрес электронной почты",
-                            "placeholder": "test-email@gmail.com"
-                        }
+        "fieldset": {
+            "personalData": {
+                "title": "Ваши контакты",
+                "fields": {
+                    "surname": {
+                        "name": "personalData.contacts.surname",
+                        "label": "Фамилия"
+                    },
+                    "name": {
+                        "name": "personalData.contacts.name",
+                        "label": "Имя"
+                    },
+                    "patronymic": {
+                        "name": "personalData.contacts.patronymic",
+                        "label": "Отчество"
+                    },
+                    "phone": {
+                        "name": "personalData.contacts.phone",
+                        "label": "Номер телефона",
+                        "placeholder": "+375",
+                        "mask": "+375 (##) ###-##-##"
+                    },
+                    "email": {
+                        "name": "personalData.contacts.email",
+                        "label": "Адрес электронной почты",
+                        "placeholder": "test-email@gmail.com"
                     }
                 }
             },
-            "step2": {
-                "tariffPlan": {
-                    "title": "Тарифный план",
-                    "fields": {
-                        "tariffPlan": {
-                            "name": "order.tariffPlan",
-                            "label": "Выберите тарифный план",
-                            "placeholder": "Выберите тарифный план",
-                            "options": ["iDOM100+Megogo, 25,50 руб./мес.", "Мой бизнес PRO 100, 43 руб./мес.", "Мой бизнес PRO 80, 25,50 руб./мес."]
-                        }
-                    }
-                },
-                "addServices": {
-                    "title": "Дополнительные услуги",
-                    "fields": {
-                        "router": {
-                            "name": "order.addServices",
-                            "label": "Маршрутизатор (Роутер)",
-                            "labelAdd": "0р./Мес.",
-                            "helpText": "Сетевое оборудование будет подобрано под ваши потребности. Ряд моделей доступны за дополнительную плату."
-                        },
-                        "staticIPAddress": {
-                            "name": "order.addServices",
-                            "label": "Статический IP-адрес",
-                            "labelAdd": "4,20 руб./мес.",
-                            "helpText": "Позволяет присвоить абоненту постоянный IP-адрес. Для выхода в интернет этот адрес не используется."
-                        }
-                    }
-                },
-                "connectionAddress": {
-                    "title": "Адрес подключения",
-                    "fields": {
-                        "postalCode": {
-                            "name": "order.connectionAddress.postalCode",
-                            "label": "Индекс"
-                        },
-                        "region": {
-                            "name": "order.connectionAddress.region",
-                            "label": "Область",
-                            "placeholder": "Выберите область",
-                            "options": ["Брестская область", "Витебская область", "Гомельская область", "Гродненская область", "Минская область", "Могилевская область"]
-                        },
-                        "settlementType": {
-                            "name": "order.connectionAddress.settlementType",
-                            "label": "Тип населенного пункта",
-                            "placeholder": "Выберите тип населенного пункта",
-                            "options": ["Город", "Поселок городского типа", "Сельский населенный пункт"]
-                        },
-                        "settlement": {
-                            "name": "order.connectionAddress.settlement",
-                            "label": "Населенный пункт",
-                            "placeholder": "Выберите населенный пункт",
-                            "options": ["Минск", "Гомель", "Могилёв", "Витебск", "Гродно", "Брест", "Барановичи", "Мозырь", "Бобруйск", "Слуцк"]
-                        },
-                        "streetType": {
-                            "name": "order.connectionAddress.streetType",
-                            "label": "Тип улицы",
-                            "placeholder": "Выберите тип улицы",
-                            "options": ["Центральная улица", "Жилые улицы", "Промышленные улицы", "Торговые улицы", "Туристические улицы"]
-                        },
-                        "street": {
-                            "name": "order.connectionAddress.street",
-                            "label": "Улица",
-                            "placeholder": "Выберите улицу",
-                            "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
-                        },
-                        "noStreet": {
-                            "name": "order.connectionAddress.noStreet",
-                            "label": "В адресе отсутствует название улицы"
-                        },
-                        "house": {
-                            "name": "order.connectionAddress.house",
-                            "label": "Дом",
-                            "placeholder": "51В"
-                        },
-                        "building": {
-                            "name": "order.connectionAddress.building",
-                            "label": "Корпус / Строение",
-                            "placeholder": "1"
-                        },
-                        "typeRoom": {
-                            "name": "order.connectionAddress.typeRoom",
-                            "label": "Тип помещения",
-                            "placeholder": "Выберите тип помещения",
-                            "options": ["Офис", "Квартира"]
-                        },
-                        "room": {
-                            "name": "order.connectionAddress.room",
-                            "label": "Помещение",
-                            "placeholder": "196"
-                        },
-                        "noRoom": {
-                            "name": "order.connectionAddress.noRoom",
-                            "label": "Это единое строение, помещения нет"
-                        },
-                        "addressCommentary": {
-                            "name": "order.connectionAddress.addressCommentary",
-                            "label": "Комментарий по адресу",
-                            "placeholder": "3 этаж, справа от входа"
-                        }
+            "tariffPlan": {
+                "title": "Тарифный план",
+                "fields": {
+                    "tariffPlan": {
+                        "name": "order.tariffPlan",
+                        "label": "Выберите тарифный план",
+                        "placeholder": "Выберите тарифный план",
+                        "options": ["iDOM100+Megogo, 25,50 руб./мес.", "Мой бизнес PRO 100, 43 руб./мес.", "Мой бизнес PRO 80, 25,50 руб./мес."]
                     }
                 }
             },
-            "step3": {
-                "passportData": {
-                    "fields": {
-                        "resident": {
-                            "title": "Являетесь ли Вы резидентом Республики Беларусь?",
-                            "fields": {
-                                "yes": {
-                                    "name": "passportData.passportData.resident",
-                                    "label": "Да"
-                                },
-                                "no": {
-                                    "name": "passportData.passportData.resident",
-                                    "label": "Нет"
-                                }
+            "addServices": {
+                "title": "Дополнительные услуги",
+                "fields": {
+                    "router": {
+                        "name": "order.addServices",
+                        "label": "Маршрутизатор (Роутер)",
+                        "labelAdd": "0р./Мес.",
+                        "helpText": "Сетевое оборудование будет подобрано под ваши потребности. Ряд моделей доступны за дополнительную плату."
+                    },
+                    "staticIPAddress": {
+                        "name": "order.addServices",
+                        "label": "Статический IP-адрес",
+                        "labelAdd": "4,20 руб./мес.",
+                        "helpText": "Позволяет присвоить абоненту постоянный IP-адрес. Для выхода в интернет этот адрес не используется."
+                    }
+                }
+            },
+            "connectionAddress": {
+                "title": "Адрес подключения",
+                "fields": {
+                    "postalCode": {
+                        "name": "order.connectionAddress.postalCode",
+                        "label": "Индекс"
+                    },
+                    "region": {
+                        "name": "order.connectionAddress.region",
+                        "label": "Область",
+                        "placeholder": "Выберите область",
+                        "options": ["Брестская область", "Витебская область", "Гомельская область", "Гродненская область", "Минская область", "Могилевская область"]
+                    },
+                    "settlementType": {
+                        "name": "order.connectionAddress.settlementType",
+                        "label": "Тип населенного пункта",
+                        "placeholder": "Выберите тип населенного пункта",
+                        "options": ["Город", "Поселок городского типа", "Сельский населенный пункт"]
+                    },
+                    "settlement": {
+                        "name": "order.connectionAddress.settlement",
+                        "label": "Населенный пункт",
+                        "placeholder": "Выберите населенный пункт",
+                        "options": ["Минск", "Гомель", "Могилёв", "Витебск", "Гродно", "Брест", "Барановичи", "Мозырь", "Бобруйск", "Слуцк"]
+                    },
+                    "streetType": {
+                        "name": "order.connectionAddress.streetType",
+                        "label": "Тип улицы",
+                        "placeholder": "Выберите тип улицы",
+                        "options": ["Центральная улица", "Жилые улицы", "Промышленные улицы", "Торговые улицы", "Туристические улицы"]
+                    },
+                    "street": {
+                        "name": "order.connectionAddress.street",
+                        "label": "Улица",
+                        "placeholder": "Выберите улицу",
+                        "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
+                    },
+                    "noStreet": {
+                        "name": "order.connectionAddress.noStreet",
+                        "label": "В адресе отсутствует название улицы"
+                    },
+                    "house": {
+                        "name": "order.connectionAddress.house",
+                        "label": "Дом",
+                        "placeholder": "51В"
+                    },
+                    "building": {
+                        "name": "order.connectionAddress.building",
+                        "label": "Корпус / Строение",
+                        "placeholder": "1"
+                    },
+                    "typeRoom": {
+                        "name": "order.connectionAddress.typeRoom",
+                        "label": "Тип помещения",
+                        "placeholder": "Выберите тип помещения",
+                        "options": ["Офис", "Квартира"]
+                    },
+                    "room": {
+                        "name": "order.connectionAddress.room",
+                        "label": "Помещение",
+                        "placeholder": "196"
+                    },
+                    "noRoom": {
+                        "name": "order.connectionAddress.noRoom",
+                        "label": "Это единое строение, помещения нет"
+                    },
+                    "addressCommentary": {
+                        "name": "order.connectionAddress.addressCommentary",
+                        "label": "Комментарий по адресу",
+                        "placeholder": "3 этаж, справа от входа"
+                    }
+                }
+            },
+            "passportData": {
+                "fields": {
+                    "resident": {
+                        "title": "Являетесь ли Вы резидентом Республики Беларусь?",
+                        "fields": {
+                            "yes": {
+                                "name": "passportData.passportData.resident",
+                                "label": "Да"
+                            },
+                            "no": {
+                                "name": "passportData.passportData.resident",
+                                "label": "Нет"
                             }
-                        },
-                        "citizenship": {
-                            "name": "passportData.passportData.citizenship",
-                            "label": "Гражданство",
-                            "placeholder": "Испания"
-                        },
-                        "temporaryRegistration": {
-                            "title": "Есть ли у вас временная регистрация?",
-                            "fields": {
-                                "yes": {
-                                    "name": "passportData.passportData.temporaryRegistration",
-                                    "label": "Да"
-                                },
-                                "no": {
-                                    "name": "passportData.passportData.temporaryRegistration",
-                                    "label": "Нет"
-                                }
+                        }
+                    },
+                    "citizenship": {
+                        "name": "passportData.passportData.citizenship",
+                        "label": "Гражданство",
+                        "placeholder": "Испания"
+                    },
+                    "temporaryRegistration": {
+                        "title": "Есть ли у вас временная регистрация?",
+                        "fields": {
+                            "yes": {
+                                "name": "passportData.passportData.temporaryRegistration",
+                                "label": "Да"
+                            },
+                            "no": {
+                                "name": "passportData.passportData.temporaryRegistration",
+                                "label": "Нет"
                             }
-                        },
-                        "documentType": {
-                            "name": "passportData.passportData.documentType",
-                            "label": "Вид документа",
-                            "placeholder": "Выберите вид документа",
-                            "options": ["Паспорт", "Удостоверение"]
-                        },
-                        "series": {
-                            "name": "passportData.passportData.series",
-                            "label": "Серия",
-                            "placeholder": "MP"
-                        },
-                        "number": {
-                            "name": "passportData.passportData.number",
-                            "label": "Номер паспорта",
-                            "placeholder": "2024468"
-                        },
-                        "dateOfIssue": {
-                            "name": "passportData.passportData.dateOfIssue",
-                            "label": "Дата выдачи паспорта"
-                        },
-                        "dateOfExpiry": {
-                            "name": "passportData.passportData.dateOfExpiry",
-                            "label": "Срок действия паспорта"
-                        },
-                        "identificationNumber": {
-                            "name": "passportData.passportData.identificationNumber",
-                            "label": "Идентификационный номер"
-                        },
-                        "passportIssuedBy": {
-                            "name": "passportData.passportData.passportIssuedBy",
-                            "label": "Кем выдан паспорт",
-                            "placeholder": "Московским РУВД"
                         }
+                    },
+                    "documentType": {
+                        "name": "passportData.passportData.documentType",
+                        "label": "Вид документа",
+                        "placeholder": "Выберите вид документа",
+                        "options": ["Паспорт", "Удостоверение"]
+                    },
+                    "series": {
+                        "name": "passportData.passportData.series",
+                        "label": "Серия",
+                        "placeholder": "MP"
+                    },
+                    "number": {
+                        "name": "passportData.passportData.number",
+                        "label": "Номер паспорта",
+                        "placeholder": "2024468"
+                    },
+                    "dateOfIssue": {
+                        "name": "passportData.passportData.dateOfIssue",
+                        "label": "Дата выдачи паспорта"
+                    },
+                    "dateOfExpiry": {
+                        "name": "passportData.passportData.dateOfExpiry",
+                        "label": "Срок действия паспорта"
+                    },
+                    "identificationNumber": {
+                        "name": "passportData.passportData.identificationNumber",
+                        "label": "Идентификационный номер"
+                    },
+                    "passportIssuedBy": {
+                        "name": "passportData.passportData.passportIssuedBy",
+                        "label": "Кем выдан паспорт",
+                        "placeholder": "Московским РУВД"
                     }
-                },
-                "registrationAddress": {
-                    "title": "Адрес регистрации",
-                    "fields": {
-                        "sameAsConnectionAddress": {
-                            "name": "passportData.registrationAddress.sameAsConnectionAddress",
-                            "label": "Совпадает с адресом подключения"
-                        },
-                        "postalCode": {
-                            "name": "passportData.registrationAddress.postalCode",
-                            "label": "Индекс"
-                        },
-                        "region": {
-                            "name": "passportData.registrationAddress.region",
-                            "label": "Область",
-                            "placeholder": "Выберите область",
-                            "options": ["Брестская область", "Витебская область", "Гомельская область", "Гродненская область", "Минская область", "Могилевская область"]
-                        },
-                        "settlementType": {
-                            "name": "passportData.registrationAddress.settlementType",
-                            "label": "Тип населенного пункта",
-                            "placeholder": "Выберите тип населенного пункта",
-                            "options": ["Город", "Поселок городского типа", "Сельский населенный пункт"]
-                        },
-                        "settlement": {
-                            "name": "passportData.registrationAddress.settlement",
-                            "label": "Населенный пункт",
-                            "placeholder": "Выберите населенный пункт",
-                            "options": ["Минск", "Гомель", "Могилёв", "Витебск", "Гродно", "Брест", "Барановичи", "Мозырь", "Бобруйск", "Слуцк"]
-                        },
-                        "streetType": {
-                            "name": "passportData.registrationAddress.streetType",
-                            "label": "Тип улицы",
-                            "placeholder": "Выберите тип улицы",
-                            "options": ["Центральная улица", "Жилые улицы", "Промышленные улицы", "Торговые улицы", "Туристические улицы"]
-                        },
-                        "street": {
-                            "name": "passportData.registrationAddress.street",
-                            "label": "Улица",
-                            "placeholder": "Выберите улицу",
-                            "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
-                        },
-                        "noStreet": {
-                            "name": "passportData.registrationAddress.noStreet",
-                            "label": "В адресе отсутствует название улицы"
-                        },
-                        "house": {
-                            "name": "passportData.registrationAddress.house",
-                            "label": "Дом",
-                            "placeholder": "51В"
-                        },
-                        "building": {
-                            "name": "passportData.registrationAddress.building",
-                            "label": "Корпус / Строение",
-                            "placeholder": "1"
-                        },
-                        "typeRoom": {
-                            "name": "passportData.registrationAddress.typeRoom",
-                            "label": "Тип помещения",
-                            "placeholder": "Выберите тип помещения",
-                            "options": ["Офис", "Квартира"]
-                        },
-                        "room": {
-                            "name": "passportData.registrationAddress.room",
-                            "label": "Помещение",
-                            "placeholder": "196"
-                        },
-                        "noRoom": {
-                            "name": "passportData.registrationAddress.noRoom",
-                            "label": "Это единое строение, помещения нет"
-                        },
-                        "addressCommentary": {
-                            "name": "passportData.registrationAddress.addressCommentary",
-                            "label": "Комментарий по адресу",
-                            "placeholder": "3 этаж, справа от входа"
-                        }
+                }
+            },
+            "registrationAddress": {
+                "title": "Адрес регистрации",
+                "fields": {
+                    "sameAsConnectionAddress": {
+                        "name": "passportData.registrationAddress.sameAsConnectionAddress",
+                        "label": "Совпадает с адресом подключения"
+                    },
+                    "postalCode": {
+                        "name": "passportData.registrationAddress.postalCode",
+                        "label": "Индекс"
+                    },
+                    "region": {
+                        "name": "passportData.registrationAddress.region",
+                        "label": "Область",
+                        "placeholder": "Выберите область",
+                        "options": ["Брестская область", "Витебская область", "Гомельская область", "Гродненская область", "Минская область", "Могилевская область"]
+                    },
+                    "settlementType": {
+                        "name": "passportData.registrationAddress.settlementType",
+                        "label": "Тип населенного пункта",
+                        "placeholder": "Выберите тип населенного пункта",
+                        "options": ["Город", "Поселок городского типа", "Сельский населенный пункт"]
+                    },
+                    "settlement": {
+                        "name": "passportData.registrationAddress.settlement",
+                        "label": "Населенный пункт",
+                        "placeholder": "Выберите населенный пункт",
+                        "options": ["Минск", "Гомель", "Могилёв", "Витебск", "Гродно", "Брест", "Барановичи", "Мозырь", "Бобруйск", "Слуцк"]
+                    },
+                    "streetType": {
+                        "name": "passportData.registrationAddress.streetType",
+                        "label": "Тип улицы",
+                        "placeholder": "Выберите тип улицы",
+                        "options": ["Центральная улица", "Жилые улицы", "Промышленные улицы", "Торговые улицы", "Туристические улицы"]
+                    },
+                    "street": {
+                        "name": "passportData.registrationAddress.street",
+                        "label": "Улица",
+                        "placeholder": "Выберите улицу",
+                        "options": ["Центральная", "Молодежная", "Садовая", "Лесная", "Полевая"]
+                    },
+                    "noStreet": {
+                        "name": "passportData.registrationAddress.noStreet",
+                        "label": "В адресе отсутствует название улицы"
+                    },
+                    "house": {
+                        "name": "passportData.registrationAddress.house",
+                        "label": "Дом",
+                        "placeholder": "51В"
+                    },
+                    "building": {
+                        "name": "passportData.registrationAddress.building",
+                        "label": "Корпус / Строение",
+                        "placeholder": "1"
+                    },
+                    "typeRoom": {
+                        "name": "passportData.registrationAddress.typeRoom",
+                        "label": "Тип помещения",
+                        "placeholder": "Выберите тип помещения",
+                        "options": ["Офис", "Квартира"]
+                    },
+                    "room": {
+                        "name": "passportData.registrationAddress.room",
+                        "label": "Помещение",
+                        "placeholder": "196"
+                    },
+                    "noRoom": {
+                        "name": "passportData.registrationAddress.noRoom",
+                        "label": "Это единое строение, помещения нет"
+                    },
+                    "addressCommentary": {
+                        "name": "passportData.registrationAddress.addressCommentary",
+                        "label": "Комментарий по адресу",
+                        "placeholder": "3 этаж, справа от входа"
                     }
-                },
-                "manager": {
-                    "title": "Ваш менеджер",
-                    "fields": {
-                        "manager": {
-                            "name": "passportData.manager",
-                            "options": ["Да", "Нет"]
-                        }
+                }
+            },
+            "manager": {
+                "title": "Ваш менеджер",
+                "fields": {
+                    "manager": {
+                        "name": "passportData.manager",
+                        "options": ["Да", "Нет"]
                     }
-                },
-                "otherWishes": {
-                    "title": "Иные пожелания",
-                    "fields": {
-                        "otherWishes": {
-                            "label": "Комментарий",
-                            "name": "passportData.otherWishes"
-                        }
+                }
+            },
+            "otherWishes": {
+                "title": "Иные пожелания",
+                "fields": {
+                    "otherWishes": {
+                        "label": "Комментарий",
+                        "name": "passportData.otherWishes"
                     }
-                },
-                "privacyPolicy": {
-                    "fields": {
-                        "privacyPolicy": {
-                            "label": "Я ознакомился(-лась) с Политикой конфиденциальности",
-                            "name": "passportData.privacyPolicy"
-                        }
+                }
+            },
+            "privacyPolicy": {
+                "fields": {
+                    "privacyPolicy": {
+                        "label": "Я ознакомился(-лась) с Политикой конфиденциальности",
+                        "name": "passportData.privacyPolicy"
                     }
                 }
             }

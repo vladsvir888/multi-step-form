@@ -18,24 +18,22 @@
       <!-- Шаг 1 -->
       <AppStep :step-number="0" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.steps.step1.personalData.title }}</legend>
+          <legend class="form__legend">{{ data.fieldset.personalData.title }}</legend>
 
-          <AppInput v-bind="{ ...data.steps.step1.personalData.fields.surname, required: true }" />
+          <AppInput v-bind="{ ...data.fieldset.personalData.fields.surname, required: true }" />
 
-          <AppInput v-bind="{ ...data.steps.step1.personalData.fields.name, required: true }" />
+          <AppInput v-bind="{ ...data.fieldset.personalData.fields.name, required: true }" />
 
-          <AppInput
-            v-bind="{ ...data.steps.step1.personalData.fields.patronymic, required: true }"
-          />
+          <AppInput v-bind="{ ...data.fieldset.personalData.fields.patronymic, required: true }" />
 
           <AppInput
             v-maska
-            v-bind="{ ...data.steps.step1.personalData.fields.phone, type: 'tel', required: true }"
+            v-bind="{ ...data.fieldset.personalData.fields.phone, type: 'tel', required: true }"
           />
 
           <AppInput
             v-bind="{
-              ...data.steps.step1.personalData.fields.email,
+              ...data.fieldset.personalData.fields.email,
               type: 'email',
               required: true
             }"
@@ -46,67 +44,67 @@
       <!-- Шаг 2 -->
       <AppStep :step-number="1" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.steps.step2.tariffPlan.title }}</legend>
+          <legend class="form__legend">{{ data.fieldset.tariffPlan.title }}</legend>
 
           <AppSelect
             v-model="values.order.tariffPlan"
-            v-bind="data.steps.step2.tariffPlan.fields.tariffPlan"
+            v-bind="data.fieldset.tariffPlan.fields.tariffPlan"
           />
         </fieldset>
 
         <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.steps.step2.addServices.title }}</legend>
+          <legend class="form__legend">{{ data.fieldset.addServices.title }}</legend>
 
           <AppCheckbox
             v-bind="{
-              ...data.steps.step2.addServices.fields.router,
-              checkedValue: data.steps.step2.addServices.fields.router.label
+              ...data.fieldset.addServices.fields.router,
+              checkedValue: data.fieldset.addServices.fields.router.label
             }"
           />
 
           <AppCheckbox
             v-bind="{
-              ...data.steps.step2.addServices.fields.staticIPAddress,
-              checkedValue: data.steps.step2.addServices.fields.staticIPAddress.label
+              ...data.fieldset.addServices.fields.staticIPAddress,
+              checkedValue: data.fieldset.addServices.fields.staticIPAddress.label
             }"
           />
         </fieldset>
 
-        <AppCollapse :header="data.steps.step2.connectionAddress.title">
+        <AppCollapse :header="data.fieldset.connectionAddress.title">
           <fieldset class="form__fieldset">
-            <AppInput v-bind="data.steps.step2.connectionAddress.fields.postalCode" />
+            <AppInput v-bind="data.fieldset.connectionAddress.fields.postalCode" />
 
             <AppSelect
               v-model="values.order.connectionAddress.region"
-              v-bind="data.steps.step2.connectionAddress.fields.region"
+              v-bind="data.fieldset.connectionAddress.fields.region"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.settlementType"
-              v-bind="data.steps.step2.connectionAddress.fields.settlementType"
+              v-bind="data.fieldset.connectionAddress.fields.settlementType"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.settlement"
-              v-bind="{ ...data.steps.step2.connectionAddress.fields.settlement, filter: true }"
+              v-bind="{ ...data.fieldset.connectionAddress.fields.settlement, filter: true }"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.streetType"
-              v-bind="data.steps.step2.connectionAddress.fields.streetType"
+              v-bind="data.fieldset.connectionAddress.fields.streetType"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.street"
               v-bind="{
-                ...data.steps.step2.connectionAddress.fields.street,
+                ...data.fieldset.connectionAddress.fields.street,
                 disabled: values.order.connectionAddress.noStreet,
                 filter: true
               }"
             />
 
             <AppCheckbox
-              v-bind="{ ...data.steps.step2.connectionAddress.fields.noStreet, checkedValue: true }"
+              v-bind="{ ...data.fieldset.connectionAddress.fields.noStreet, checkedValue: true }"
               @change="
                 setFieldValue(
                   'order.connectionAddress.street',
@@ -116,25 +114,25 @@
             />
 
             <div class="form__fieldset-wrapper">
-              <AppInput v-bind="data.steps.step2.connectionAddress.fields.house" />
+              <AppInput v-bind="data.fieldset.connectionAddress.fields.house" />
 
-              <AppInput v-bind="data.steps.step2.connectionAddress.fields.building" />
+              <AppInput v-bind="data.fieldset.connectionAddress.fields.building" />
             </div>
 
             <AppSelect
               v-model="values.order.connectionAddress.typeRoom"
-              v-bind="data.steps.step2.connectionAddress.fields.typeRoom"
+              v-bind="data.fieldset.connectionAddress.fields.typeRoom"
             />
 
             <AppInput
               v-bind="{
-                ...data.steps.step2.connectionAddress.fields.room,
+                ...data.fieldset.connectionAddress.fields.room,
                 disabled: values.order.connectionAddress.noRoom
               }"
             />
 
             <AppCheckbox
-              v-bind="{ ...data.steps.step2.connectionAddress.fields.noRoom, checkedValue: true }"
+              v-bind="{ ...data.fieldset.connectionAddress.fields.noRoom, checkedValue: true }"
               @change="
                 setFieldValue('order.connectionAddress.room', 'Это единое строение, помещения нет')
               "
@@ -142,7 +140,7 @@
 
             <AppInput
               v-bind="{
-                ...data.steps.step2.connectionAddress.fields.addressCommentary,
+                ...data.fieldset.connectionAddress.fields.addressCommentary,
                 tag: 'textarea',
                 rows: '5'
               }"
@@ -155,20 +153,20 @@
       <!-- Почему-то при переходе на последний этап триггерится валидация на обязательном чекбоксе с политикой конфиденциальности, пока просто сделал его по умолчанию checked -->
       <AppStep :step-number="2" :current-step="currentStep">
         <fieldset class="form__fieldset">
-          <AppRadioGroup :label="data.steps.step3.passportData.fields.resident.title">
+          <AppRadioGroup :label="data.fieldset.passportData.fields.resident.title">
             <div class="form__fieldset-wrapper">
               <AppRadioButton
                 v-bind="{
-                  ...data.steps.step3.passportData.fields.resident.fields.yes,
-                  checkedValue: data.steps.step3.passportData.fields.resident.fields.yes.label
+                  ...data.fieldset.passportData.fields.resident.fields.yes,
+                  checkedValue: data.fieldset.passportData.fields.resident.fields.yes.label
                 }"
                 @change="isResidentBelarus = true"
               />
 
               <AppRadioButton
                 v-bind="{
-                  ...data.steps.step3.passportData.fields.resident.fields.no,
-                  checkedValue: data.steps.step3.passportData.fields.resident.fields.no.label
+                  ...data.fieldset.passportData.fields.resident.fields.no,
+                  checkedValue: data.fieldset.passportData.fields.resident.fields.no.label
                 }"
                 @change="isResidentBelarus = false"
               />
@@ -176,26 +174,24 @@
           </AppRadioGroup>
 
           <div class="form__fieldset" v-show="isResidentBelarus === false">
-            <AppInput v-bind="data.steps.step3.passportData.fields.citizenship" />
+            <AppInput v-bind="data.fieldset.passportData.fields.citizenship" />
 
-            <AppRadioGroup
-              :label="data.steps.step3.passportData.fields.temporaryRegistration.title"
-            >
+            <AppRadioGroup :label="data.fieldset.passportData.fields.temporaryRegistration.title">
               <div class="form__fieldset-wrapper">
                 <AppRadioButton
                   v-bind="{
-                    ...data.steps.step3.passportData.fields.temporaryRegistration.fields.yes,
+                    ...data.fieldset.passportData.fields.temporaryRegistration.fields.yes,
                     checkedValue:
-                      data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
+                      data.fieldset.passportData.fields.temporaryRegistration.fields.yes.label
                   }"
                   @change="isTemporaryRegistration = true"
                 />
 
                 <AppRadioButton
                   v-bind="{
-                    ...data.steps.step3.passportData.fields.temporaryRegistration.fields.no,
+                    ...data.fieldset.passportData.fields.temporaryRegistration.fields.no,
                     checkedValue:
-                      data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
+                      data.fieldset.passportData.fields.temporaryRegistration.fields.no.label
                   }"
                   @change="isTemporaryRegistration = false"
                 />
@@ -205,67 +201,63 @@
 
           <AppSelect
             v-model="values.passportData.passportData.documentType"
-            v-bind="data.steps.step3.passportData.fields.documentType"
+            v-bind="data.fieldset.passportData.fields.documentType"
           />
 
           <div class="form__fieldset-wrapper">
-            <AppInput v-bind="data.steps.step3.passportData.fields.series" />
+            <AppInput v-bind="data.fieldset.passportData.fields.series" />
 
-            <AppInput v-bind="data.steps.step3.passportData.fields.number" />
+            <AppInput v-bind="data.fieldset.passportData.fields.number" />
           </div>
 
-          <AppInput
-            v-bind="{ ...data.steps.step3.passportData.fields.dateOfIssue, type: 'date' }"
-          />
+          <AppInput v-bind="{ ...data.fieldset.passportData.fields.dateOfIssue, type: 'date' }" />
 
-          <AppInput
-            v-bind="{ ...data.steps.step3.passportData.fields.dateOfExpiry, type: 'date' }"
-          />
+          <AppInput v-bind="{ ...data.fieldset.passportData.fields.dateOfExpiry, type: 'date' }" />
 
-          <AppInput v-bind="data.steps.step3.passportData.fields.identificationNumber" />
+          <AppInput v-bind="data.fieldset.passportData.fields.identificationNumber" />
 
-          <AppInput v-bind="data.steps.step3.passportData.fields.passportIssuedBy" />
+          <AppInput v-bind="data.fieldset.passportData.fields.passportIssuedBy" />
         </fieldset>
 
         <AppCollapse
           v-show="isTemporaryRegistration !== false"
-          :header="data.steps.step3.registrationAddress.title"
+          :header="data.fieldset.registrationAddress.title"
         >
           <AppCheckbox
             v-bind="{
-              ...data.steps.step3.registrationAddress.fields.sameAsConnectionAddress,
+              ...data.fieldset.registrationAddress.fields.sameAsConnectionAddress,
               checkedValue: true
             }"
             @change="isSameAsConnectionAddress = !isSameAsConnectionAddress"
           />
 
           <fieldset v-show="!isSameAsConnectionAddress" class="form__fieldset">
-            <AppInput v-bind="data.steps.step3.registrationAddress.fields.postalCode" />
+            <AppInput v-bind="data.fieldset.registrationAddress.fields.postalCode" />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.region"
-              v-bind="data.steps.step3.registrationAddress.fields.region"
+              v-bind="data.fieldset.registrationAddress.fields.region"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.settlementType"
-              v-bind="data.steps.step3.registrationAddress.fields.settlementType"
+              v-bind="data.fieldset.registrationAddress.fields.settlementType"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.settlement"
-              v-bind="{ ...data.steps.step3.registrationAddress.fields.settlement, filter: true }"
+              v-bind="{ ...data.fieldset.registrationAddress.fields.settlement, filter: true }"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.streetType"
-              v-bind="data.steps.step3.registrationAddress.fields.streetType"
+              v-bind="data.fieldset.registrationAddress.fields.streetType"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.street"
               v-bind="{
-                ...data.steps.step3.registrationAddress.fields.street,
+                ...data.fieldset.registrationAddress.fields.street,
                 filter: true,
                 disabled: values.passportData.registrationAddress.noStreet
               }"
@@ -273,38 +265,38 @@
 
             <AppCheckbox
               v-bind="{
-                ...data.steps.step3.registrationAddress.fields.noStreet,
+                ...data.fieldset.registrationAddress.fields.noStreet,
                 checkedValue: true
               }"
               @change="setFieldValue('passportData.registrationAddress.street', '')"
             />
 
             <div class="form__fieldset-wrapper">
-              <AppInput v-bind="data.steps.step3.registrationAddress.fields.house" />
+              <AppInput v-bind="data.fieldset.registrationAddress.fields.house" />
 
-              <AppInput v-bind="data.steps.step3.registrationAddress.fields.building" />
+              <AppInput v-bind="data.fieldset.registrationAddress.fields.building" />
             </div>
 
             <AppSelect
               v-model="values.passportData.registrationAddress.typeRoom"
-              v-bind="data.steps.step3.registrationAddress.fields.typeRoom"
+              v-bind="data.fieldset.registrationAddress.fields.typeRoom"
             />
 
             <AppInput
               v-bind="{
-                ...data.steps.step3.registrationAddress.fields.room,
+                ...data.fieldset.registrationAddress.fields.room,
                 disabled: values.passportData.registrationAddress.noRoom
               }"
             />
 
             <AppCheckbox
-              v-bind="{ ...data.steps.step3.registrationAddress.fields.noRoom, checkedValue: true }"
+              v-bind="{ ...data.fieldset.registrationAddress.fields.noRoom, checkedValue: true }"
               @change="setFieldValue('passportData.registrationAddress.room', '')"
             />
 
             <AppInput
               v-bind="{
-                ...data.steps.step3.registrationAddress.fields.addressCommentary,
+                ...data.fieldset.registrationAddress.fields.addressCommentary,
                 tag: 'textarea',
                 rows: '5'
               }"
@@ -313,20 +305,20 @@
         </AppCollapse>
 
         <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.steps.step3.manager.title }}</legend>
+          <legend class="form__legend">{{ data.fieldset.manager.title }}</legend>
 
           <AppSelect
             v-model="values.passportData.manager"
-            v-bind="data.steps.step3.manager.fields.manager"
+            v-bind="data.fieldset.manager.fields.manager"
           />
         </fieldset>
 
         <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.steps.step3.otherWishes.title }}</legend>
+          <legend class="form__legend">{{ data.fieldset.otherWishes.title }}</legend>
 
           <AppInput
             v-bind="{
-              ...data.steps.step3.otherWishes.fields.otherWishes,
+              ...data.fieldset.otherWishes.fields.otherWishes,
               tag: 'textarea',
               rows: '5'
             }"
@@ -336,7 +328,7 @@
         <div class="form__checkbox-wrapper">
           <AppCheckbox
             v-bind="{
-              ...data.steps.step3.privacyPolicy.fields.privacyPolicy,
+              ...data.fieldset.privacyPolicy.fields.privacyPolicy,
               required: true,
               checkedValue: true
             }"
