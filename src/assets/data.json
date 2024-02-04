@@ -5,42 +5,32 @@
             "В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.",
             "<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>"
         ],
-        "tabs": [
-            {
-                "text": "Личные данные"
-            },
-            {
-                "text": "Заказ"
-            },
-            {
-                "text": "Паспортные данные"
-            }
-        ],
+        "tabs": ["Личные данные", "Заказ", "Паспортные данные"],
         "steps": {
             "step1": {
                 "personalData": {
                     "title": "Ваши контакты",
                     "fields": {
                         "surname": {
-                            "name": "personalData.surname",
+                            "name": "personalData.contacts.surname",
                             "label": "Фамилия"
                         },
                         "name": {
-                            "name": "personalData.name",
+                            "name": "personalData.contacts.name",
                             "label": "Имя"
                         },
                         "patronymic": {
-                            "name": "personalData.patronymic",
+                            "name": "personalData.contacts.patronymic",
                             "label": "Отчество"
                         },
                         "phone": {
-                            "name": "personalData.phone",
+                            "name": "personalData.contacts.phone",
                             "label": "Номер телефона",
                             "placeholder": "+375",
                             "mask": "+375 (##) ###-##-##"
                         },
                         "email": {
-                            "name": "personalData.email",
+                            "name": "personalData.contacts.email",
                             "label": "Адрес электронной почты",
                             "placeholder": "test-email@gmail.com"
                         }

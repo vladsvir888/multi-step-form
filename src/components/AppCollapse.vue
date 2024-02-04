@@ -1,9 +1,5 @@
 <template>
-  <Accordion
-    :active-index="activeIndex"
-    @tab-open="$emit('change-index-active-tab', 0)"
-    @tab-close="$emit('change-index-active-tab', null)"
-  >
+  <Accordion>
     <AccordionTab
       :header="header"
       :pt="{
@@ -22,12 +18,7 @@
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
 
-defineEmits(['change-index-active-tab'])
-
 defineProps({
-  activeIndex: {
-    type: [Number, Array]
-  },
   header: {
     type: String,
     required: true

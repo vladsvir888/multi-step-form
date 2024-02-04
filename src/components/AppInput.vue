@@ -14,6 +14,7 @@
       :placeholder="placeholder"
       :disabled="disabled"
       :rows="rows"
+      :data-maska="mask"
       class="input__field"
       v-bind="$attrs"
     />
@@ -58,6 +59,9 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  mask: {
+    type: String
+  },
   rows: {
     type: String
   }
@@ -79,6 +83,7 @@ const { value, errorMessage } = useField(() => props.name)
         display: inline-flex;
         margin-left: 5px;
         color: #ec2b59;
+        font-weight: 500;
         content: '*';
       }
     }

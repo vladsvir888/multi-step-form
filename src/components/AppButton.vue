@@ -1,6 +1,6 @@
 <template>
   <button class="button" :class="className" type="button">
-    <slot></slot>
+    <slot />
   </button>
 </template>
 

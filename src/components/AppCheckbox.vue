@@ -14,7 +14,7 @@
       <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{ labelAdd }}</p>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
-    <p v-if="errorMessage" class="checkbox__error">{{ errorMessage }}</p>
+    <p v-show="errorMessage" class="checkbox__error">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -97,6 +97,7 @@ const { handleChange, checked, errorMessage } = useField(() => props.name, undef
         display: inline-flex;
         margin-left: 5px;
         color: #ec2b59;
+        font-weight: 500;
         content: '*';
       }
     }

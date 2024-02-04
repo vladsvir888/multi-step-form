@@ -3,70 +3,54 @@
     <nav class="form__nav">
       <AppButton
         v-for="(tab, index) in data.tabs"
-        :key="tab.text"
+        :key="tab"
         @click="onClickNavButton(index)"
         class="form__nav-button"
         :class="{ active: currentStep === index }"
         :type="meta.valid ? 'button' : 'submit'"
         :aria-pressed="currentStep === index"
       >
-        {{ tab.text }}
+        {{ tab }}
       </AppButton>
     </nav>
 
     <div class="form__fields">
+      <!-- Шаг 1 -->
       <AppStep :step-number="0" :current-step="currentStep">
         <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step1.personalData.title }}</legend>
 
-          <AppInput
-            :label="data.steps.step1.personalData.fields.surname.label"
-            :name="data.steps.step1.personalData.fields.surname.name"
-            required
-          />
+          <AppInput v-bind="{ ...data.steps.step1.personalData.fields.surname, required: true }" />
+
+          <AppInput v-bind="{ ...data.steps.step1.personalData.fields.name, required: true }" />
 
           <AppInput
-            :label="data.steps.step1.personalData.fields.name.label"
-            :name="data.steps.step1.personalData.fields.name.name"
-            required
-          />
-
-          <AppInput
-            :label="data.steps.step1.personalData.fields.patronymic.label"
-            :name="data.steps.step1.personalData.fields.patronymic.name"
-            required
+            v-bind="{ ...data.steps.step1.personalData.fields.patronymic, required: true }"
           />
 
           <AppInput
             v-maska
-            :data-maska="data.steps.step1.personalData.fields.phone.mask"
-            :placeholder="data.steps.step1.personalData.fields.phone.placeholder"
-            :label="data.steps.step1.personalData.fields.phone.label"
-            :name="data.steps.step1.personalData.fields.phone.name"
-            type="tel"
-            required
+            v-bind="{ ...data.steps.step1.personalData.fields.phone, type: 'tel', required: true }"
           />
 
           <AppInput
-            :label="data.steps.step1.personalData.fields.email.label"
-            :name="data.steps.step1.personalData.fields.email.name"
-            :placeholder="data.steps.step1.personalData.fields.email.placeholder"
-            type="email"
-            required
+            v-bind="{
+              ...data.steps.step1.personalData.fields.email,
+              type: 'email',
+              required: true
+            }"
           />
         </fieldset>
       </AppStep>
 
+      <!-- Шаг 2 -->
       <AppStep :step-number="1" :current-step="currentStep">
         <fieldset class="form__fieldset">
           <legend class="form__legend">{{ data.steps.step2.tariffPlan.title }}</legend>
 
           <AppSelect
             v-model="values.order.tariffPlan"
-            :options="data.steps.step2.tariffPlan.fields.tariffPlan.options"
-            :label="data.steps.step2.tariffPlan.fields.tariffPlan.label"
-            :name="data.steps.step2.tariffPlan.fields.tariffPlan.name"
-            :placeholder="data.steps.step2.tariffPlan.fields.tariffPlan.placeholder"
+            v-bind="data.steps.step2.tariffPlan.fields.tariffPlan"
           />
         </fieldset>
 
@@ -74,180 +58,145 @@
           <legend class="form__legend">{{ data.steps.step2.addServices.title }}</legend>
 
           <AppCheckbox
-            :name="data.steps.step2.addServices.fields.router.name"
-            :checked-value="data.steps.step2.addServices.fields.router.label"
-            :label="data.steps.step2.addServices.fields.router.label"
-            :label-add="data.steps.step2.addServices.fields.router.labelAdd"
-            :help-text="data.steps.step2.addServices.fields.router.helpText"
+            v-bind="{
+              ...data.steps.step2.addServices.fields.router,
+              checkedValue: data.steps.step2.addServices.fields.router.label
+            }"
           />
 
           <AppCheckbox
-            :name="data.steps.step2.addServices.fields.staticIPAddress.name"
-            :checked-value="data.steps.step2.addServices.fields.staticIPAddress.label"
-            :label="data.steps.step2.addServices.fields.staticIPAddress.label"
-            :label-add="data.steps.step2.addServices.fields.staticIPAddress.labelAdd"
-            :help-text="data.steps.step2.addServices.fields.staticIPAddress.helpText"
+            v-bind="{
+              ...data.steps.step2.addServices.fields.staticIPAddress,
+              checkedValue: data.steps.step2.addServices.fields.staticIPAddress.label
+            }"
           />
         </fieldset>
 
-        <!-- Аккордеон закрывается при размонтировании компонента (при переключении на другой step), <KeepAlive /> не помог. Решаю проблему через ref с активным табом и emits из api primevue -->
-        <AppCollapse
-          :active-index="connectionAddressActiveIndex"
-          @change-index-active-tab="connectionAddressActiveIndex = $event"
-          header="Адрес подключения"
-        >
+        <AppCollapse :header="data.steps.step2.connectionAddress.title">
           <fieldset class="form__fieldset">
-            <AppInput
-              :label="data.steps.step2.connectionAddress.fields.postalCode.label"
-              :name="data.steps.step2.connectionAddress.fields.postalCode.name"
-            />
+            <AppInput v-bind="data.steps.step2.connectionAddress.fields.postalCode" />
 
             <AppSelect
               v-model="values.order.connectionAddress.region"
-              :options="data.steps.step2.connectionAddress.fields.region.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.region.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.region.label"
-              :name="data.steps.step2.connectionAddress.fields.region.name"
+              v-bind="data.steps.step2.connectionAddress.fields.region"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.settlementType"
-              :options="data.steps.step2.connectionAddress.fields.settlementType.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.settlementType.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.settlementType.label"
-              :name="data.steps.step2.connectionAddress.fields.settlementType.name"
+              v-bind="data.steps.step2.connectionAddress.fields.settlementType"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.settlement"
-              :options="data.steps.step2.connectionAddress.fields.settlement.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.settlement.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.settlement.label"
-              :name="data.steps.step2.connectionAddress.fields.settlement.name"
-              filter
+              v-bind="{ ...data.steps.step2.connectionAddress.fields.settlement, filter: true }"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.streetType"
-              :options="data.steps.step2.connectionAddress.fields.streetType.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.streetType.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.streetType.label"
-              :name="data.steps.step2.connectionAddress.fields.streetType.name"
+              v-bind="data.steps.step2.connectionAddress.fields.streetType"
             />
 
             <AppSelect
               v-model="values.order.connectionAddress.street"
-              :options="data.steps.step2.connectionAddress.fields.street.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.street.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.street.label"
-              :name="data.steps.step2.connectionAddress.fields.street.name"
-              :disabled="values.order.connectionAddress.noStreet"
-              filter
+              v-bind="{
+                ...data.steps.step2.connectionAddress.fields.street,
+                disabled: values.order.connectionAddress.noStreet,
+                filter: true
+              }"
             />
 
             <AppCheckbox
-              :name="data.steps.step2.connectionAddress.fields.noStreet.name"
-              :checked-value="true"
-              :label="data.steps.step2.connectionAddress.fields.noStreet.label"
-              @change="setFieldValue('order.connectionAddress.street', '')"
+              v-bind="{ ...data.steps.step2.connectionAddress.fields.noStreet, checkedValue: true }"
+              @change="
+                setFieldValue(
+                  'order.connectionAddress.street',
+                  'В адресе отсутствует название улицы'
+                )
+              "
             />
 
             <div class="form__fieldset-wrapper">
-              <AppInput
-                :label="data.steps.step2.connectionAddress.fields.house.label"
-                :name="data.steps.step2.connectionAddress.fields.house.name"
-                :placeholder="data.steps.step2.connectionAddress.fields.house.placeholder"
-              />
+              <AppInput v-bind="data.steps.step2.connectionAddress.fields.house" />
 
-              <AppInput
-                :label="data.steps.step2.connectionAddress.fields.building.label"
-                :name="data.steps.step2.connectionAddress.fields.building.name"
-                :placeholder="data.steps.step2.connectionAddress.fields.building.placeholder"
-              />
+              <AppInput v-bind="data.steps.step2.connectionAddress.fields.building" />
             </div>
 
             <AppSelect
               v-model="values.order.connectionAddress.typeRoom"
-              :options="data.steps.step2.connectionAddress.fields.typeRoom.options"
-              :placeholder="data.steps.step2.connectionAddress.fields.typeRoom.placeholder"
-              :label="data.steps.step2.connectionAddress.fields.typeRoom.label"
-              :name="data.steps.step2.connectionAddress.fields.typeRoom.name"
+              v-bind="data.steps.step2.connectionAddress.fields.typeRoom"
             />
 
             <AppInput
-              :label="data.steps.step2.connectionAddress.fields.room.label"
-              :name="data.steps.step2.connectionAddress.fields.room.name"
-              :placeholder="data.steps.step2.connectionAddress.fields.room.placeholder"
-              :disabled="values.order.connectionAddress.noRoom"
+              v-bind="{
+                ...data.steps.step2.connectionAddress.fields.room,
+                disabled: values.order.connectionAddress.noRoom
+              }"
             />
 
             <AppCheckbox
-              :name="data.steps.step2.connectionAddress.fields.noRoom.name"
-              :checked-value="true"
-              :label="data.steps.step2.connectionAddress.fields.noRoom.label"
-              @change="setFieldValue('order.connectionAddress.room', '')"
+              v-bind="{ ...data.steps.step2.connectionAddress.fields.noRoom, checkedValue: true }"
+              @change="
+                setFieldValue('order.connectionAddress.room', 'Это единое строение, помещения нет')
+              "
             />
 
             <AppInput
-              tag="textarea"
-              :label="data.steps.step2.connectionAddress.fields.addressCommentary.label"
-              :name="data.steps.step2.connectionAddress.fields.addressCommentary.name"
-              :placeholder="data.steps.step2.connectionAddress.fields.addressCommentary.placeholder"
-              rows="5"
+              v-bind="{
+                ...data.steps.step2.connectionAddress.fields.addressCommentary,
+                tag: 'textarea',
+                rows: '5'
+              }"
             />
           </fieldset>
         </AppCollapse>
       </AppStep>
 
+      <!-- Шаг 3 -->
+      <!-- Почему-то при переходе на последний этап триггерится валидация на обязательном чекбоксе с политикой конфиденциальности, пока просто сделал его по умолчанию checked -->
       <AppStep :step-number="2" :current-step="currentStep">
         <fieldset class="form__fieldset">
           <AppRadioGroup :label="data.steps.step3.passportData.fields.resident.title">
             <div class="form__fieldset-wrapper">
-              <!-- Почему-то эта радиокнопка триггерит валидацию на чекбоксе с политикой конфиденциальности, пока просто по умолчанию сделал чекбокс как checked -->
               <AppRadioButton
-                :name="data.steps.step3.passportData.fields.resident.fields.yes.name"
-                :checked-value="data.steps.step3.passportData.fields.resident.fields.yes.label"
-                :label="data.steps.step3.passportData.fields.resident.fields.yes.label"
+                v-bind="{
+                  ...data.steps.step3.passportData.fields.resident.fields.yes,
+                  checkedValue: data.steps.step3.passportData.fields.resident.fields.yes.label
+                }"
                 @change="isResidentBelarus = true"
               />
+
               <AppRadioButton
-                :name="data.steps.step3.passportData.fields.resident.fields.no.name"
-                :checked-value="data.steps.step3.passportData.fields.resident.fields.no.label"
-                :label="data.steps.step3.passportData.fields.resident.fields.no.label"
+                v-bind="{
+                  ...data.steps.step3.passportData.fields.resident.fields.no,
+                  checkedValue: data.steps.step3.passportData.fields.resident.fields.no.label
+                }"
                 @change="isResidentBelarus = false"
               />
             </div>
           </AppRadioGroup>
 
           <div class="form__fieldset" v-show="isResidentBelarus === false">
-            <AppInput
-              :label="data.steps.step3.passportData.fields.citizenship.label"
-              :name="data.steps.step3.passportData.fields.citizenship.name"
-              :placeholder="data.steps.step3.passportData.fields.citizenship.placeholder"
-            />
+            <AppInput v-bind="data.steps.step3.passportData.fields.citizenship" />
 
             <AppRadioGroup
               :label="data.steps.step3.passportData.fields.temporaryRegistration.title"
             >
               <div class="form__fieldset-wrapper">
                 <AppRadioButton
-                  :name="data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.name"
-                  :checked-value="
-                    data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
-                  "
-                  :label="
-                    data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
-                  "
+                  v-bind="{
+                    ...data.steps.step3.passportData.fields.temporaryRegistration.fields.yes,
+                    checkedValue:
+                      data.steps.step3.passportData.fields.temporaryRegistration.fields.yes.label
+                  }"
                   @change="isTemporaryRegistration = true"
                 />
+
                 <AppRadioButton
-                  :name="data.steps.step3.passportData.fields.temporaryRegistration.fields.no.name"
-                  :checked-value="
-                    data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
-                  "
-                  :label="
-                    data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
-                  "
+                  v-bind="{
+                    ...data.steps.step3.passportData.fields.temporaryRegistration.fields.no,
+                    checkedValue:
+                      data.steps.step3.passportData.fields.temporaryRegistration.fields.no.label
+                  }"
                   @change="isTemporaryRegistration = false"
                 />
               </div>
@@ -256,164 +205,109 @@
 
           <AppSelect
             v-model="values.passportData.passportData.documentType"
-            :options="data.steps.step3.passportData.fields.documentType.options"
-            :name="data.steps.step3.passportData.fields.documentType.name"
-            :label="data.steps.step3.passportData.fields.documentType.label"
-            :placeholder="data.steps.step3.passportData.fields.documentType.placeholder"
+            v-bind="data.steps.step3.passportData.fields.documentType"
           />
 
           <div class="form__fieldset-wrapper">
-            <AppInput
-              :label="data.steps.step3.passportData.fields.series.label"
-              :name="data.steps.step3.passportData.fields.series.name"
-              :placeholder="data.steps.step3.passportData.fields.series.placeholder"
-            />
+            <AppInput v-bind="data.steps.step3.passportData.fields.series" />
 
-            <AppInput
-              :label="data.steps.step3.passportData.fields.number.label"
-              :name="data.steps.step3.passportData.fields.number.name"
-              :placeholder="data.steps.step3.passportData.fields.number.placeholder"
-            />
+            <AppInput v-bind="data.steps.step3.passportData.fields.number" />
           </div>
 
           <AppInput
-            :label="data.steps.step3.passportData.fields.dateOfIssue.label"
-            :name="data.steps.step3.passportData.fields.dateOfIssue.name"
-            type="date"
+            v-bind="{ ...data.steps.step3.passportData.fields.dateOfIssue, type: 'date' }"
           />
 
           <AppInput
-            :label="data.steps.step3.passportData.fields.dateOfExpiry.label"
-            :name="data.steps.step3.passportData.fields.dateOfExpiry.name"
-            :placeholder="data.steps.step3.passportData.fields.dateOfExpiry.placeholder"
-            type="date"
+            v-bind="{ ...data.steps.step3.passportData.fields.dateOfExpiry, type: 'date' }"
           />
 
-          <AppInput
-            :label="data.steps.step3.passportData.fields.identificationNumber.label"
-            :name="data.steps.step3.passportData.fields.identificationNumber.name"
-          />
+          <AppInput v-bind="data.steps.step3.passportData.fields.identificationNumber" />
 
-          <AppInput
-            :label="data.steps.step3.passportData.fields.passportIssuedBy.label"
-            :name="data.steps.step3.passportData.fields.passportIssuedBy.name"
-            :placeholder="data.steps.step3.passportData.fields.passportIssuedBy.placeholder"
-          />
+          <AppInput v-bind="data.steps.step3.passportData.fields.passportIssuedBy" />
         </fieldset>
 
         <AppCollapse
           v-show="isTemporaryRegistration !== false"
-          :active-index="registrationAddressActiveIndex"
-          @change-index-active-tab="registrationAddressActiveIndex = $event"
-          header="Адрес регистрации"
+          :header="data.steps.step3.registrationAddress.title"
         >
           <AppCheckbox
-            :name="data.steps.step3.registrationAddress.fields.sameAsConnectionAddress.name"
-            :checked-value="true"
-            :label="data.steps.step3.registrationAddress.fields.sameAsConnectionAddress.label"
+            v-bind="{
+              ...data.steps.step3.registrationAddress.fields.sameAsConnectionAddress,
+              checkedValue: true
+            }"
             @change="isSameAsConnectionAddress = !isSameAsConnectionAddress"
           />
 
           <fieldset v-show="!isSameAsConnectionAddress" class="form__fieldset">
-            <AppInput
-              :label="data.steps.step3.registrationAddress.fields.postalCode.label"
-              :name="data.steps.step3.registrationAddress.fields.postalCode.name"
-            />
+            <AppInput v-bind="data.steps.step3.registrationAddress.fields.postalCode" />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.region"
-              :options="data.steps.step3.registrationAddress.fields.region.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.region.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.region.label"
-              :name="data.steps.step3.registrationAddress.fields.region.name"
+              v-bind="data.steps.step3.registrationAddress.fields.region"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.settlementType"
-              :options="data.steps.step3.registrationAddress.fields.settlementType.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.settlementType.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.settlementType.label"
-              :name="data.steps.step3.registrationAddress.fields.settlementType.name"
+              v-bind="data.steps.step3.registrationAddress.fields.settlementType"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.settlement"
-              :options="data.steps.step3.registrationAddress.fields.settlement.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.settlement.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.settlement.label"
-              :name="data.steps.step3.registrationAddress.fields.settlement.name"
-              filter
+              v-bind="{ ...data.steps.step3.registrationAddress.fields.settlement, filter: true }"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.streetType"
-              :options="data.steps.step3.registrationAddress.fields.streetType.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.streetType.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.streetType.label"
-              :name="data.steps.step3.registrationAddress.fields.streetType.name"
+              v-bind="data.steps.step3.registrationAddress.fields.streetType"
             />
 
             <AppSelect
               v-model="values.passportData.registrationAddress.street"
-              :options="data.steps.step3.registrationAddress.fields.street.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.street.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.street.label"
-              :name="data.steps.step3.registrationAddress.fields.street.name"
-              :disabled="values.passportData.registrationAddress.noStreet"
-              filter
+              v-bind="{
+                ...data.steps.step3.registrationAddress.fields.street,
+                filter: true,
+                disabled: values.passportData.registrationAddress.noStreet
+              }"
             />
 
             <AppCheckbox
-              :name="data.steps.step3.registrationAddress.fields.noStreet.name"
-              :checked-value="true"
-              :label="data.steps.step3.registrationAddress.fields.noStreet.label"
+              v-bind="{
+                ...data.steps.step3.registrationAddress.fields.noStreet,
+                checkedValue: true
+              }"
               @change="setFieldValue('passportData.registrationAddress.street', '')"
             />
 
             <div class="form__fieldset-wrapper">
-              <AppInput
-                :label="data.steps.step3.registrationAddress.fields.house.label"
-                :name="data.steps.step3.registrationAddress.fields.house.name"
-                :placeholder="data.steps.step3.registrationAddress.fields.house.placeholder"
-              />
+              <AppInput v-bind="data.steps.step3.registrationAddress.fields.house" />
 
-              <AppInput
-                :label="data.steps.step3.registrationAddress.fields.building.label"
-                :name="data.steps.step3.registrationAddress.fields.building.name"
-                :placeholder="data.steps.step3.registrationAddress.fields.building.placeholder"
-              />
+              <AppInput v-bind="data.steps.step3.registrationAddress.fields.building" />
             </div>
 
             <AppSelect
               v-model="values.passportData.registrationAddress.typeRoom"
-              :options="data.steps.step3.registrationAddress.fields.typeRoom.options"
-              :placeholder="data.steps.step3.registrationAddress.fields.typeRoom.placeholder"
-              :label="data.steps.step3.registrationAddress.fields.typeRoom.label"
-              :name="data.steps.step3.registrationAddress.fields.typeRoom.name"
+              v-bind="data.steps.step3.registrationAddress.fields.typeRoom"
             />
 
             <AppInput
-              :label="data.steps.step3.registrationAddress.fields.room.label"
-              :name="data.steps.step3.registrationAddress.fields.room.name"
-              :placeholder="data.steps.step3.registrationAddress.fields.room.placeholder"
-              :disabled="values.passportData.registrationAddress.noRoom"
+              v-bind="{
+                ...data.steps.step3.registrationAddress.fields.room,
+                disabled: values.passportData.registrationAddress.noRoom
+              }"
             />
 
             <AppCheckbox
-              :name="data.steps.step3.registrationAddress.fields.noRoom.name"
-              :checked-value="true"
-              :label="data.steps.step3.registrationAddress.fields.noRoom.label"
+              v-bind="{ ...data.steps.step3.registrationAddress.fields.noRoom, checkedValue: true }"
               @change="setFieldValue('passportData.registrationAddress.room', '')"
             />
 
             <AppInput
-              tag="textarea"
-              :label="data.steps.step3.registrationAddress.fields.addressCommentary.label"
-              :name="data.steps.step3.registrationAddress.fields.addressCommentary.name"
-              :placeholder="
-                data.steps.step3.registrationAddress.fields.addressCommentary.placeholder
-              "
-              rows="5"
+              v-bind="{
+                ...data.steps.step3.registrationAddress.fields.addressCommentary,
+                tag: 'textarea',
+                rows: '5'
+              }"
             />
           </fieldset>
         </AppCollapse>
@@ -423,8 +317,7 @@
 
           <AppSelect
             v-model="values.passportData.manager"
-            :options="data.steps.step3.manager.fields.manager.options"
-            :name="data.steps.step3.manager.fields.manager.name"
+            v-bind="data.steps.step3.manager.fields.manager"
           />
         </fieldset>
 
@@ -432,19 +325,21 @@
           <legend class="form__legend">{{ data.steps.step3.otherWishes.title }}</legend>
 
           <AppInput
-            tag="textarea"
-            :label="data.steps.step3.otherWishes.fields.otherWishes.label"
-            :name="data.steps.step3.otherWishes.fields.otherWishes.name"
-            rows="5"
+            v-bind="{
+              ...data.steps.step3.otherWishes.fields.otherWishes,
+              tag: 'textarea',
+              rows: '5'
+            }"
           />
         </fieldset>
 
         <div class="form__checkbox-wrapper">
           <AppCheckbox
-            :name="data.steps.step3.privacyPolicy.fields.privacyPolicy.name"
-            :checked-value="true"
-            :label="data.steps.step3.privacyPolicy.fields.privacyPolicy.label"
-            required
+            v-bind="{
+              ...data.steps.step3.privacyPolicy.fields.privacyPolicy,
+              required: true,
+              checkedValue: true
+            }"
           />
         </div>
       </AppStep>
@@ -452,7 +347,7 @@
 
     <div class="form__buttons">
       <AppButton
-        v-if="!isFirstStep"
+        v-show="!isFirstStep"
         @click="onClickPreviousButton"
         class="form__button"
         variant="secondary"
@@ -463,10 +358,6 @@
         isLastStep ? 'Готово' : 'Отправить'
       }}</AppButton>
     </div>
-
-    <pre>
-      values - {{ values }}
-    </pre>
   </form>
   <AppSkeletonForm v-else />
 </template>
@@ -505,12 +396,10 @@ import {
   endDateMessages
 } from '@/utils/messages.js'
 
-const emit = defineEmits(['change-text'])
+const emit = defineEmits(['change-text', 'get-result-data'])
 
 const data = ref(null)
 
-const connectionAddressActiveIndex = ref(null)
-const registrationAddressActiveIndex = ref(null)
 const isResidentBelarus = ref(null)
 const isTemporaryRegistration = ref(null)
 const isSameAsConnectionAddress = ref(null)
@@ -524,11 +413,13 @@ const addressSchema = object({
 const schemas = [
   object({
     personalData: object({
-      surname: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      name: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      patronymic: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-      phone: string().required().matches(phoneRegexp, phoneMessage),
-      email: string().required().email()
+      contacts: object({
+        surname: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+        name: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+        patronymic: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+        phone: string().required().matches(phoneRegexp, phoneMessage),
+        email: string().required().email()
+      })
     })
   }),
   object({
@@ -574,14 +465,15 @@ const isLastStep = computed(() => {
 
 const { handleSubmit, meta, setValues, setFieldValue, values, validate, setErrors } = useForm({
   validationSchema: currentSchema,
-  keepValuesOnUnmount: true,
   initialValues: {
     personalData: {
-      surname: '',
-      name: '',
-      patronymic: '',
-      phone: '',
-      email: ''
+      contacts: {
+        surname: '',
+        name: '',
+        patronymic: '',
+        phone: '',
+        email: ''
+      }
     },
     order: {
       tariffPlan: '',
@@ -682,7 +574,8 @@ const onClickPreviousButton = () => {
 
 const onSubmit = handleSubmit(async (values) => {
   if (isLastStep.value) {
-    console.log('Данные формы:', values)
+    console.log('Данные:', values)
+    emit('get-result-data', values)
     return
   }
 
@@ -709,6 +602,8 @@ onMounted(async () => {
   emitChangedText()
 
   window.addEventListener('beforeunload', onBeforeUnload)
+
+  console.log(responseData.value)
 })
 
 onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
@@ -771,9 +666,11 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
   }
 
   .form__fields {
-    display: grid;
-    row-gap: 30px;
     max-width: 400px;
+
+    @media (width <= 900px) {
+      max-width: 100%;
+    }
   }
 
   .form__fieldset {

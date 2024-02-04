@@ -1,5 +1,7 @@
 <template>
-  <slot v-if="stepNumber === currentStep" />
+  <div v-show="stepNumber === currentStep" class="step">
+    <slot />
+  </div>
 </template>
 
 <script setup>
@@ -14,3 +16,10 @@ defineProps({
   }
 })
 </script>
+
+<style>
+.step {
+  display: grid;
+  row-gap: 30px;
+}
+</style>
