@@ -1,8 +1,8 @@
 <template>
-  <form v-if="data" @submit="onSubmit" class="form" novalidate>
+  <form @submit="onSubmit" class="form" novalidate>
     <nav class="form__nav">
       <AppButton
-        v-for="(tab, index) in data.tabs"
+        v-for="(tab, index) in tabs"
         :key="tab"
         @click="onClickNavButton(index)"
         class="form__nav-button"
@@ -17,323 +17,171 @@
     <div class="form__fields">
       <!-- Шаг 1 -->
       <AppStep :step-number="0" :current-step="currentStep">
-        <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.fieldset.personalData.title }}</legend>
+        <!-- Контактные данные -->
+        <section class="form__block">
+          <h2 class="form__block-title">
+            {{ fieldset.personalData.title }}
+          </h2>
 
-          <AppInput v-bind="{ ...data.fieldset.personalData.fields.surname, required: true }" />
-
-          <AppInput v-bind="{ ...data.fieldset.personalData.fields.name, required: true }" />
-
-          <AppInput v-bind="{ ...data.fieldset.personalData.fields.patronymic, required: true }" />
-
-          <AppInput
+          <!-- todo: директиву v-maska прокинуть только на инпут с телефоном -->
+          <component
+            v-for="(value, key) in fieldset.personalData.fields"
+            :key="key"
+            :is="value.component"
+            v-bind="value.props"
+            v-model="value.initialValue"
             v-maska
-            v-bind="{ ...data.fieldset.personalData.fields.phone, type: 'tel', required: true }"
           />
-
-          <AppInput
-            v-bind="{
-              ...data.fieldset.personalData.fields.email,
-              type: 'email',
-              required: true
-            }"
-          />
-        </fieldset>
+        </section>
       </AppStep>
 
       <!-- Шаг 2 -->
       <AppStep :step-number="1" :current-step="currentStep">
-        <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.fieldset.tariffPlan.title }}</legend>
+        <!-- Тарифный план -->
+        <section class="form__block">
+          <h2 class="form__block-title">
+            {{ fieldset.tariffPlan.title }}
+          </h2>
 
-          <AppSelect
-            v-model="values.order.tariffPlan"
-            v-bind="data.fieldset.tariffPlan.fields.tariffPlan"
+          <component
+            :is="fieldset.tariffPlan.component"
+            v-bind="fieldset.tariffPlan.props"
+            v-model="fieldset.tariffPlan.initialValue"
           />
-        </fieldset>
+        </section>
 
-        <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.fieldset.addServices.title }}</legend>
+        <!-- Доп.услуги -->
+        <section class="form__block">
+          <h2 class="form__block-title">
+            {{ fieldset.addServices.title }}
+          </h2>
 
-          <AppCheckbox
-            v-bind="{
-              ...data.fieldset.addServices.fields.router,
-              checkedValue: data.fieldset.addServices.fields.router.label
-            }"
+          <component
+            v-for="(value, key) in fieldset.addServices.fields"
+            :key="key"
+            :is="value.component"
+            v-bind="value.props"
+            v-model="fieldset.addServices.initialValue"
           />
+        </section>
 
-          <AppCheckbox
-            v-bind="{
-              ...data.fieldset.addServices.fields.staticIPAddress,
-              checkedValue: data.fieldset.addServices.fields.staticIPAddress.label
-            }"
-          />
-        </fieldset>
-
-        <AppCollapse :header="data.fieldset.connectionAddress.title">
-          <fieldset class="form__fieldset">
-            <AppInput v-bind="data.fieldset.connectionAddress.fields.postalCode" />
-
-            <AppSelect
-              v-model="values.order.connectionAddress.region"
-              v-bind="data.fieldset.connectionAddress.fields.region"
+        <!-- Адрес подключения -->
+        <AppCollapse :header="fieldset.connectionAddress.title">
+          <div class="form__block form__block--2">
+            <component
+              v-for="(value, key) in fieldset.connectionAddress.fields"
+              :key="key"
+              :is="value.component"
+              v-bind="value.props"
+              v-model="value.initialValue"
+              v-on="value.handlers ?? {}"
             />
-
-            <AppSelect
-              v-model="values.order.connectionAddress.settlementType"
-              v-bind="data.fieldset.connectionAddress.fields.settlementType"
-            />
-
-            <AppSelect
-              v-model="values.order.connectionAddress.settlement"
-              v-bind="{ ...data.fieldset.connectionAddress.fields.settlement, filter: true }"
-            />
-
-            <AppSelect
-              v-model="values.order.connectionAddress.streetType"
-              v-bind="data.fieldset.connectionAddress.fields.streetType"
-            />
-
-            <AppSelect
-              v-model="values.order.connectionAddress.street"
-              v-bind="{
-                ...data.fieldset.connectionAddress.fields.street,
-                disabled: values.order.connectionAddress.noStreet,
-                filter: true
-              }"
-            />
-
-            <AppCheckbox
-              v-bind="{ ...data.fieldset.connectionAddress.fields.noStreet, checkedValue: true }"
-              @change="
-                setFieldValue(
-                  'order.connectionAddress.street',
-                  'В адресе отсутствует название улицы'
-                )
-              "
-            />
-
-            <div class="form__fieldset-wrapper">
-              <AppInput v-bind="data.fieldset.connectionAddress.fields.house" />
-
-              <AppInput v-bind="data.fieldset.connectionAddress.fields.building" />
-            </div>
-
-            <AppSelect
-              v-model="values.order.connectionAddress.typeRoom"
-              v-bind="data.fieldset.connectionAddress.fields.typeRoom"
-            />
-
-            <AppInput
-              v-bind="{
-                ...data.fieldset.connectionAddress.fields.room,
-                disabled: values.order.connectionAddress.noRoom
-              }"
-            />
-
-            <AppCheckbox
-              v-bind="{ ...data.fieldset.connectionAddress.fields.noRoom, checkedValue: true }"
-              @change="
-                setFieldValue('order.connectionAddress.room', 'Это единое строение, помещения нет')
-              "
-            />
-
-            <AppInput
-              v-bind="{
-                ...data.fieldset.connectionAddress.fields.addressCommentary,
-                tag: 'textarea',
-                rows: '5'
-              }"
-            />
-          </fieldset>
+          </div>
         </AppCollapse>
       </AppStep>
 
-      <!-- Шаг 3 -->
-      <!-- Почему-то при переходе на последний этап триггерится валидация на обязательном чекбоксе с политикой конфиденциальности, пока просто сделал его по умолчанию checked -->
       <AppStep :step-number="2" :current-step="currentStep">
-        <fieldset class="form__fieldset">
-          <AppRadioGroup :label="data.fieldset.passportData.fields.resident.title">
-            <div class="form__fieldset-wrapper">
-              <AppRadioButton
-                v-bind="{
-                  ...data.fieldset.passportData.fields.resident.fields.yes,
-                  checkedValue: data.fieldset.passportData.fields.resident.fields.yes.label
-                }"
-                @change="isResidentBelarus = true"
-              />
-
-              <AppRadioButton
-                v-bind="{
-                  ...data.fieldset.passportData.fields.resident.fields.no,
-                  checkedValue: data.fieldset.passportData.fields.resident.fields.no.label
-                }"
-                @change="isResidentBelarus = false"
+        <!-- Паспортные данные -->
+        <div class="form__block">
+          <AppRadioGroup :label="fieldset.passportData.fields.resident.title">
+            <div class="radio-group__wrapper">
+              <component
+                v-for="(value, key) in fieldset.passportData.fields.resident.fields"
+                :key="key"
+                :is="value.component"
+                v-bind="value.props"
+                v-model="fieldset.passportData.fields.resident.initialValue"
+                v-on="value.handlers"
               />
             </div>
           </AppRadioGroup>
 
-          <div class="form__fieldset" v-show="isResidentBelarus === false">
-            <AppInput v-bind="data.fieldset.passportData.fields.citizenship" />
+          <div class="form__block" v-show="isResidentBelarus === false">
+            <component
+              :is="fieldset.passportData.fields.citizenship.component"
+              v-bind="fieldset.passportData.fields.citizenship.props"
+              v-model="fieldset.passportData.fields.citizenship.initialValue"
+            />
 
-            <AppRadioGroup :label="data.fieldset.passportData.fields.temporaryRegistration.title">
-              <div class="form__fieldset-wrapper">
-                <AppRadioButton
-                  v-bind="{
-                    ...data.fieldset.passportData.fields.temporaryRegistration.fields.yes,
-                    checkedValue:
-                      data.fieldset.passportData.fields.temporaryRegistration.fields.yes.label
-                  }"
-                  @change="isTemporaryRegistration = true"
-                />
-
-                <AppRadioButton
-                  v-bind="{
-                    ...data.fieldset.passportData.fields.temporaryRegistration.fields.no,
-                    checkedValue:
-                      data.fieldset.passportData.fields.temporaryRegistration.fields.no.label
-                  }"
-                  @change="isTemporaryRegistration = false"
+            <AppRadioGroup :label="fieldset.passportData.fields.temporaryRegistration.title">
+              <div class="radio-group__wrapper">
+                <component
+                  v-for="(value, key) in fieldset.passportData.fields.temporaryRegistration.fields"
+                  :key="key"
+                  :is="value.component"
+                  v-bind="value.props"
+                  v-model="fieldset.passportData.fields.temporaryRegistration.initialValue"
+                  v-on="value.handlers"
                 />
               </div>
             </AppRadioGroup>
           </div>
 
-          <AppSelect
-            v-model="values.passportData.passportData.documentType"
-            v-bind="data.fieldset.passportData.fields.documentType"
-          />
-
-          <div class="form__fieldset-wrapper">
-            <AppInput v-bind="data.fieldset.passportData.fields.series" />
-
-            <AppInput v-bind="data.fieldset.passportData.fields.number" />
+          <div class="form__block">
+            <template v-for="(value, key) in fieldset.passportData.fields" :key="key">
+              <component
+                v-if="isSpecialKey(key, ['resident', 'citizenship', 'temporaryRegistration'])"
+                :is="value.component"
+                v-bind="value.props"
+                v-model="value.initialValue"
+              />
+            </template>
           </div>
+        </div>
 
-          <AppInput v-bind="{ ...data.fieldset.passportData.fields.dateOfIssue, type: 'date' }" />
-
-          <AppInput v-bind="{ ...data.fieldset.passportData.fields.dateOfExpiry, type: 'date' }" />
-
-          <AppInput v-bind="data.fieldset.passportData.fields.identificationNumber" />
-
-          <AppInput v-bind="data.fieldset.passportData.fields.passportIssuedBy" />
-        </fieldset>
-
+        <!-- Адрес регистрации -->
         <AppCollapse
           v-show="isTemporaryRegistration !== false"
-          :header="data.fieldset.registrationAddress.title"
+          :header="fieldset.registrationAddress.title"
         >
-          <AppCheckbox
-            v-bind="{
-              ...data.fieldset.registrationAddress.fields.sameAsConnectionAddress,
-              checkedValue: true
-            }"
-            @change="isSameAsConnectionAddress = !isSameAsConnectionAddress"
+          <component
+            :is="fieldset.registrationAddress.fields.sameAsConnectionAddress.component"
+            v-bind="fieldset.registrationAddress.fields.sameAsConnectionAddress.props"
+            v-model="fieldset.registrationAddress.fields.sameAsConnectionAddress.initialValue"
+            v-on="fieldset.registrationAddress.fields.sameAsConnectionAddress.handlers"
           />
 
-          <fieldset v-show="!isSameAsConnectionAddress" class="form__fieldset">
-            <AppInput v-bind="data.fieldset.registrationAddress.fields.postalCode" />
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.region"
-              v-bind="data.fieldset.registrationAddress.fields.region"
-            />
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.settlementType"
-              v-bind="data.fieldset.registrationAddress.fields.settlementType"
-            />
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.settlement"
-              v-bind="{ ...data.fieldset.registrationAddress.fields.settlement, filter: true }"
-            />
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.streetType"
-              v-bind="data.fieldset.registrationAddress.fields.streetType"
-            />
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.street"
-              v-bind="{
-                ...data.fieldset.registrationAddress.fields.street,
-                filter: true,
-                disabled: values.passportData.registrationAddress.noStreet
-              }"
-            />
-
-            <AppCheckbox
-              v-bind="{
-                ...data.fieldset.registrationAddress.fields.noStreet,
-                checkedValue: true
-              }"
-              @change="setFieldValue('passportData.registrationAddress.street', '')"
-            />
-
-            <div class="form__fieldset-wrapper">
-              <AppInput v-bind="data.fieldset.registrationAddress.fields.house" />
-
-              <AppInput v-bind="data.fieldset.registrationAddress.fields.building" />
-            </div>
-
-            <AppSelect
-              v-model="values.passportData.registrationAddress.typeRoom"
-              v-bind="data.fieldset.registrationAddress.fields.typeRoom"
-            />
-
-            <AppInput
-              v-bind="{
-                ...data.fieldset.registrationAddress.fields.room,
-                disabled: values.passportData.registrationAddress.noRoom
-              }"
-            />
-
-            <AppCheckbox
-              v-bind="{ ...data.fieldset.registrationAddress.fields.noRoom, checkedValue: true }"
-              @change="setFieldValue('passportData.registrationAddress.room', '')"
-            />
-
-            <AppInput
-              v-bind="{
-                ...data.fieldset.registrationAddress.fields.addressCommentary,
-                tag: 'textarea',
-                rows: '5'
-              }"
-            />
-          </fieldset>
+          <div v-show="!isSameAsConnectionAddress" class="form__block form__block--2">
+            <template v-for="(value, key) in fieldset.registrationAddress.fields" :key="key">
+              <component
+                v-if="isSpecialKey(key, ['sameAsConnectionAddress'])"
+                :is="value.component"
+                v-bind="value.props"
+                v-model="value.initialValue"
+                v-on="value.handlers ?? {}"
+              />
+            </template>
+          </div>
         </AppCollapse>
 
-        <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.fieldset.manager.title }}</legend>
+        <!-- Ваш менеджер -->
+        <section class="form__block">
+          <h2 class="form__block-title">{{ fieldset.manager.title }}</h2>
 
-          <AppSelect
-            v-model="values.passportData.manager"
-            v-bind="data.fieldset.manager.fields.manager"
+          <component
+            :is="fieldset.manager.component"
+            v-bind="fieldset.manager.props"
+            v-model="fieldset.manager.initialValue"
           />
-        </fieldset>
+        </section>
 
-        <fieldset class="form__fieldset">
-          <legend class="form__legend">{{ data.fieldset.otherWishes.title }}</legend>
+        <!-- Иные пожелания -->
+        <section class="form__block">
+          <h2 class="form__block-title">{{ fieldset.otherWishes.title }}</h2>
 
-          <AppInput
-            v-bind="{
-              ...data.fieldset.otherWishes.fields.otherWishes,
-              tag: 'textarea',
-              rows: '5'
-            }"
+          <component
+            :is="fieldset.otherWishes.component"
+            v-bind="fieldset.otherWishes.props"
+            v-model="fieldset.otherWishes.initialValue"
           />
-        </fieldset>
+        </section>
 
-        <div class="form__checkbox-wrapper">
-          <AppCheckbox
-            v-bind="{
-              ...data.fieldset.privacyPolicy.fields.privacyPolicy,
-              required: true,
-              checkedValue: true
-            }"
-          />
-        </div>
+        <!-- Согласие с политикой -->
+        <component
+          :is="fieldset.privacyPolicy.component"
+          v-bind="fieldset.privacyPolicy.props"
+          v-model="fieldset.privacyPolicy.initialValue"
+        />
       </AppStep>
     </div>
 
@@ -351,22 +199,19 @@
       }}</AppButton>
     </div>
   </form>
-  <AppSkeletonForm v-else />
 </template>
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, markRaw, ref, onMounted, onUnmounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
-import { useFetch } from '@vueuse/core'
 import AppInput from '@/components/AppInput.vue'
 import AppButton from '@/components/AppButton.vue'
 import AppStep from '@/components/AppStep.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import AppCheckbox from '@/components/AppCheckbox.vue'
-import AppSkeletonForm from '@/components/AppSkeletonForm.vue'
 import AppRadioGroup from '@/components/AppRadioGroup.vue'
 import AppRadioButton from '@/components/AppRadioButton.vue'
 import AppCollapse from '@/components/AppCollapse.vue'
@@ -385,17 +230,708 @@ import {
   cyrillicAndNumbersMessage,
   onlyNumbersMessage,
   latinAndNumbersMessage,
-  endDateMessages
+  endDateMessages,
+  privacyPolicyMessages
 } from '@/utils/messages.js'
 
+// emits
 const emit = defineEmits(['change-text', 'get-result-data'])
 
-const data = ref(null)
-
+// ref
+const currentStep = ref(0)
 const isResidentBelarus = ref(null)
 const isTemporaryRegistration = ref(null)
+const isDisabledConnectionAddressStreetSelect = ref(false)
+const isDisabledConnectionAddressRoomSelect = ref(false)
+const isDisabledRegistrationAddressStreetSelect = ref(false)
+const isDisabledRegistrationAddressRoomSelect = ref(false)
 const isSameAsConnectionAddress = ref(null)
+const tabs = ref(['Личные данные', 'Заказ', 'Паспортные данные'])
+const texts = ref([
+  '<p><b>Не уверены, какой тариф лучше выбрать?</b></p><p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>',
+  'В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.',
+  '<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>'
+])
+const fieldset = ref({
+  personalData: {
+    title: 'Ваши контакты',
+    fields: {
+      surname: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'personalData.contacts.surname',
+          label: 'Фамилия',
+          required: true
+        },
+        initialValue: ''
+      },
+      name: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'personalData.contacts.name',
+          label: 'Имя',
+          required: true
+        },
+        initialValue: ''
+      },
+      patronymic: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'personalData.contacts.patronymic',
+          label: 'Отчество',
+          required: true
+        },
+        initialValue: ''
+      },
+      phone: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'personalData.contacts.phone',
+          label: 'Номер телефона',
+          placeholder: '+375',
+          mask: '+375 (##) ###-##-##',
+          type: 'tel',
+          required: true
+        },
+        initialValue: ''
+      },
+      email: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'personalData.contacts.email',
+          label: 'Адрес электронной почты',
+          placeholder: 'test-email@gmail.com',
+          type: 'email',
+          required: true
+        },
+        initialValue: ''
+      }
+    }
+  },
+  tariffPlan: {
+    title: 'Тарифный план',
+    component: markRaw(AppSelect),
+    props: {
+      name: 'order.tariffPlan',
+      label: 'Выберите тарифный план',
+      placeholder: 'Выберите тарифный план',
+      options: [
+        'iDOM100+Megogo, 25,50 руб./мес.',
+        'Мой бизнес PRO 100, 43 руб./мес.',
+        'Мой бизнес PRO 80, 25,50 руб./мес.'
+      ]
+    },
+    initialValue: ''
+  },
+  addServices: {
+    title: 'Дополнительные услуги',
+    fields: {
+      router: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'order.addServices',
+          label: 'Маршрутизатор (Роутер)',
+          labelAdd: '0р./Мес.',
+          helpText:
+            'Сетевое оборудование будет подобрано под ваши потребности. Ряд моделей доступны за дополнительную плату.',
+          checkedValue: 'Маршрутизатор (Роутер)'
+        }
+      },
+      staticIPAddress: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'order.addServices',
+          label: 'Статический IP-адрес',
+          labelAdd: '4,20 руб./мес.',
+          helpText:
+            'Позволяет присвоить абоненту постоянный IP-адрес. Для выхода в интернет этот адрес не используется.',
+          checkedValue: 'Статический IP-адрес'
+        }
+      }
+    },
+    initialValue: []
+  },
+  connectionAddress: {
+    title: 'Адрес подключения',
+    fields: {
+      postalCode: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'order.connectionAddress.postalCode',
+          label: 'Индекс'
+        },
+        initialValue: ''
+      },
+      region: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.region',
+          label: 'Область',
+          placeholder: 'Выберите область',
+          options: [
+            'Брестская область',
+            'Витебская область',
+            'Гомельская область',
+            'Гродненская область',
+            'Минская область',
+            'Могилевская область'
+          ]
+        },
+        initialValue: ''
+      },
+      settlementType: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.settlementType',
+          label: 'Тип населенного пункта',
+          placeholder: 'Выберите тип населенного пункта',
+          options: ['Город', 'Поселок городского типа', 'Сельский населенный пункт']
+        },
+        initialValue: ''
+      },
+      settlement: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.settlement',
+          label: 'Населенный пункт',
+          placeholder: 'Выберите населенный пункт',
+          options: [
+            'Минск',
+            'Гомель',
+            'Могилёв',
+            'Витебск',
+            'Гродно',
+            'Брест',
+            'Барановичи',
+            'Мозырь',
+            'Бобруйск',
+            'Слуцк'
+          ],
+          filter: true
+        },
+        initialValue: ''
+      },
+      streetType: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.streetType',
+          label: 'Тип улицы',
+          placeholder: 'Выберите тип улицы',
+          options: [
+            'Центральная улица',
+            'Жилые улицы',
+            'Промышленные улицы',
+            'Торговые улицы',
+            'Туристические улицы'
+          ]
+        },
+        initialValue: ''
+      },
+      street: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.street',
+          label: 'Улица',
+          placeholder: 'Выберите улицу',
+          options: ['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'],
+          filter: true,
+          disabled: isDisabledConnectionAddressStreetSelect
+        },
+        initialValue: ''
+      },
+      noStreet: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'order.connectionAddress.noStreet',
+          label: 'В адресе отсутствует название улицы',
+          checkedValue: true
+        },
+        handlers: {
+          change: () => {
+            isDisabledConnectionAddressStreetSelect.value =
+              !isDisabledConnectionAddressStreetSelect.value
 
+            if (isDisabledConnectionAddressStreetSelect.value) {
+              setFieldValue('order.connectionAddress.street', 'В адресе отсутствует название улицы')
+            } else {
+              setFieldValue('order.connectionAddress.street', '')
+            }
+          }
+        },
+        initialValue: false
+      },
+      house: {
+        component: markRaw(AppInput),
+        props: {
+          inputWrapperClassName: 'form__block-control',
+          name: 'order.connectionAddress.house',
+          label: 'Дом',
+          placeholder: '51В'
+        },
+        initialValue: ''
+      },
+      building: {
+        component: markRaw(AppInput),
+        props: {
+          inputWrapperClassName: 'form__block-control',
+          name: 'order.connectionAddress.building',
+          label: 'Корпус / Строение',
+          placeholder: '1'
+        },
+        initialValue: ''
+      },
+      typeRoom: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'order.connectionAddress.typeRoom',
+          label: 'Тип помещения',
+          placeholder: 'Выберите тип помещения',
+          options: ['Офис', 'Квартира']
+        },
+        initialValue: ''
+      },
+      room: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'order.connectionAddress.room',
+          label: 'Помещение',
+          placeholder: '196',
+          disabled: isDisabledConnectionAddressRoomSelect
+        },
+        initialValue: ''
+      },
+      noRoom: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'order.connectionAddress.noRoom',
+          label: 'Это единое строение, помещения нет',
+          checkedValue: true
+        },
+        handlers: {
+          change: () => {
+            isDisabledConnectionAddressRoomSelect.value =
+              !isDisabledConnectionAddressRoomSelect.value
+
+            if (isDisabledConnectionAddressRoomSelect.value) {
+              setFieldValue('order.connectionAddress.room', 'Это единое строение, помещения нет')
+            } else {
+              setFieldValue('order.connectionAddress.room', '')
+            }
+          }
+        },
+        initialValue: false
+      },
+      addressCommentary: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'order.connectionAddress.addressCommentary',
+          label: 'Комментарий по адресу',
+          placeholder: '3 этаж, справа от входа',
+          tag: 'textarea',
+          rows: '5'
+        },
+        initialValue: ''
+      }
+    }
+  },
+  passportData: {
+    fields: {
+      resident: {
+        title: 'Являетесь ли Вы резидентом Республики Беларусь?',
+        fields: {
+          yes: {
+            component: markRaw(AppRadioButton),
+            props: {
+              name: 'passportData.passportData.resident',
+              label: 'Да',
+              checkedValue: 'Да'
+            },
+            handlers: {
+              change: () => {
+                isResidentBelarus.value = true
+                setValues({
+                  passportData: {
+                    passportData: {
+                      citizenship: '',
+                      temporaryRegistration: ''
+                    }
+                  }
+                })
+              }
+            }
+          },
+          no: {
+            component: markRaw(AppRadioButton),
+            props: {
+              name: 'passportData.passportData.resident',
+              label: 'Нет',
+              checkedValue: 'Нет'
+            },
+            handlers: {
+              change: () => (isResidentBelarus.value = false)
+            }
+          }
+        },
+        initialValue: ''
+      },
+      citizenship: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.citizenship',
+          label: 'Гражданство',
+          placeholder: 'Испания'
+        },
+        initialValue: ''
+      },
+      temporaryRegistration: {
+        title: 'Есть ли у вас временная регистрация?',
+        fields: {
+          yes: {
+            component: markRaw(AppRadioButton),
+            props: {
+              name: 'passportData.passportData.temporaryRegistration',
+              label: 'Да',
+              checkedValue: 'Да'
+            },
+            handlers: {
+              change: () => (isTemporaryRegistration.value = true)
+            }
+          },
+          no: {
+            component: markRaw(AppRadioButton),
+            props: {
+              name: 'passportData.passportData.temporaryRegistration',
+              label: 'Нет',
+              checkedValue: 'Нет'
+            },
+            handlers: {
+              change: () => (isTemporaryRegistration.value = false)
+            }
+          }
+        },
+        initialValue: ''
+      },
+      documentType: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.passportData.documentType',
+          label: 'Вид документа',
+          placeholder: 'Выберите вид документа',
+          options: ['Паспорт', 'Удостоверение']
+        },
+        initialValue: ''
+      },
+      series: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.series',
+          label: 'Серия',
+          placeholder: 'MP'
+        },
+        initialValue: ''
+      },
+      number: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.number',
+          label: 'Номер паспорта',
+          placeholder: '2024468'
+        },
+        initialValue: ''
+      },
+      dateOfIssue: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.dateOfIssue',
+          label: 'Дата выдачи паспорта',
+          type: 'date'
+        }
+        // initialValue: ''
+      },
+      dateOfExpiry: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.dateOfExpiry',
+          label: 'Срок действия паспорта',
+          type: 'date'
+        }
+        // initialValue: ''
+      },
+      identificationNumber: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.identificationNumber',
+          label: 'Идентификационный номер'
+        },
+        initialValue: ''
+      },
+      passportIssuedBy: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.passportData.passportIssuedBy',
+          label: 'Кем выдан паспорт',
+          placeholder: 'Московским РУВД'
+        },
+        initialValue: ''
+      }
+    }
+  },
+  registrationAddress: {
+    title: 'Адрес регистрации',
+    fields: {
+      sameAsConnectionAddress: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'passportData.registrationAddress.sameAsConnectionAddress',
+          label: 'Совпадает с адресом подключения',
+          checkedValue: true
+        },
+        handlers: {
+          change: () => {
+            isSameAsConnectionAddress.value = !isSameAsConnectionAddress.value
+            isDisabledRegistrationAddressStreetSelect.value = true
+            isDisabledRegistrationAddressRoomSelect.value = true
+
+            setValues({
+              passportData: {
+                registrationAddress: {
+                  postalCode: values.order.connectionAddress.postalCode,
+                  region: values.order.connectionAddress.region,
+                  settlementType: values.order.connectionAddress.settlementType,
+                  settlement: values.order.connectionAddress.settlement,
+                  streetType: values.order.connectionAddress.streetType,
+                  street: values.order.connectionAddress.street,
+                  noStreet: values.order.connectionAddress.noStreet,
+                  house: values.order.connectionAddress.house,
+                  building: values.order.connectionAddress.building,
+                  typeRoom: values.order.connectionAddress.typeRoom,
+                  room: values.order.connectionAddress.room,
+                  noRoom: values.order.connectionAddress.noRoom,
+                  addressCommentary: values.order.connectionAddress.addressCommentary
+                }
+              }
+            })
+          }
+        },
+        initialValue: false
+      },
+      postalCode: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.registrationAddress.postalCode',
+          label: 'Индекс'
+        },
+        initialValue: ''
+      },
+      region: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.region',
+          label: 'Область',
+          placeholder: 'Выберите область',
+          options: [
+            'Брестская область',
+            'Витебская область',
+            'Гомельская область',
+            'Гродненская область',
+            'Минская область',
+            'Могилевская область'
+          ]
+        },
+        initialValue: ''
+      },
+      settlementType: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.settlementType',
+          label: 'Тип населенного пункта',
+          placeholder: 'Выберите тип населенного пункта',
+          options: ['Город', 'Поселок городского типа', 'Сельский населенный пункт']
+        },
+        initialValue: ''
+      },
+      settlement: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.settlement',
+          label: 'Населенный пункт',
+          placeholder: 'Выберите населенный пункт',
+          options: [
+            'Минск',
+            'Гомель',
+            'Могилёв',
+            'Витебск',
+            'Гродно',
+            'Брест',
+            'Барановичи',
+            'Мозырь',
+            'Бобруйск',
+            'Слуцк'
+          ],
+          filter: true
+        },
+        initialValue: ''
+      },
+      streetType: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.streetType',
+          label: 'Тип улицы',
+          placeholder: 'Выберите тип улицы',
+          options: [
+            'Центральная улица',
+            'Жилые улицы',
+            'Промышленные улицы',
+            'Торговые улицы',
+            'Туристические улицы'
+          ]
+        },
+        initialValue: ''
+      },
+      street: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.street',
+          label: 'Улица',
+          placeholder: 'Выберите улицу',
+          options: ['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'],
+          filter: true,
+          disabled: isDisabledRegistrationAddressStreetSelect
+        },
+        initialValue: ''
+      },
+      noStreet: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'passportData.registrationAddress.noStreet',
+          label: 'В адресе отсутствует название улицы',
+          checkedValue: true
+        },
+        handlers: {
+          change: () => {
+            isDisabledRegistrationAddressStreetSelect.value =
+              !isDisabledRegistrationAddressStreetSelect.value
+
+            if (isDisabledRegistrationAddressStreetSelect.value) {
+              setFieldValue(
+                'order.registrationAddress.street',
+                'В адресе отсутствует название улицы'
+              )
+            } else {
+              setFieldValue('order.registrationAddress.street', '')
+            }
+          }
+        },
+        initialValue: false
+      },
+      house: {
+        component: markRaw(AppInput),
+        props: {
+          inputWrapperClassName: 'form__block-control',
+          name: 'passportData.registrationAddress.house',
+          label: 'Дом',
+          placeholder: '51В'
+        },
+        initialValue: ''
+      },
+      building: {
+        component: markRaw(AppInput),
+        props: {
+          inputWrapperClassName: 'form__block-control',
+          name: 'passportData.registrationAddress.building',
+          label: 'Корпус / Строение',
+          placeholder: '1'
+        },
+        initialValue: ''
+      },
+      typeRoom: {
+        component: markRaw(AppSelect),
+        props: {
+          name: 'passportData.registrationAddress.typeRoom',
+          label: 'Тип помещения',
+          placeholder: 'Выберите тип помещения',
+          options: ['Офис', 'Квартира']
+        },
+        initialValue: ''
+      },
+      room: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.registrationAddress.room',
+          label: 'Помещение',
+          placeholder: '196',
+          disabled: isDisabledRegistrationAddressRoomSelect
+        },
+        initialValue: ''
+      },
+      noRoom: {
+        component: markRaw(AppCheckbox),
+        props: {
+          name: 'passportData.registrationAddress.noRoom',
+          label: 'Это единое строение, помещения нет',
+          checkedValue: true
+        },
+        handlers: {
+          change: () => {
+            isDisabledRegistrationAddressRoomSelect.value =
+              !isDisabledRegistrationAddressRoomSelect.value
+
+            if (isDisabledRegistrationAddressRoomSelect.value) {
+              setFieldValue('order.registrationAddress.room', 'Это единое строение, помещения нет')
+            } else {
+              setFieldValue('order.registrationAddress.room', '')
+            }
+          }
+        },
+        initialValue: false
+      },
+      addressCommentary: {
+        component: markRaw(AppInput),
+        props: {
+          name: 'passportData.registrationAddress.addressCommentary',
+          label: 'Комментарий по адресу',
+          placeholder: '3 этаж, справа от входа',
+          tag: 'textarea',
+          rows: '5'
+        },
+        initialValue: ''
+      }
+    }
+  },
+  manager: {
+    title: 'Ваш менеджер',
+    component: markRaw(AppSelect),
+    props: {
+      name: 'passportData.manager',
+      options: ['Да', 'Нет']
+    },
+    initialValue: ''
+  },
+  otherWishes: {
+    title: 'Иные пожелания',
+    component: markRaw(AppInput),
+    props: {
+      label: 'Комментарий',
+      name: 'passportData.otherWishes',
+      tag: 'textarea',
+      rows: '5'
+    },
+    initialValue: ''
+  },
+  privacyPolicy: {
+    component: markRaw(AppCheckbox),
+    props: {
+      label: 'Я ознакомился(-лась) с Политикой конфиденциальности',
+      name: 'passportData.privacyPolicy',
+      required: true,
+      checkedValue: true
+    },
+    initialValue: true
+  }
+})
+
+// validation schema
+// todo: динамическая схема
 const addressSchema = object({
   postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
   house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
@@ -436,13 +972,13 @@ const schemas = [
           )
       }),
       registrationAddress: addressSchema,
-      privacyPolicy: boolean().required()
+      // false почему-то считается валидным, поэтому доп.проверка через oneOf
+      privacyPolicy: boolean().required().oneOf([true], privacyPolicyMessages)
     })
   })
 ]
 
-const currentStep = ref(0)
-
+// computed
 const currentSchema = computed(() => {
   return schemas[currentStep.value]
 })
@@ -455,99 +991,13 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, validate, setErrors } = useForm({
-  validationSchema: currentSchema,
-  initialValues: {
-    personalData: {
-      contacts: {
-        surname: '',
-        name: '',
-        patronymic: '',
-        phone: '',
-        email: ''
-      }
-    },
-    order: {
-      tariffPlan: '',
-      addServices: [],
-      connectionAddress: {
-        postalCode: '',
-        region: '',
-        settlementType: '',
-        settlement: '',
-        streetType: '',
-        street: '',
-        noStreet: null,
-        house: '',
-        building: '',
-        typeRoom: '',
-        room: '',
-        noRoom: null,
-        addressCommentary: ''
-      }
-    },
-    passportData: {
-      passportData: {
-        resident: '',
-        citizenship: '',
-        temporaryRegistration: '',
-        documentType: '',
-        series: '',
-        number: '',
-        dateOfIssue: undefined,
-        dateOfExpiry: undefined,
-        identificationNumber: '',
-        passportIssuedBy: ''
-      },
-      registrationAddress: {
-        sameAsConnectionAddress: null,
-        postalCode: '',
-        region: '',
-        settlementType: '',
-        settlement: '',
-        streetType: '',
-        street: '',
-        noStreet: null,
-        house: '',
-        building: '',
-        typeRoom: '',
-        room: '',
-        noRoom: null,
-        addressCommentary: ''
-      },
-      manager: '',
-      otherWishes: '',
-      privacyPolicy: true
-    }
-  }
-  // не работает, скорее всего это связано с тем, что я данные получаю в onMounted и vee-validate вызывает валидацию тоже при onMounted
-  // validateOnMount: true
+const { handleSubmit, meta, setValues, setFieldValue, values } = useForm({
+  validationSchema: currentSchema
 })
 
-watch(isSameAsConnectionAddress, () => {
-  setValues({
-    passportData: {
-      registrationAddress: {
-        postalCode: values.order.connectionAddress.postalCode,
-        region: values.order.connectionAddress.region,
-        settlementType: values.order.connectionAddress.settlementType,
-        settlement: values.order.connectionAddress.settlement,
-        streetType: values.order.connectionAddress.streetType,
-        street: values.order.connectionAddress.street,
-        noStreet: values.order.connectionAddress.noStreet,
-        house: values.order.connectionAddress.house,
-        building: values.order.connectionAddress.building,
-        typeRoom: values.order.connectionAddress.typeRoom,
-        room: values.order.connectionAddress.room,
-        noRoom: values.order.connectionAddress.noRoom,
-        addressCommentary: values.order.connectionAddress.addressCommentary
-      }
-    }
-  })
-})
-
+// handlers
 const emitChangedText = () => {
-  emit('change-text', data.value.texts[currentStep.value])
+  emit('change-text', texts.value[currentStep.value])
 }
 
 const onClickNavButton = (value) => {
@@ -566,8 +1016,9 @@ const onClickPreviousButton = () => {
 
 const onSubmit = handleSubmit(async (values) => {
   if (isLastStep.value) {
-    console.log('Данные:', values)
+    values.passportData.privacyPolicy = undefined
     emit('get-result-data', values)
+
     return
   }
 
@@ -576,26 +1027,25 @@ const onSubmit = handleSubmit(async (values) => {
   emitChangedText()
 })
 
-// todo: временный вариант, лучше реализовать работу через localStorage
+const isSpecialKey = (key, keys) => {
+  if (keys.includes(key)) {
+    return false
+  }
+
+  return true
+}
+
+// todo: лучше реализовать работу через localStorage
 const onBeforeUnload = (event) => {
   event.preventDefault()
   event.returnValue = ''
 }
 
-onMounted(async () => {
-  const { data: responseData, error } = await useFetch('http://localhost:3000/data').json()
-
-  if (error.value) {
-    alert('Произошла ошибка в результате ответа сервера.')
-    return
-  }
-
-  data.value = responseData.value
-  emitChangedText()
-
+// lifecycle hooks
+onMounted(() => {
   window.addEventListener('beforeunload', onBeforeUnload)
 
-  console.log(responseData.value)
+  emitChangedText()
 })
 
 onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
@@ -665,31 +1115,38 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
     }
   }
 
-  .form__fieldset {
+  .form__block {
     display: grid;
-    row-gap: 20px;
+    gap: 20px;
   }
 
-  .form__fieldset-wrapper {
+  .form__block--2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 30px;
+
+    > *:not(.form__block-control) {
+      grid-column: span 2;
+
+      @media (width <= 600px) {
+        grid-column: unset;
+      }
+    }
 
     @media (width <= 600px) {
       grid-template-columns: 1fr;
     }
   }
 
-  .form__legend {
+  .form__block-title {
     font-size: 21px;
     line-height: 1.33;
     font-weight: 600;
-    margin-bottom: 20px;
   }
 
   .form__buttons {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px 20px;
     margin-top: 40px;
 
@@ -697,6 +1154,10 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
       flex-direction: column;
       width: 100%;
       margin-top: 20px;
+
+      > * {
+        width: 100%;
+      }
     }
   }
 

@@ -1,7 +1,9 @@
 <template>
   <section class="result-table">
     <div class="result-table__header">
-      <h2 class="result-table__title">ЗАЯВКА НА ПОДКЛЮЧЕНИЕ ИНТЕРНЕТА «ДЕЛОВОЙ СЕТИ»</h2>
+      <h2 class="result-table__title result-table__title--main">
+        ЗАЯВКА НА ПОДКЛЮЧЕНИЕ ИНТЕРНЕТА «ДЕЛОВОЙ СЕТИ»
+      </h2>
       <div class="result-table__text">
         <p>Пожалуйста, проверьте правильность заполненной информации.</p>
         <p>
@@ -11,69 +13,59 @@
       </div>
     </div>
     <div class="result-table__main">
-      <div class="result-table__block">
-        <h3 class="result-table__title">Заголовок 1</h3>
-        <div class="result-table__content-wrapper">
-          <div class="result-table__content">
-            <h4 class="result-table__content-title">Заголовок</h4>
-            <dl class="result-table__list">
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
+      <template v-for="(blockValue, blockKey) in data" :key="blockKey">
+        <div v-if="checkValues(blockValue)" class="result-table__block">
+          <h3 class="result-table__title">
+            {{ resultTableDictionary[blockKey] }}
+          </h3>
+          <div class="result-table__content-wrapper">
+            <template v-for="(contentValue, contentKey) in blockValue" :key="contentKey">
+              <div v-if="checkValues(contentValue)" class="result-table__content">
+                <h4 class="result-table__content-title">
+                  {{ resultTableDictionary[contentKey] }}
+                </h4>
+                <template v-if="typeof contentValue === 'string'">
+                  <div class="result-table__list">
+                    <div class="result-table__list-item">
+                      <div class="result-table__term">
+                        {{ resultTableDictionary[contentKey] }}
+                      </div>
+                      <div class="result-table__descr">
+                        {{ contentValue }}
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="Array.isArray(contentValue)">
+                  <div class="result-table__list">
+                    <div
+                      v-for="arrayValue in contentValue"
+                      :key="arrayValue"
+                      class="result-table__list-item"
+                    >
+                      {{ arrayValue }}
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="typeof contentValue === 'object' && contentValue !== null">
+                  <dl class="result-table__list">
+                    <template v-for="(valueObj, valueKey) in contentValue" :key="valueKey">
+                      <div v-if="checkValues(valueObj)" class="result-table__list-item">
+                        <dt class="result-table__term">
+                          {{ resultTableDictionary[valueKey] }}
+                        </dt>
+                        <dd class="result-table__descr">
+                          {{ valueObj }}
+                        </dd>
+                      </div>
+                    </template>
+                  </dl>
+                </template>
               </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-            </dl>
-          </div>
-
-          <div class="result-table__content">
-            <h4 class="result-table__content-title">Заголовок</h4>
-            <dl class="result-table__list">
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      <div class="result-table__block">
-        <h3 class="result-table__title">Заголовок 2</h3>
-        <div class="result-table__content-wrapper">
-          <div class="result-table__content">
-            <h4 class="result-table__content-title">Заголовок</h4>
-            <dl class="result-table__list">
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-              <div class="result-table__list-item">
-                <dt class="result-table__term">Термин</dt>
-                <dd class="result-table__descr">Описание</dd>
-              </div>
-            </dl>
+            </template>
           </div>
         </div>
-      </div>
+      </template>
     </div>
     <div class="result-table__buttons">
       <AppButton @click="$emit('reset-data')" class="result-table__button" variant="secondary"
@@ -85,7 +77,7 @@
 </template>
 
 <script setup>
-// import resultTableDictionary from '@/utils/resultTableDictionary.js'
+import resultTableDictionary from '@/utils/resultTableDictionary'
 import AppButton from '@/components/AppButton.vue'
 
 defineEmits(['reset-data'])
@@ -95,6 +87,31 @@ defineProps({
     type: Object
   }
 })
+
+const checkValues = (value) => {
+  const values = []
+
+  const checkNestedValues = (obj) => {
+    for (let key in obj) {
+      const data = obj[key]
+
+      if (typeof data === 'string') {
+        values.push(!!data)
+      } else if (Array.isArray(data)) {
+        values.push(!!data.length)
+      } else if (typeof data === 'boolean') {
+        // && key !== 'privacyPolicy'
+        values.push(data)
+      } else if (typeof data === 'object' && data !== null) {
+        checkNestedValues(data)
+      }
+    }
+  }
+
+  checkNestedValues(value)
+
+  return values.some((value) => value)
+}
 </script>
 
 <style>
@@ -128,6 +145,12 @@ defineProps({
     font-size: 24px;
     line-height: 121%;
     text-transform: uppercase;
+
+    &:not(.result-table__title--main) {
+      align-self: start;
+      position: sticky;
+      top: 20px;
+    }
   }
 
   .result-table__text {

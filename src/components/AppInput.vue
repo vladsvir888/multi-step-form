@@ -1,5 +1,5 @@
 <template>
-  <div class="input">
+  <div class="input" :class="inputWrapperClassName">
     <label :for="name" class="input__label">
       {{ label }}
     </label>
@@ -7,7 +7,6 @@
       :is="tag"
       :value="value"
       @input="value = $event.target.value"
-      :name="name"
       :id="name"
       :type="type"
       :required="required"
@@ -18,7 +17,7 @@
       class="input__field"
       v-bind="$attrs"
     />
-    <p v-show="errorMessage" class="input__error">
+    <p v-show="errorMessage" class="input__error" role="status">
       {{ errorMessage }}
     </p>
   </div>
@@ -64,10 +63,18 @@ const props = defineProps({
   },
   rows: {
     type: String
+  },
+  modelValue: {
+    type: String
+  },
+  inputWrapperClassName: {
+    type: String
   }
 })
 
-const { value, errorMessage } = useField(() => props.name)
+const { value, errorMessage } = useField(() => props.name, undefined, {
+  syncVModel: true
+})
 </script>
 
 <style>

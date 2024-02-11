@@ -1,21 +1,21 @@
 :root {
-    --font-family: 'Montserrat', sans-serif;
+  --font-family: 'Montserrat', sans-serif;
 }
 
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    scrollbar-gutter: stable;
+  scrollbar-gutter: stable;
 }
 
 body {
-    font-family: var(--font-family);
-    color: #13284a;
+  font-family: var(--font-family);
+  color: #13284a;
 }
 
 body,
@@ -26,64 +26,64 @@ h4,
 p,
 dd,
 dl {
-    margin: 0;
+  margin: 0;
 }
 
 fieldset {
-    padding: 0;
-    margin: 0;
-    border: none;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 legend {
-    padding: 0;
+  padding: 0;
 }
 
 .container {
-    max-width: 1295px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 1295px;
+  margin: 0 auto;
+  padding: 20px;
 
-    &.container--two-cols {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
+  &.container--two-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 
-        @media (width <=900px) {
-            grid-template-columns: 1fr;
-        }
+    @media (width <=900px) {
+      grid-template-columns: 1fr;
     }
+  }
 
-    .container__wrapper {
-        position: sticky;
-        top: 20px;
-        align-self: start;
+  .container__wrapper {
+    position: sticky;
+    top: 20px;
+    align-self: start;
 
-        @media (width <=900px) {
-            position: unset;
-        }
+    @media (width <=900px) {
+      position: unset;
     }
+  }
 
-    @media (width <=600px) {
-        padding: 20px 10px;
-    }
+  @media (width <=600px) {
+    padding: 20px 10px;
+  }
 }
 
 h1 {
-    font-size: 50px;
-    margin-bottom: 26px;
+  font-size: 50px;
+  margin-bottom: 26px;
 
-    @media (width <=600px) {
-        font-size: 35px;
-    }
+  @media (width <=600px) {
+    font-size: 35px;
+  }
 }
 
 .text-block {
-    max-width: 380px;
+  max-width: 380px;
 
-    >p {
-        &:not(:last-child) {
-            margin-bottom: 20px;
-        }
+  > p {
+    &:not(:last-child) {
+      margin-bottom: 20px;
     }
+  }
 }

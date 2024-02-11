@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
-import PrimeVue from 'primevue/config';
+import PrimeVue from 'primevue/config'
 
 import 'primevue/resources/themes/lara-light-green/theme.css'
 
-import './assets/main.css';
+import './assets/main.css'
 
 import App from './App.vue'
 

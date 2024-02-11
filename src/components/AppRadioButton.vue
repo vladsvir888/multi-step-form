@@ -33,12 +33,16 @@ const props = defineProps({
   label: {
     type: String,
     required: true
+  },
+  modelValue: {
+    type: String
   }
 })
 
 const { handleChange, checked } = useField(() => props.name, undefined, {
   type: 'radio',
-  checkedValue: props.checkedValue
+  checkedValue: props.checkedValue,
+  syncVModel: true
 })
 </script>
 
@@ -56,7 +60,6 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
     line-height: 19px;
     transition-property: border-color, box-shadow, color, background-color;
     transition-duration: 0.3s;
-    cursor: pointer;
 
     &:hover {
       border-color: #00c4b3;

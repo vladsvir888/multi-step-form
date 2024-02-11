@@ -7,3 +7,4 @@ export const latinAndNumbersMessage =
   'Введите только цифры, буквы кириллического/латинского алфавита'
 export const endDateMessages =
   'Дата окончания действия паспорта не может быть меньше даты выдачи паспорта'
+export const privacyPolicyMessages = 'Обязательное поле'
