@@ -71,7 +71,9 @@
       <AppButton @click="$emit('reset-data')" class="result-table__button" variant="secondary"
         >Вернуться к редактированию</AppButton
       >
-      <AppButton class="result-table__button" variant="primary">Отправить</AppButton>
+      <AppButton @click="$emit('submit-data', false)" class="result-table__button" variant="primary"
+        >Отправить</AppButton
+      >
     </div>
   </section>
 </template>
@@ -80,7 +82,7 @@
 import resultTableDictionary from '@/utils/resultTableDictionary'
 import AppButton from '@/components/AppButton.vue'
 
-defineEmits(['reset-data'])
+defineEmits(['reset-data', 'submit-data'])
 
 defineProps({
   data: {
@@ -125,6 +127,10 @@ const checkValues = (value) => {
   display: grid;
   row-gap: 30px;
 
+  @media (width <= 900px) {
+    padding: 25px;
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -150,6 +156,10 @@ const checkValues = (value) => {
       align-self: start;
       position: sticky;
       top: 20px;
+
+      @media (width <= 900px) {
+        position: static;
+      }
     }
   }
 
@@ -167,6 +177,11 @@ const checkValues = (value) => {
     gap: 30px;
     padding: 50px 0;
     border-bottom: 1px solid #e4e4e4;
+
+    @media (width <= 900px) {
+      grid-template-columns: 1fr;
+      padding: 25px 0;
+    }
   }
 
   .result-table__content:not(:last-child) {
@@ -201,6 +216,10 @@ const checkValues = (value) => {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+
+    @media (width <= 600px) {
+      grid-template-columns: 1fr;
+    }
   }
 
   .result-table__term {
@@ -211,6 +230,11 @@ const checkValues = (value) => {
     display: flex;
     justify-content: flex-end;
     gap: 20px;
+
+    @media (width <= 600px) {
+      flex-direction: column;
+      gap: 10px;
+    }
   }
 
   .result-table__button {

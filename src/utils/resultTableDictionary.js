@@ -38,7 +38,7 @@ const resultTableDictionary = {
   dateOfExpiry: 'Срок действия паспорта',
   identificationNumber: 'Идентификационный номер',
   passportIssuedBy: 'Кем выдан паспорт',
-  sameAsConnectionAddress: 'Совпадает с адресом подключения'
+  sameAsConnectionAddress: 'Адрес регистрации'
 }
 
 export default resultTableDictionary

@@ -203,7 +203,7 @@
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, markRaw, ref, onMounted, onUnmounted } from 'vue'
+import { computed, markRaw, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
@@ -236,6 +236,13 @@ import {
 
 // emits
 const emit = defineEmits(['change-text', 'get-result-data'])
+
+// props
+const props = defineProps({
+  isSuccessfullSubmit: {
+    type: Boolean
+  }
+})
 
 // ref
 const currentStep = ref(0)
@@ -694,21 +701,7 @@ const fieldset = ref({
 
             setValues({
               passportData: {
-                registrationAddress: {
-                  postalCode: values.order.connectionAddress.postalCode,
-                  region: values.order.connectionAddress.region,
-                  settlementType: values.order.connectionAddress.settlementType,
-                  settlement: values.order.connectionAddress.settlement,
-                  streetType: values.order.connectionAddress.streetType,
-                  street: values.order.connectionAddress.street,
-                  noStreet: values.order.connectionAddress.noStreet,
-                  house: values.order.connectionAddress.house,
-                  building: values.order.connectionAddress.building,
-                  typeRoom: values.order.connectionAddress.typeRoom,
-                  room: values.order.connectionAddress.room,
-                  noRoom: values.order.connectionAddress.noRoom,
-                  addressCommentary: values.order.connectionAddress.addressCommentary
-                }
+                registrationAddress: values.order.connectionAddress
               }
             })
           }
@@ -991,9 +984,15 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values, resetForm } = useForm({
   validationSchema: currentSchema
 })
+
+// watchers
+// watch(
+//   () => props.isSuccessfullSubmit,
+//   () => resetForm()
+// )
 
 // handlers
 const emitChangedText = () => {
@@ -1016,6 +1015,13 @@ const onClickPreviousButton = () => {
 
 const onSubmit = handleSubmit(async (values) => {
   if (isLastStep.value) {
+    if (values.passportData.registrationAddress.sameAsConnectionAddress) {
+      // https://vee-validate.logaretm.com/v4/guide/composition-api/handling-forms/#form-values
+      values.passportData.registrationAddress = {
+        sameAsConnectionAddress: 'Совпадает с адресом подключения'
+      }
+    }
+
     values.passportData.privacyPolicy = undefined
     emit('get-result-data', values)
 
