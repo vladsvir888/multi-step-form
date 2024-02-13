@@ -7,26 +7,38 @@
     <AppFormWizard
       @change-text="text = $event"
       @get-result-data="resultData = $event"
-      :is-successfull-submit="isSuccessfullSubmit"
+      :response-data="responseData"
     />
   </div>
   <div v-show="resultData" class="container">
     <AppResultTable
       :data="resultData"
       @reset-data="resultData = $event"
-      @submit-data="isSuccessfullSubmit = $event"
+      @response-data="handleResponseData"
     />
   </div>
+  <AppModal
+    :is-modal-visible="isModalVisible"
+    @modal-close="isModalVisible = false"
+    :title="responseData?.title"
+  ></AppModal>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import AppFormWizard from '@/components/AppFormWizard.vue'
 import AppResultTable from '@/components/AppResultTable.vue'
+import AppModal from '@/components/AppModal.vue'
 
 const text = ref('')
 const resultData = ref(null)
-const isSuccessfullSubmit = ref(null)
+const responseData = ref({})
+const isModalVisible = ref(false)
+
+const handleResponseData = (data) => {
+  responseData.value = data
+  isModalVisible.value = true
+}
 </script>
 
 <style></style>

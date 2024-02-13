@@ -202,7 +202,7 @@
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, markRaw, ref, onMounted, onUnmounted } from 'vue'
+import { computed, markRaw, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
@@ -238,9 +238,9 @@ import { isSpecialKey } from '@/utils/isFunction'
 const emit = defineEmits(['change-text', 'get-result-data'])
 
 // props
-defineProps({
-  isSuccessfullSubmit: {
-    type: Boolean
+const props = defineProps({
+  responseData: {
+    type: Object
   }
 })
 
@@ -983,15 +983,19 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values, resetForm } = useForm({
   validationSchema: currentSchema
 })
 
 // watchers
-// watch(
-//   () => props.isSuccessfullSubmit,
-//   () => resetForm()
-// )
+watch(
+  () => props.responseData,
+  () => {
+    console.log('watch')
+    resetForm()
+    currentStep.value = 0
+  }
+)
 
 // handlers
 const emitChangedText = () => {

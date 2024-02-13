@@ -71,7 +71,7 @@
       <AppButton @click="$emit('reset-data')" class="result-table__button" variant="secondary"
         >Вернуться к редактированию</AppButton
       >
-      <AppButton @click="$emit('submit-data', false)" class="result-table__button" variant="primary"
+      <AppButton @click="fetchData" class="result-table__button" variant="primary"
         >Отправить</AppButton
       >
     </div>
@@ -82,10 +82,11 @@
 import resultTableDictionary from '@/utils/resultTableDictionary'
 import AppButton from '@/components/AppButton.vue'
 import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
+import { useFetch } from '@vueuse/core'
 
-defineEmits(['reset-data', 'submit-data'])
+const emit = defineEmits(['reset-data', 'response-data'])
 
-defineProps({
+const props = defineProps({
   data: {
     type: Object
   }
@@ -114,6 +115,24 @@ const checkValues = (value) => {
   checkNestedValues(value)
 
   return values.some((value) => value)
+}
+
+const fetchData = async () => {
+  const { data } = useFetch('/action.php').post(JSON.stringify(props.data)).json()
+
+  if (!data.value) {
+    emit('response-data', {
+      title: 'Произошла ошибка при отправке данных',
+      isSubmit: true
+    })
+  } else {
+    emit('response-data', {
+      title: 'Спасибо, заявка отправлена',
+      isSubmit: true
+    })
+  }
+
+  emit('reset-data')
 }
 </script>
 
