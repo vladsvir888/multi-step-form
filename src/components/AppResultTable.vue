@@ -24,7 +24,7 @@
                 <h4 class="result-table__content-title">
                   {{ resultTableDictionary[contentKey] }}
                 </h4>
-                <template v-if="typeof contentValue === 'string'">
+                <template v-if="isString(contentValue)">
                   <div class="result-table__list">
                     <div class="result-table__list-item">
                       <div class="result-table__term">
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-else-if="Array.isArray(contentValue)">
+                <template v-else-if="isArray(contentValue)">
                   <div class="result-table__list">
                     <div
                       v-for="arrayValue in contentValue"
@@ -47,7 +47,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-else-if="typeof contentValue === 'object' && contentValue !== null">
+                <template v-else-if="isObject(contentValue)">
                   <dl class="result-table__list">
                     <template v-for="(valueObj, valueKey) in contentValue" :key="valueKey">
                       <div v-if="checkValues(valueObj)" class="result-table__list-item">
@@ -81,6 +81,7 @@
 <script setup>
 import resultTableDictionary from '@/utils/resultTableDictionary'
 import AppButton from '@/components/AppButton.vue'
+import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
 
 defineEmits(['reset-data', 'submit-data'])
 
@@ -97,14 +98,14 @@ const checkValues = (value) => {
     for (let key in obj) {
       const data = obj[key]
 
-      if (typeof data === 'string') {
+      if (isString(data)) {
         values.push(!!data)
-      } else if (Array.isArray(data)) {
+      } else if (isArray(data)) {
         values.push(!!data.length)
-      } else if (typeof data === 'boolean') {
+      } else if (isBoolean(data)) {
         // && key !== 'privacyPolicy'
         values.push(data)
-      } else if (typeof data === 'object' && data !== null) {
+      } else if (isObject(data)) {
         checkNestedValues(data)
       }
     }

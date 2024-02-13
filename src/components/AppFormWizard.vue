@@ -23,7 +23,6 @@
             {{ fieldset.personalData.title }}
           </h2>
 
-          <!-- todo: директиву v-maska прокинуть только на инпут с телефоном -->
           <component
             v-for="(value, key) in fieldset.personalData.fields"
             :key="key"
@@ -203,7 +202,7 @@
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, markRaw, ref, onMounted, onUnmounted, watch } from 'vue'
+import { computed, markRaw, ref, onMounted, onUnmounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
@@ -233,12 +232,13 @@ import {
   endDateMessages,
   privacyPolicyMessages
 } from '@/utils/messages.js'
+import { isSpecialKey } from '@/utils/isFunction'
 
 // emits
 const emit = defineEmits(['change-text', 'get-result-data'])
 
 // props
-const props = defineProps({
+defineProps({
   isSuccessfullSubmit: {
     type: Boolean
   }
@@ -924,7 +924,6 @@ const fieldset = ref({
 })
 
 // validation schema
-// todo: динамическая схема
 const addressSchema = object({
   postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
   house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
@@ -984,7 +983,7 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, resetForm } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values } = useForm({
   validationSchema: currentSchema
 })
 
@@ -1013,10 +1012,9 @@ const onClickPreviousButton = () => {
   emitChangedText()
 }
 
-const onSubmit = handleSubmit(async (values) => {
+const onSuccessSubmit = (values) => {
   if (isLastStep.value) {
     if (values.passportData.registrationAddress.sameAsConnectionAddress) {
-      // https://vee-validate.logaretm.com/v4/guide/composition-api/handling-forms/#form-values
       values.passportData.registrationAddress = {
         sameAsConnectionAddress: 'Совпадает с адресом подключения'
       }
@@ -1031,15 +1029,9 @@ const onSubmit = handleSubmit(async (values) => {
   currentStep.value += 1
 
   emitChangedText()
-})
-
-const isSpecialKey = (key, keys) => {
-  if (keys.includes(key)) {
-    return false
-  }
-
-  return true
 }
+
+const onSubmit = handleSubmit(onSuccessSubmit)
 
 // todo: лучше реализовать работу через localStorage
 const onBeforeUnload = (event) => {
