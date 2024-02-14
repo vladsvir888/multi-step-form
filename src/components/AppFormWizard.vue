@@ -1,5 +1,5 @@
 <template>
-  <form @submit="onSubmit" class="form" novalidate>
+  <form @submit="onSubmit" @reset="handleReset" class="form" novalidate>
     <nav class="form__nav">
       <AppButton
         v-for="(tab, index) in tabs"
@@ -23,14 +23,21 @@
             {{ fieldset.personalData.title }}
           </h2>
 
-          <component
-            v-for="(value, key) in fieldset.personalData.fields"
-            :key="key"
-            :is="value.component"
-            v-bind="value.props"
-            v-model="value.initialValue"
-            v-maska
-          />
+          <template v-for="(value, key) in fieldset.personalData.fields" :key="key">
+            <component
+              v-if="key !== 'phone'"
+              :is="value.component"
+              v-bind="value.props"
+              v-model="value.initialValue"
+            />
+            <component
+              v-else
+              :is="value.component"
+              v-bind="value.props"
+              v-model="value.initialValue"
+              v-maska
+            />
+          </template>
         </section>
       </AppStep>
 
@@ -233,6 +240,7 @@ import {
   privacyPolicyMessages
 } from '@/utils/messages.js'
 import { isSpecialKey } from '@/utils/isFunction'
+import scrollUp from '@/utils/scrollUp'
 
 // emits
 const emit = defineEmits(['change-text', 'get-result-data'])
@@ -297,7 +305,7 @@ const fieldset = ref({
           label: 'Номер телефона',
           placeholder: '+375',
           mask: '+375 (##) ###-##-##',
-          type: 'tel',
+          type: 'text',
           required: true
         },
         initialValue: ''
@@ -956,15 +964,12 @@ const schemas = [
           .trim()
           .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
         dateOfIssue: date(),
-        dateOfExpiry: date()
-          // изначально решение было через yup.ref(), но после оптимизации (подключения из yup только нужного с целью сокращения размера бандла) происходил конфликт с ref из vue. Решаю проблему через yup.when()
-          .when(
-            'dateOfIssue',
-            ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages)
-          )
+        dateOfExpiry: date().when(
+          'dateOfIssue',
+          ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages)
+        )
       }),
       registrationAddress: addressSchema,
-      // false почему-то считается валидным, поэтому доп.проверка через oneOf
       privacyPolicy: boolean().required().oneOf([true], privacyPolicyMessages)
     })
   })
@@ -983,7 +988,7 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, resetForm } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
   validationSchema: currentSchema
 })
 
@@ -991,9 +996,8 @@ const { handleSubmit, meta, setValues, setFieldValue, values, resetForm } = useF
 watch(
   () => props.responseData,
   () => {
-    console.log('watch')
-    resetForm()
     currentStep.value = 0
+    handleReset()
   }
 )
 
@@ -1014,9 +1018,12 @@ const onClickPreviousButton = () => {
   currentStep.value -= 1
 
   emitChangedText()
+  scrollUp()
 }
 
 const onSuccessSubmit = (values) => {
+  scrollUp()
+
   if (isLastStep.value) {
     if (values.passportData.registrationAddress.sameAsConnectionAddress) {
       values.passportData.registrationAddress = {
@@ -1025,6 +1032,7 @@ const onSuccessSubmit = (values) => {
     }
 
     values.passportData.privacyPolicy = undefined
+
     emit('get-result-data', values)
 
     return
