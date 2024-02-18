@@ -243,7 +243,7 @@ import { isSpecialKey } from '@/utils/isFunction'
 import scrollUp from '@/utils/scrollUp'
 
 // emits
-const emit = defineEmits(['change-text', 'get-result-data'])
+const emit = defineEmits(['change-text', 'result-data'])
 
 // props
 const props = defineProps({
@@ -620,7 +620,16 @@ const fieldset = ref({
               checkedValue: 'Нет'
             },
             handlers: {
-              change: () => (isTemporaryRegistration.value = false)
+              change: () => {
+                isTemporaryRegistration.value = false
+                isSameAsConnectionAddress.value = false
+
+                setValues({
+                  passportData: {
+                    registrationAddress: undefined
+                  }
+                })
+              }
             }
           }
         },
@@ -1002,7 +1011,7 @@ watch(
 )
 
 // handlers
-const emitChangedText = () => {
+const changeText = () => {
   emit('change-text', texts.value[currentStep.value])
 }
 
@@ -1011,13 +1020,13 @@ const onClickNavButton = (value) => {
 
   currentStep.value = value
 
-  emitChangedText()
+  changeText()
 }
 
 const onClickPreviousButton = () => {
   currentStep.value -= 1
 
-  emitChangedText()
+  changeText()
   scrollUp()
 }
 
@@ -1025,7 +1034,7 @@ const onSuccessSubmit = (values) => {
   scrollUp()
 
   if (isLastStep.value) {
-    if (values.passportData.registrationAddress.sameAsConnectionAddress) {
+    if (values.passportData?.registrationAddress?.sameAsConnectionAddress) {
       values.passportData.registrationAddress = {
         sameAsConnectionAddress: 'Совпадает с адресом подключения'
       }
@@ -1033,14 +1042,14 @@ const onSuccessSubmit = (values) => {
 
     values.passportData.privacyPolicy = undefined
 
-    emit('get-result-data', values)
+    emit('result-data', values)
 
     return
   }
 
   currentStep.value += 1
 
-  emitChangedText()
+  changeText()
 }
 
 const onSubmit = handleSubmit(onSuccessSubmit)
@@ -1055,7 +1064,7 @@ const onBeforeUnload = (event) => {
 onMounted(() => {
   window.addEventListener('beforeunload', onBeforeUnload)
 
-  emitChangedText()
+  changeText()
 })
 
 onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))

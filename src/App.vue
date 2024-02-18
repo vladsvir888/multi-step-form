@@ -6,7 +6,7 @@
     </div>
     <AppFormWizard
       @change-text="text = $event"
-      @get-result-data="resultData = $event"
+      @result-data="resultData = $event"
       :response-data="responseData"
     />
   </div>
@@ -40,5 +40,3 @@ const handleResponseData = (data) => {
   isModalVisible.value = true
 }
 </script>
-
-<style></style>

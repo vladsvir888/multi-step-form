@@ -68,7 +68,7 @@
       </template>
     </div>
     <div class="result-table__buttons">
-      <AppButton @click="$emit('reset-data')" class="result-table__button" variant="secondary"
+      <AppButton @click="resetData" class="result-table__button" variant="secondary"
         >Вернуться к редактированию</AppButton
       >
       <AppButton @click="fetchData" class="result-table__button" variant="primary"
@@ -79,19 +79,23 @@
 </template>
 
 <script setup>
-import resultTableDictionary from '@/utils/resultTableDictionary'
-import AppButton from '@/components/AppButton.vue'
-import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
 import { useFetch } from '@vueuse/core'
+import AppButton from '@/components/AppButton.vue'
+import resultTableDictionary from '@/utils/resultTableDictionary'
+import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
+import scrollUp from '@/utils/scrollUp'
 
+// emits
 const emit = defineEmits(['reset-data', 'response-data'])
 
+// props
 const props = defineProps({
   data: {
     type: Object
   }
 })
 
+// handlers
 const checkValues = (value) => {
   const values = []
 
@@ -117,6 +121,12 @@ const checkValues = (value) => {
   return values.some((value) => value)
 }
 
+const resetData = () => {
+  emit('reset-data')
+
+  scrollUp()
+}
+
 const fetchData = async () => {
   const { data } = useFetch('/action.php').post(JSON.stringify(props.data)).json()
 
@@ -132,7 +142,7 @@ const fetchData = async () => {
     })
   }
 
-  emit('reset-data')
+  resetData()
 }
 </script>
 
