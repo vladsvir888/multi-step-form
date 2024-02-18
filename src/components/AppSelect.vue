@@ -3,6 +3,7 @@
     <p v-if="label" class="select__text">{{ label }}</p>
     <Dropdown
       v-model="value"
+      @change="updateDataInLocalStorage"
       :name="name"
       :options="options"
       :placeholder="placeholder"
@@ -24,6 +25,9 @@
 <script setup>
 import Dropdown from 'primevue/dropdown'
 import { useField } from 'vee-validate'
+import { inject } from 'vue'
+
+const updateDataInLocalStorage = inject('updateDataInLocalStorage')
 
 const props = defineProps({
   label: {

@@ -4,7 +4,7 @@
       <input
         :value="checkedValue"
         :checked="checked"
-        @change="handleChange"
+        @change="onChange"
         :required="required"
         class="checkbox__input"
         type="checkbox"
@@ -20,6 +20,9 @@
 
 <script setup>
 import { useField } from 'vee-validate'
+import { inject } from 'vue'
+
+const updateDataInLocalStorage = inject('updateDataInLocalStorage')
 
 defineOptions({
   inheritAttrs: false
@@ -59,6 +62,11 @@ const { handleChange, checked, errorMessage } = useField(() => props.name, undef
   uncheckedValue: false,
   syncVModel: true
 })
+
+const onChange = () => {
+  handleChange()
+  updateDataInLocalStorage()
+}
 </script>
 
 <style>

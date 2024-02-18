@@ -4,7 +4,7 @@
       <input
         :value="checkedValue"
         :checked="checked"
-        @change="handleChange"
+        @change="onChange"
         class="radio-button__input"
         type="radio"
         v-bind="$attrs"
@@ -16,6 +16,9 @@
 
 <script setup>
 import { useField } from 'vee-validate'
+import { inject } from 'vue'
+
+const updateDataInLocalStorage = inject('updateDataInLocalStorage')
 
 defineOptions({
   inheritAttrs: false
@@ -44,6 +47,11 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
   checkedValue: props.checkedValue,
   syncVModel: true
 })
+
+const onChange = () => {
+  handleChange()
+  updateDataInLocalStorage()
+}
 </script>
 
 <style>

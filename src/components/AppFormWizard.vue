@@ -102,7 +102,7 @@
             </div>
           </AppRadioGroup>
 
-          <div class="form__block" v-show="isResidentBelarus === false">
+          <div class="form__block" v-show="isResidentBelarus !== null && !isResidentBelarus">
             <component
               :is="fieldset.passportData.fields.citizenship.component"
               v-bind="fieldset.passportData.fields.citizenship.props"
@@ -137,7 +137,7 @@
 
         <!-- Адрес регистрации -->
         <AppCollapse
-          v-show="isTemporaryRegistration !== false"
+          v-show="isTemporaryRegistration === null || isTemporaryRegistration"
           :header="fieldset.registrationAddress.title"
         >
           <component
@@ -209,7 +209,7 @@
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, markRaw, ref, onMounted, onUnmounted, watch } from 'vue'
+import { computed, markRaw, ref, onMounted, watch, provide } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean } from 'yup'
 import { vMaska } from 'maska'
@@ -237,13 +237,15 @@ import {
   onlyNumbersMessage,
   latinAndNumbersMessage,
   endDateMessages,
-  privacyPolicyMessages
-} from '@/utils/messages.js'
+  privacyPolicyMessages,
+  keyInLocalStorage
+} from '@/utils/constants.js'
 import { isSpecialKey } from '@/utils/isFunction'
 import scrollUp from '@/utils/scrollUp'
+import { getItemInLocalStorage, setItemInLocalStorage } from '@/utils/localStorage'
 
 // emits
-const emit = defineEmits(['change-text', 'result-data'])
+const emit = defineEmits(['change-text', 'summary-data'])
 
 // props
 const props = defineProps({
@@ -471,6 +473,11 @@ const fieldset = ref({
             } else {
               setFieldValue('order.connectionAddress.street', '')
             }
+
+            setItemInLocalStorage(keyInLocalStorage, {
+              ...getItemInLocalStorage(keyInLocalStorage),
+              isDisabledConnectionAddressStreetSelect: isDisabledConnectionAddressStreetSelect.value
+            })
           }
         },
         initialValue: false
@@ -532,6 +539,11 @@ const fieldset = ref({
             } else {
               setFieldValue('order.connectionAddress.room', '')
             }
+
+            setItemInLocalStorage(keyInLocalStorage, {
+              ...getItemInLocalStorage(keyInLocalStorage),
+              isDisabledConnectionAddressRoomSelect: isDisabledConnectionAddressRoomSelect.value
+            })
           }
         },
         initialValue: false
@@ -564,6 +576,7 @@ const fieldset = ref({
             handlers: {
               change: () => {
                 isResidentBelarus.value = true
+
                 setValues({
                   passportData: {
                     passportData: {
@@ -571,6 +584,11 @@ const fieldset = ref({
                       temporaryRegistration: ''
                     }
                   }
+                })
+
+                setItemInLocalStorage(keyInLocalStorage, {
+                  ...getItemInLocalStorage(keyInLocalStorage),
+                  isResidentBelarus: isResidentBelarus.value
                 })
               }
             }
@@ -583,7 +601,14 @@ const fieldset = ref({
               checkedValue: 'Нет'
             },
             handlers: {
-              change: () => (isResidentBelarus.value = false)
+              change: () => {
+                isResidentBelarus.value = false
+
+                setItemInLocalStorage(keyInLocalStorage, {
+                  ...getItemInLocalStorage(keyInLocalStorage),
+                  isResidentBelarus: isResidentBelarus.value
+                })
+              }
             }
           }
         },
@@ -609,7 +634,14 @@ const fieldset = ref({
               checkedValue: 'Да'
             },
             handlers: {
-              change: () => (isTemporaryRegistration.value = true)
+              change: () => {
+                isTemporaryRegistration.value = true
+
+                setItemInLocalStorage(keyInLocalStorage, {
+                  ...getItemInLocalStorage(keyInLocalStorage),
+                  isTemporaryRegistration: isTemporaryRegistration.value
+                })
+              }
             }
           },
           no: {
@@ -628,6 +660,12 @@ const fieldset = ref({
                   passportData: {
                     registrationAddress: undefined
                   }
+                })
+
+                setItemInLocalStorage(keyInLocalStorage, {
+                  ...getItemInLocalStorage(keyInLocalStorage),
+                  isTemporaryRegistration: isTemporaryRegistration.value,
+                  isSameAsConnectionAddress: isSameAsConnectionAddress.value
                 })
               }
             }
@@ -720,6 +758,14 @@ const fieldset = ref({
               passportData: {
                 registrationAddress: values.order.connectionAddress
               }
+            })
+
+            setItemInLocalStorage(keyInLocalStorage, {
+              ...getItemInLocalStorage(keyInLocalStorage),
+              isSameAsConnectionAddress: isSameAsConnectionAddress.value,
+              isDisabledRegistrationAddressStreetSelect:
+                isDisabledRegistrationAddressStreetSelect.value,
+              isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
             })
           }
         },
@@ -830,6 +876,12 @@ const fieldset = ref({
             } else {
               setFieldValue('order.registrationAddress.street', '')
             }
+
+            setItemInLocalStorage(keyInLocalStorage, {
+              ...getItemInLocalStorage(keyInLocalStorage),
+              isDisabledRegistrationAddressStreetSelect:
+                isDisabledRegistrationAddressStreetSelect.value
+            })
           }
         },
         initialValue: false
@@ -891,6 +943,11 @@ const fieldset = ref({
             } else {
               setFieldValue('order.registrationAddress.room', '')
             }
+
+            setItemInLocalStorage(keyInLocalStorage, {
+              ...getItemInLocalStorage(keyInLocalStorage),
+              isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
+            })
           }
         },
         initialValue: false
@@ -997,22 +1054,34 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
+let { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
   validationSchema: currentSchema
 })
-
-// watchers
-watch(
-  () => props.responseData,
-  () => {
-    currentStep.value = 0
-    handleReset()
-  }
-)
 
 // handlers
 const changeText = () => {
   emit('change-text', texts.value[currentStep.value])
+}
+
+const updateDataInLocalStorage = () => {
+  setItemInLocalStorage(keyInLocalStorage, {
+    ...getItemInLocalStorage(keyInLocalStorage),
+    data: values
+  })
+}
+
+const updateAllDataInLocalStorage = () => {
+  setItemInLocalStorage(keyInLocalStorage, {
+    data: values,
+    step: currentStep.value,
+    isDisabledConnectionAddressStreetSelect: isDisabledConnectionAddressStreetSelect.value,
+    isDisabledConnectionAddressRoomSelect: isDisabledConnectionAddressRoomSelect.value,
+    isResidentBelarus: isResidentBelarus.value,
+    isTemporaryRegistration: isTemporaryRegistration.value,
+    isSameAsConnectionAddress: isSameAsConnectionAddress.value,
+    isDisabledRegistrationAddressStreetSelect: isDisabledRegistrationAddressStreetSelect.value,
+    isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
+  })
 }
 
 const onClickNavButton = (value) => {
@@ -1021,6 +1090,7 @@ const onClickNavButton = (value) => {
   currentStep.value = value
 
   changeText()
+  updateAllDataInLocalStorage()
 }
 
 const onClickPreviousButton = () => {
@@ -1028,6 +1098,7 @@ const onClickPreviousButton = () => {
 
   changeText()
   scrollUp()
+  updateAllDataInLocalStorage()
 }
 
 const onSuccessSubmit = (values) => {
@@ -1042,32 +1113,60 @@ const onSuccessSubmit = (values) => {
 
     values.passportData.privacyPolicy = undefined
 
-    emit('result-data', values)
+    emit('summary-data', values)
 
-    return
+    setItemInLocalStorage(keyInLocalStorage, {
+      ...getItemInLocalStorage(keyInLocalStorage),
+      summaryData: values
+    })
+  } else {
+    currentStep.value += 1
+
+    changeText()
+    updateAllDataInLocalStorage()
   }
-
-  currentStep.value += 1
-
-  changeText()
 }
 
 const onSubmit = handleSubmit(onSuccessSubmit)
 
-// todo: лучше реализовать работу через localStorage
-const onBeforeUnload = (event) => {
-  event.preventDefault()
-  event.returnValue = ''
-}
+// watchers
+watch(
+  () => props.responseData,
+  () => {
+    currentStep.value = 0
+    handleReset()
+    updateAllDataInLocalStorage()
+  }
+)
+
+// provide/inject
+provide('updateDataInLocalStorage', updateDataInLocalStorage)
 
 // lifecycle hooks
 onMounted(() => {
-  window.addEventListener('beforeunload', onBeforeUnload)
+  const data = getItemInLocalStorage(keyInLocalStorage)
+
+  if (!data) {
+    updateAllDataInLocalStorage()
+  } else {
+    currentStep.value = data.step
+    isDisabledConnectionAddressStreetSelect.value = data.isDisabledConnectionAddressStreetSelect
+    isDisabledConnectionAddressRoomSelect.value = data.isDisabledConnectionAddressRoomSelect
+    isResidentBelarus.value = data.isResidentBelarus
+    isTemporaryRegistration.value = data.isTemporaryRegistration
+    isSameAsConnectionAddress.value = data.isSameAsConnectionAddress
+    isDisabledRegistrationAddressStreetSelect.value = data.isDisabledRegistrationAddressStreetSelect
+    isDisabledRegistrationAddressRoomSelect.value = data.isDisabledRegistrationAddressRoomSelect
+
+    setValues(data.data, false)
+  }
+
+  if (data?.summaryData) {
+    emit('summary-data', data.summaryData)
+  }
 
   changeText()
 })
-
-onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
 </script>
 
 <style>
@@ -1189,3 +1288,4 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
   }
 }
 </style>
+@/utils/constants.js

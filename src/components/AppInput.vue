@@ -7,6 +7,7 @@
       :is="tag"
       :value="value"
       @input="value = $event.target.value"
+      @change="updateDataInLocalStorage"
       :id="name"
       :type="type"
       :required="required"
@@ -25,6 +26,9 @@
 
 <script setup>
 import { useField } from 'vee-validate'
+import { inject } from 'vue'
+
+const updateDataInLocalStorage = inject('updateDataInLocalStorage')
 
 defineOptions({
   inheritAttrs: false

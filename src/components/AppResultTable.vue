@@ -81,9 +81,10 @@
 <script setup>
 import { useFetch } from '@vueuse/core'
 import AppButton from '@/components/AppButton.vue'
-import resultTableDictionary from '@/utils/resultTableDictionary'
+import { keyInLocalStorage, resultTableDictionary } from '@/utils/constants'
 import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
 import scrollUp from '@/utils/scrollUp'
+import { getItemInLocalStorage, setItemInLocalStorage } from '@/utils/localStorage'
 
 // emits
 const emit = defineEmits(['reset-data', 'response-data'])
@@ -125,6 +126,10 @@ const resetData = () => {
   emit('reset-data')
 
   scrollUp()
+
+  const data = getItemInLocalStorage(keyInLocalStorage)
+  delete data.summaryData
+  setItemInLocalStorage(keyInLocalStorage, data)
 }
 
 const fetchData = async () => {
