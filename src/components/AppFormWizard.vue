@@ -1054,7 +1054,7 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-let { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
+const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
   validationSchema: currentSchema
 })
 
