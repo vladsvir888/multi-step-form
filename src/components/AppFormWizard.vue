@@ -1054,9 +1054,10 @@ const isLastStep = computed(() => {
   return currentStep.value === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
-  validationSchema: currentSchema
-})
+const { handleSubmit, meta, setValues, setFieldValue, values, handleReset, setFieldError } =
+  useForm({
+    validationSchema: currentSchema
+  })
 
 // handlers
 const changeText = () => {
@@ -1136,6 +1137,10 @@ watch(
     currentStep.value = 0
     handleReset()
     updateAllDataInLocalStorage()
+
+    setTimeout(() => {
+      setFieldError('personalData.contacts.phone', undefined)
+    }, 50)
   }
 )
 
