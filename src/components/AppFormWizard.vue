@@ -211,7 +211,7 @@
 import '@/utils/locale.js'
 import { computed, markRaw, ref, onMounted, watch, provide } from 'vue'
 import { useForm } from 'vee-validate'
-import { string, object, date, boolean } from 'yup'
+import { string, object, date, boolean, ref as yup_ref } from 'yup'
 import { vMaska } from 'maska'
 import AppInput from '@/components/AppInput.vue'
 import AppButton from '@/components/AppButton.vue'
@@ -1030,10 +1030,7 @@ const schemas = [
           .trim()
           .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
         dateOfIssue: date(),
-        dateOfExpiry: date().when(
-          'dateOfIssue',
-          ([dateOfIssue], schema) => dateOfIssue && schema.min(dateOfIssue, endDateMessages)
-        )
+        dateOfExpiry: date().min(yup_ref('dateOfIssue'), endDateMessages)
       }),
       registrationAddress: addressSchema,
       privacyPolicy: boolean().required().oneOf([true], privacyPolicyMessages)
