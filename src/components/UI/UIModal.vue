@@ -1,7 +1,6 @@
 <template>
   <Dialog
     :visible="isModalVisible"
-    @update:visible="$emit('modal-close')"
     modal
     :dismissableMask="true"
     :draggable="false"
@@ -10,17 +9,16 @@
     :pt="{
       content: 'modal__content'
     }"
+    @update:visible="$emit('modal-close')"
   >
     <div class="modal__title">{{ title }}</div>
-    <AppButton class="modal__close" variant="primary" @click="$emit('modal-close')"
-      >Хорошо</AppButton
-    >
+    <UIButton class="modal__close" variant="primary" @click="$emit('modal-close')">Хорошо</UIButton>
   </Dialog>
 </template>
 
 <script setup>
 import Dialog from 'primevue/dialog'
-import AppButton from '@/components/AppButton.vue'
+import UIButton from '@/components/UI/UIButton.vue'
 
 defineEmits(['modal-close'])
 

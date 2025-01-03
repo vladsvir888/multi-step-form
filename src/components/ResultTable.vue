@@ -1,9 +1,9 @@
 <template>
   <section class="result-table">
     <div class="result-table__header">
-      <h2 class="result-table__title result-table__title--main">
+      <h1 class="result-table__title result-table__title--main">
         ЗАЯВКА НА ПОДКЛЮЧЕНИЕ ИНТЕРНЕТА «ДЕЛОВОЙ СЕТИ»
-      </h2>
+      </h1>
       <div class="result-table__text">
         <p>Пожалуйста, проверьте правильность заполненной информации.</p>
         <p>
@@ -15,15 +15,15 @@
     <div class="result-table__main">
       <template v-for="(blockValue, blockKey) in data" :key="blockKey">
         <div v-if="checkValues(blockValue)" class="result-table__block">
-          <h3 class="result-table__title">
+          <h2 class="result-table__title">
             {{ resultTableDictionary[blockKey] }}
-          </h3>
+          </h2>
           <div class="result-table__content-wrapper">
             <template v-for="(contentValue, contentKey) in blockValue" :key="contentKey">
               <div v-if="checkValues(contentValue)" class="result-table__content">
-                <h4 class="result-table__content-title">
+                <h3 class="result-table__content-title">
                   {{ resultTableDictionary[contentKey] }}
-                </h4>
+                </h3>
                 <template v-if="isString(contentValue)">
                   <div class="result-table__list">
                     <div class="result-table__list-item">
@@ -68,35 +68,42 @@
       </template>
     </div>
     <div class="result-table__buttons">
-      <AppButton @click="resetData" class="result-table__button" variant="secondary"
-        >Вернуться к редактированию</AppButton
+      <UIButton
+        class="result-table__button"
+        variant="secondary"
+        :disabled="isLoading"
+        @click="resetData"
+        >Вернуться к редактированию</UIButton
       >
-      <AppButton @click="fetchData" class="result-table__button" variant="primary"
-        >Отправить</AppButton
+      <UIButton
+        class="result-table__button"
+        variant="primary"
+        :disabled="isLoading"
+        @click="fetchData"
+        ><span>{{ isLoading ? 'Отправка...' : 'Отправить' }}</span></UIButton
       >
     </div>
   </section>
 </template>
 
 <script setup>
-import { useFetch } from '@vueuse/core'
-import AppButton from '@/components/AppButton.vue'
+import { ref } from 'vue'
+import UIButton from '@/components/UI/UIButton.vue'
 import { keyInLocalStorage, resultTableDictionary } from '@/utils/constants'
 import { isBoolean, isArray, isObject, isString } from '@/utils/isFunction'
 import scrollUp from '@/utils/scrollUp'
 import { getItemInLocalStorage, setItemInLocalStorage } from '@/utils/localStorage'
 
-// emits
 const emit = defineEmits(['reset-data', 'response-data'])
 
-// props
 const props = defineProps({
   data: {
     type: Object
   }
 })
 
-// handlers
+const isLoading = ref(false)
+
 const checkValues = (value) => {
   const values = []
 
@@ -123,35 +130,54 @@ const checkValues = (value) => {
 }
 
 const resetData = () => {
-  emit('reset-data')
+  emit('reset-data', null)
 
   scrollUp()
 
-  const data = getItemInLocalStorage(keyInLocalStorage)
-  delete data.summaryData
+  let data = getItemInLocalStorage(keyInLocalStorage)
+  data = { ...data, summaryData: undefined }
   setItemInLocalStorage(keyInLocalStorage, data)
 }
 
 const fetchData = async () => {
-  const { data } = useFetch('/action.php').post(JSON.stringify(props.data)).json()
+  try {
+    isLoading.value = true
 
-  if (!data.value) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/form`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(props.data)
+    })
+
+    if (!response.ok) {
+      throw new Error()
+    }
+
+    const result = await response.json()
+
+    if (!result) {
+      throw new Error()
+    } else {
+      emit('response-data', {
+        title: 'Заявка успешно отправлена',
+        success: true
+      })
+    }
+  } catch {
     emit('response-data', {
       title: 'Произошла ошибка при отправке данных',
-      isSubmit: true
+      success: false
     })
-  } else {
-    emit('response-data', {
-      title: 'Спасибо, заявка отправлена',
-      isSubmit: true
-    })
+  } finally {
+    resetData()
+    isLoading.value = false
   }
-
-  resetData()
 }
 </script>
 
-<style>
+<style scoped>
 .result-table {
   max-width: 920px;
   margin: 0 auto;
@@ -168,7 +194,7 @@ const fetchData = async () => {
 
   &::before {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;

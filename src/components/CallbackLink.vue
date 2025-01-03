@@ -1,0 +1,50 @@
+<template>
+  <a class="callback-link" href="tel:174" aria-label="Позвонить">
+    <svg
+      class="callback-link__icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      width="20"
+      height="20"
+    >
+      <path
+        d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"
+      />
+    </svg>
+  </a>
+</template>
+
+<style scoped>
+.callback-link {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: #00a99a;
+  color: #fff;
+  border-radius: 50%;
+  animation: rotate 1s infinite;
+
+  .callback-link__icon {
+    fill: currentColor;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(5deg);
+  }
+
+  50% {
+    transform: rotate(20deg);
+  }
+
+  100% {
+    transform: rotate(5deg);
+  }
+}
+</style>

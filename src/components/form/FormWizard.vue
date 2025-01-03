@@ -1,226 +1,84 @@
 <template>
-  <form @submit="onSubmit" @reset="handleReset" class="form" novalidate>
-    <nav class="form__nav">
-      <AppButton
-        v-for="(tab, index) in tabs"
-        :key="tab"
-        @click="onClickNavButton(index)"
-        class="form__nav-button"
-        :class="{ active: currentStep === index }"
-        :type="meta.valid ? 'button' : 'submit'"
-        :aria-pressed="currentStep === index"
-      >
-        {{ tab }}
-      </AppButton>
-    </nav>
+  <form class="form" novalidate @submit="onSubmit" @reset="handleReset">
+    <FormNav
+      :current-step="state.currentStep"
+      :meta="meta"
+      @change-step="onClickNavButton($event)"
+    />
 
     <div class="form__fields">
-      <!-- Шаг 1 -->
-      <AppStep :step-number="0" :current-step="currentStep">
-        <!-- Контактные данные -->
-        <section class="form__block">
-          <h2 class="form__block-title">
-            {{ fieldset.personalData.title }}
-          </h2>
+      <FormStep :step-number="0" :current-step="state.currentStep">
+        <FormContacts :data="fieldset.personalData" />
+      </FormStep>
 
-          <template v-for="(value, key) in fieldset.personalData.fields" :key="key">
-            <component
-              v-if="key !== 'phone'"
-              :is="value.component"
-              v-bind="value.props"
-              v-model="value.initialValue"
-            />
-            <component
-              v-else
-              :is="value.component"
-              v-bind="value.props"
-              v-model="value.initialValue"
-              v-maska
-            />
-          </template>
-        </section>
-      </AppStep>
+      <FormStep :step-number="1" :current-step="state.currentStep">
+        <FormTariffPlan :data="fieldset.tariffPlan" />
 
-      <!-- Шаг 2 -->
-      <AppStep :step-number="1" :current-step="currentStep">
-        <!-- Тарифный план -->
-        <section class="form__block">
-          <h2 class="form__block-title">
-            {{ fieldset.tariffPlan.title }}
-          </h2>
+        <FormAddServices :data="fieldset.addServices" />
 
-          <component
-            :is="fieldset.tariffPlan.component"
-            v-bind="fieldset.tariffPlan.props"
-            v-model="fieldset.tariffPlan.initialValue"
-          />
-        </section>
+        <UICollapse :header="fieldset.connectionAddress.title">
+          <FormConnectionAddress :data="fieldset.connectionAddress" />
+        </UICollapse>
+      </FormStep>
 
-        <!-- Доп.услуги -->
-        <section class="form__block">
-          <h2 class="form__block-title">
-            {{ fieldset.addServices.title }}
-          </h2>
+      <FormStep :step-number="2" :current-step="state.currentStep">
+        <FormPassport
+          :data="fieldset.passportData"
+          :is-resident-belarus="state.isResidentBelarus"
+        />
 
-          <component
-            v-for="(value, key) in fieldset.addServices.fields"
-            :key="key"
-            :is="value.component"
-            v-bind="value.props"
-            v-model="fieldset.addServices.initialValue"
-          />
-        </section>
-
-        <!-- Адрес подключения -->
-        <AppCollapse :header="fieldset.connectionAddress.title">
-          <div class="form__block form__block--2">
-            <component
-              v-for="(value, key) in fieldset.connectionAddress.fields"
-              :key="key"
-              :is="value.component"
-              v-bind="value.props"
-              v-model="value.initialValue"
-              v-on="value.handlers ?? {}"
-            />
-          </div>
-        </AppCollapse>
-      </AppStep>
-
-      <AppStep :step-number="2" :current-step="currentStep">
-        <!-- Паспортные данные -->
-        <div class="form__block">
-          <AppRadioGroup :label="fieldset.passportData.fields.resident.title">
-            <div class="radio-group__wrapper">
-              <component
-                v-for="(value, key) in fieldset.passportData.fields.resident.fields"
-                :key="key"
-                :is="value.component"
-                v-bind="value.props"
-                v-model="fieldset.passportData.fields.resident.initialValue"
-                v-on="value.handlers"
-              />
-            </div>
-          </AppRadioGroup>
-
-          <div class="form__block" v-show="isResidentBelarus !== null && !isResidentBelarus">
-            <component
-              :is="fieldset.passportData.fields.citizenship.component"
-              v-bind="fieldset.passportData.fields.citizenship.props"
-              v-model="fieldset.passportData.fields.citizenship.initialValue"
-            />
-
-            <AppRadioGroup :label="fieldset.passportData.fields.temporaryRegistration.title">
-              <div class="radio-group__wrapper">
-                <component
-                  v-for="(value, key) in fieldset.passportData.fields.temporaryRegistration.fields"
-                  :key="key"
-                  :is="value.component"
-                  v-bind="value.props"
-                  v-model="fieldset.passportData.fields.temporaryRegistration.initialValue"
-                  v-on="value.handlers"
-                />
-              </div>
-            </AppRadioGroup>
-          </div>
-
-          <div class="form__block">
-            <template v-for="(value, key) in fieldset.passportData.fields" :key="key">
-              <component
-                v-if="isSpecialKey(key, ['resident', 'citizenship', 'temporaryRegistration'])"
-                :is="value.component"
-                v-bind="value.props"
-                v-model="value.initialValue"
-              />
-            </template>
-          </div>
-        </div>
-
-        <!-- Адрес регистрации -->
-        <AppCollapse
-          v-show="isTemporaryRegistration === null || isTemporaryRegistration"
+        <UICollapse
+          v-show="state.isTemporaryRegistration === undefined || state.isTemporaryRegistration"
           :header="fieldset.registrationAddress.title"
         >
-          <component
-            :is="fieldset.registrationAddress.fields.sameAsConnectionAddress.component"
-            v-bind="fieldset.registrationAddress.fields.sameAsConnectionAddress.props"
-            v-model="fieldset.registrationAddress.fields.sameAsConnectionAddress.initialValue"
-            v-on="fieldset.registrationAddress.fields.sameAsConnectionAddress.handlers"
+          <FormRegistration
+            :data="fieldset.registrationAddress"
+            :is-same-as-connection-address="state.isSameAsConnectionAddress"
           />
+        </UICollapse>
 
-          <div v-show="!isSameAsConnectionAddress" class="form__block form__block--2">
-            <template v-for="(value, key) in fieldset.registrationAddress.fields" :key="key">
-              <component
-                v-if="isSpecialKey(key, ['sameAsConnectionAddress'])"
-                :is="value.component"
-                v-bind="value.props"
-                v-model="value.initialValue"
-                v-on="value.handlers ?? {}"
-              />
-            </template>
-          </div>
-        </AppCollapse>
+        <FormManager :data="fieldset.manager" />
 
-        <!-- Ваш менеджер -->
-        <section class="form__block">
-          <h2 class="form__block-title">{{ fieldset.manager.title }}</h2>
+        <FormOtherWishes :data="fieldset.otherWishes" />
 
-          <component
-            :is="fieldset.manager.component"
-            v-bind="fieldset.manager.props"
-            v-model="fieldset.manager.initialValue"
-          />
-        </section>
-
-        <!-- Иные пожелания -->
-        <section class="form__block">
-          <h2 class="form__block-title">{{ fieldset.otherWishes.title }}</h2>
-
-          <component
-            :is="fieldset.otherWishes.component"
-            v-bind="fieldset.otherWishes.props"
-            v-model="fieldset.otherWishes.initialValue"
-          />
-        </section>
-
-        <!-- Согласие с политикой -->
         <component
           :is="fieldset.privacyPolicy.component"
           v-bind="fieldset.privacyPolicy.props"
           v-model="fieldset.privacyPolicy.initialValue"
         />
-      </AppStep>
+      </FormStep>
     </div>
 
-    <div class="form__buttons">
-      <AppButton
-        v-show="!isFirstStep"
-        @click="onClickPreviousButton"
-        class="form__button"
-        variant="secondary"
-        :disabled="!meta.valid"
-        >Назад</AppButton
-      >
-      <AppButton class="form__button" type="submit" :disabled="!meta.valid" variant="primary">{{
-        isLastStep ? 'Готово' : 'Отправить'
-      }}</AppButton>
-    </div>
+    <FormButtons
+      :meta="meta"
+      :is-first-step="isFirstStep"
+      :is-last-step="isLastStep"
+      @go-back="onClickPreviousButton"
+    />
   </form>
 </template>
 
 <script setup>
 import '@/utils/locale.js'
-import { computed, markRaw, ref, onMounted, watch, provide } from 'vue'
+import { computed, markRaw, ref, onMounted, watch, provide, reactive } from 'vue'
 import { useForm } from 'vee-validate'
 import { string, object, date, boolean, ref as yup_ref } from 'yup'
-import { vMaska } from 'maska'
-import AppInput from '@/components/AppInput.vue'
-import AppButton from '@/components/AppButton.vue'
-import AppStep from '@/components/AppStep.vue'
-import AppSelect from '@/components/AppSelect.vue'
-import AppCheckbox from '@/components/AppCheckbox.vue'
-import AppRadioGroup from '@/components/AppRadioGroup.vue'
-import AppRadioButton from '@/components/AppRadioButton.vue'
-import AppCollapse from '@/components/AppCollapse.vue'
+import UIInput from '@/components/UI/UIInput.vue'
+import FormStep from '@/components/form/FormStep.vue'
+import FormNav from '@/components/form/FormNav.vue'
+import FormContacts from '@/components/form/FormContacts.vue'
+import FormTariffPlan from '@/components/form/FormTariffPlan.vue'
+import FormAddServices from '@/components/form/FormAddServices.vue'
+import FormConnectionAddress from '@/components/form/FormConnectionAddress.vue'
+import FormPassport from '@/components/form/FormPassport.vue'
+import FormOtherWishes from '@/components/form/FormOtherWishes.vue'
+import FormManager from '@/components/form/FormManager.vue'
+import FormRegistration from '@/components/form/FormRegistration.vue'
+import FormButtons from '@/components/form/FormButtons.vue'
+import UISelect from '@/components/UI/UISelect.vue'
+import UICheckbox from '@/components/UI/UICheckbox.vue'
+import UIRadioButton from '@/components/UI/UIRadioButton.vue'
+import UICollapse from '@/components/UI/UICollapse.vue'
 import {
   onlyLettersRegexp,
   phoneRegexp,
@@ -240,41 +98,44 @@ import {
   privacyPolicyMessages,
   keyInLocalStorage
 } from '@/utils/constants.js'
-import { isSpecialKey } from '@/utils/isFunction'
 import scrollUp from '@/utils/scrollUp'
 import { getItemInLocalStorage, setItemInLocalStorage } from '@/utils/localStorage'
 
-// emits
 const emit = defineEmits(['change-text', 'summary-data'])
 
-// props
 const props = defineProps({
   responseData: {
     type: Object
   }
 })
 
-// ref
-const currentStep = ref(0)
-const isResidentBelarus = ref(null)
-const isTemporaryRegistration = ref(null)
-const isDisabledConnectionAddressStreetSelect = ref(false)
-const isDisabledConnectionAddressRoomSelect = ref(false)
-const isDisabledRegistrationAddressStreetSelect = ref(false)
-const isDisabledRegistrationAddressRoomSelect = ref(false)
-const isSameAsConnectionAddress = ref(null)
-const tabs = ref(['Личные данные', 'Заказ', 'Паспортные данные'])
-const texts = ref([
+const texts = [
   '<p><b>Не уверены, какой тариф лучше выбрать?</b></p><p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>',
   'В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.',
   '<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>'
-])
+]
+
+const defaultState = {
+  currentStep: 0,
+  isDisabledConnectionAddressStreetSelect: false,
+  isDisabledConnectionAddressRoomSelect: false,
+  isResidentBelarus: undefined,
+  isTemporaryRegistration: undefined,
+  isDisabledRegistrationAddressStreetSelect: false,
+  isDisabledRegistrationAddressRoomSelect: false,
+  isSameAsConnectionAddress: undefined
+}
+
+const state = reactive({
+  ...defaultState
+})
+
 const fieldset = ref({
   personalData: {
     title: 'Ваши контакты',
     fields: {
       surname: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'personalData.contacts.surname',
           label: 'Фамилия',
@@ -283,7 +144,7 @@ const fieldset = ref({
         initialValue: ''
       },
       name: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'personalData.contacts.name',
           label: 'Имя',
@@ -292,7 +153,7 @@ const fieldset = ref({
         initialValue: ''
       },
       patronymic: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'personalData.contacts.patronymic',
           label: 'Отчество',
@@ -301,7 +162,7 @@ const fieldset = ref({
         initialValue: ''
       },
       phone: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'personalData.contacts.phone',
           label: 'Номер телефона',
@@ -313,7 +174,7 @@ const fieldset = ref({
         initialValue: ''
       },
       email: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'personalData.contacts.email',
           label: 'Адрес электронной почты',
@@ -327,7 +188,7 @@ const fieldset = ref({
   },
   tariffPlan: {
     title: 'Тарифный план',
-    component: markRaw(AppSelect),
+    component: markRaw(UISelect),
     props: {
       name: 'order.tariffPlan',
       label: 'Выберите тарифный план',
@@ -344,7 +205,7 @@ const fieldset = ref({
     title: 'Дополнительные услуги',
     fields: {
       router: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'order.addServices',
           label: 'Маршрутизатор (Роутер)',
@@ -355,7 +216,7 @@ const fieldset = ref({
         }
       },
       staticIPAddress: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'order.addServices',
           label: 'Статический IP-адрес',
@@ -372,7 +233,7 @@ const fieldset = ref({
     title: 'Адрес подключения',
     fields: {
       postalCode: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'order.connectionAddress.postalCode',
           label: 'Индекс'
@@ -380,7 +241,7 @@ const fieldset = ref({
         initialValue: ''
       },
       region: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.region',
           label: 'Область',
@@ -397,7 +258,7 @@ const fieldset = ref({
         initialValue: ''
       },
       settlementType: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.settlementType',
           label: 'Тип населенного пункта',
@@ -407,7 +268,7 @@ const fieldset = ref({
         initialValue: ''
       },
       settlement: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.settlement',
           label: 'Населенный пункт',
@@ -429,7 +290,7 @@ const fieldset = ref({
         initialValue: ''
       },
       streetType: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.streetType',
           label: 'Тип улицы',
@@ -445,19 +306,19 @@ const fieldset = ref({
         initialValue: ''
       },
       street: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.street',
           label: 'Улица',
           placeholder: 'Выберите улицу',
           options: ['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'],
           filter: true,
-          disabled: isDisabledConnectionAddressStreetSelect
+          disabled: computed(() => state.isDisabledConnectionAddressStreetSelect)
         },
         initialValue: ''
       },
       noStreet: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'order.connectionAddress.noStreet',
           label: 'В адресе отсутствует название улицы',
@@ -465,10 +326,10 @@ const fieldset = ref({
         },
         handlers: {
           change: () => {
-            isDisabledConnectionAddressStreetSelect.value =
-              !isDisabledConnectionAddressStreetSelect.value
+            state.isDisabledConnectionAddressStreetSelect =
+              !state.isDisabledConnectionAddressStreetSelect
 
-            if (isDisabledConnectionAddressStreetSelect.value) {
+            if (state.isDisabledConnectionAddressStreetSelect) {
               setFieldValue('order.connectionAddress.street', 'В адресе отсутствует название улицы')
             } else {
               setFieldValue('order.connectionAddress.street', '')
@@ -476,16 +337,16 @@ const fieldset = ref({
 
             setItemInLocalStorage(keyInLocalStorage, {
               ...getItemInLocalStorage(keyInLocalStorage),
-              isDisabledConnectionAddressStreetSelect: isDisabledConnectionAddressStreetSelect.value
+              isDisabledConnectionAddressStreetSelect: state.isDisabledConnectionAddressStreetSelect
             })
           }
         },
         initialValue: false
       },
       house: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
-          inputWrapperClassName: 'form__block-control',
+          inputWrapperClassName: 'form-block__control',
           name: 'order.connectionAddress.house',
           label: 'Дом',
           placeholder: '51В'
@@ -493,9 +354,9 @@ const fieldset = ref({
         initialValue: ''
       },
       building: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
-          inputWrapperClassName: 'form__block-control',
+          inputWrapperClassName: 'form-block__control',
           name: 'order.connectionAddress.building',
           label: 'Корпус / Строение',
           placeholder: '1'
@@ -503,7 +364,7 @@ const fieldset = ref({
         initialValue: ''
       },
       typeRoom: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'order.connectionAddress.typeRoom',
           label: 'Тип помещения',
@@ -513,17 +374,17 @@ const fieldset = ref({
         initialValue: ''
       },
       room: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'order.connectionAddress.room',
           label: 'Помещение',
           placeholder: '196',
-          disabled: isDisabledConnectionAddressRoomSelect
+          disabled: computed(() => state.isDisabledConnectionAddressRoomSelect)
         },
         initialValue: ''
       },
       noRoom: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'order.connectionAddress.noRoom',
           label: 'Это единое строение, помещения нет',
@@ -531,10 +392,10 @@ const fieldset = ref({
         },
         handlers: {
           change: () => {
-            isDisabledConnectionAddressRoomSelect.value =
-              !isDisabledConnectionAddressRoomSelect.value
+            state.isDisabledConnectionAddressRoomSelect =
+              !state.isDisabledConnectionAddressRoomSelect
 
-            if (isDisabledConnectionAddressRoomSelect.value) {
+            if (state.isDisabledConnectionAddressRoomSelect) {
               setFieldValue('order.connectionAddress.room', 'Это единое строение, помещения нет')
             } else {
               setFieldValue('order.connectionAddress.room', '')
@@ -542,14 +403,14 @@ const fieldset = ref({
 
             setItemInLocalStorage(keyInLocalStorage, {
               ...getItemInLocalStorage(keyInLocalStorage),
-              isDisabledConnectionAddressRoomSelect: isDisabledConnectionAddressRoomSelect.value
+              isDisabledConnectionAddressRoomSelect: state.isDisabledConnectionAddressRoomSelect
             })
           }
         },
         initialValue: false
       },
       addressCommentary: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'order.connectionAddress.addressCommentary',
           label: 'Комментарий по адресу',
@@ -567,7 +428,7 @@ const fieldset = ref({
         title: 'Являетесь ли Вы резидентом Республики Беларусь?',
         fields: {
           yes: {
-            component: markRaw(AppRadioButton),
+            component: markRaw(UIRadioButton),
             props: {
               name: 'passportData.passportData.resident',
               label: 'Да',
@@ -575,7 +436,7 @@ const fieldset = ref({
             },
             handlers: {
               change: () => {
-                isResidentBelarus.value = true
+                state.isResidentBelarus = true
 
                 setValues({
                   passportData: {
@@ -588,13 +449,13 @@ const fieldset = ref({
 
                 setItemInLocalStorage(keyInLocalStorage, {
                   ...getItemInLocalStorage(keyInLocalStorage),
-                  isResidentBelarus: isResidentBelarus.value
+                  isResidentBelarus: state.isResidentBelarus
                 })
               }
             }
           },
           no: {
-            component: markRaw(AppRadioButton),
+            component: markRaw(UIRadioButton),
             props: {
               name: 'passportData.passportData.resident',
               label: 'Нет',
@@ -602,11 +463,11 @@ const fieldset = ref({
             },
             handlers: {
               change: () => {
-                isResidentBelarus.value = false
+                state.isResidentBelarus = false
 
                 setItemInLocalStorage(keyInLocalStorage, {
                   ...getItemInLocalStorage(keyInLocalStorage),
-                  isResidentBelarus: isResidentBelarus.value
+                  isResidentBelarus: state.isResidentBelarus
                 })
               }
             }
@@ -615,7 +476,7 @@ const fieldset = ref({
         initialValue: ''
       },
       citizenship: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.citizenship',
           label: 'Гражданство',
@@ -627,7 +488,7 @@ const fieldset = ref({
         title: 'Есть ли у вас временная регистрация?',
         fields: {
           yes: {
-            component: markRaw(AppRadioButton),
+            component: markRaw(UIRadioButton),
             props: {
               name: 'passportData.passportData.temporaryRegistration',
               label: 'Да',
@@ -635,17 +496,17 @@ const fieldset = ref({
             },
             handlers: {
               change: () => {
-                isTemporaryRegistration.value = true
+                state.isTemporaryRegistration = true
 
                 setItemInLocalStorage(keyInLocalStorage, {
                   ...getItemInLocalStorage(keyInLocalStorage),
-                  isTemporaryRegistration: isTemporaryRegistration.value
+                  isTemporaryRegistration: state.isTemporaryRegistration
                 })
               }
             }
           },
           no: {
-            component: markRaw(AppRadioButton),
+            component: markRaw(UIRadioButton),
             props: {
               name: 'passportData.passportData.temporaryRegistration',
               label: 'Нет',
@@ -653,8 +514,8 @@ const fieldset = ref({
             },
             handlers: {
               change: () => {
-                isTemporaryRegistration.value = false
-                isSameAsConnectionAddress.value = false
+                state.isTemporaryRegistration = false
+                state.isSameAsConnectionAddress = false
 
                 setValues({
                   passportData: {
@@ -664,8 +525,8 @@ const fieldset = ref({
 
                 setItemInLocalStorage(keyInLocalStorage, {
                   ...getItemInLocalStorage(keyInLocalStorage),
-                  isTemporaryRegistration: isTemporaryRegistration.value,
-                  isSameAsConnectionAddress: isSameAsConnectionAddress.value
+                  isTemporaryRegistration: state.isTemporaryRegistration,
+                  isSameAsConnectionAddress: state.isSameAsConnectionAddress
                 })
               }
             }
@@ -674,7 +535,7 @@ const fieldset = ref({
         initialValue: ''
       },
       documentType: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.passportData.documentType',
           label: 'Вид документа',
@@ -684,7 +545,7 @@ const fieldset = ref({
         initialValue: ''
       },
       series: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.series',
           label: 'Серия',
@@ -693,7 +554,7 @@ const fieldset = ref({
         initialValue: ''
       },
       number: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.number',
           label: 'Номер паспорта',
@@ -702,7 +563,7 @@ const fieldset = ref({
         initialValue: ''
       },
       dateOfIssue: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.dateOfIssue',
           label: 'Дата выдачи паспорта',
@@ -711,7 +572,7 @@ const fieldset = ref({
         // initialValue: ''
       },
       dateOfExpiry: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.dateOfExpiry',
           label: 'Срок действия паспорта',
@@ -720,7 +581,7 @@ const fieldset = ref({
         // initialValue: ''
       },
       identificationNumber: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.identificationNumber',
           label: 'Идентификационный номер'
@@ -728,7 +589,7 @@ const fieldset = ref({
         initialValue: ''
       },
       passportIssuedBy: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.passportData.passportIssuedBy',
           label: 'Кем выдан паспорт',
@@ -742,7 +603,7 @@ const fieldset = ref({
     title: 'Адрес регистрации',
     fields: {
       sameAsConnectionAddress: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'passportData.registrationAddress.sameAsConnectionAddress',
           label: 'Совпадает с адресом подключения',
@@ -750,29 +611,18 @@ const fieldset = ref({
         },
         handlers: {
           change: () => {
-            isSameAsConnectionAddress.value = !isSameAsConnectionAddress.value
-            isDisabledRegistrationAddressStreetSelect.value = true
-            isDisabledRegistrationAddressRoomSelect.value = true
-
-            setValues({
-              passportData: {
-                registrationAddress: values.order.connectionAddress
-              }
-            })
+            state.isSameAsConnectionAddress = !state.isSameAsConnectionAddress
 
             setItemInLocalStorage(keyInLocalStorage, {
               ...getItemInLocalStorage(keyInLocalStorage),
-              isSameAsConnectionAddress: isSameAsConnectionAddress.value,
-              isDisabledRegistrationAddressStreetSelect:
-                isDisabledRegistrationAddressStreetSelect.value,
-              isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
+              isSameAsConnectionAddress: state.isSameAsConnectionAddress
             })
           }
         },
         initialValue: false
       },
       postalCode: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.registrationAddress.postalCode',
           label: 'Индекс'
@@ -780,7 +630,7 @@ const fieldset = ref({
         initialValue: ''
       },
       region: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.region',
           label: 'Область',
@@ -797,7 +647,7 @@ const fieldset = ref({
         initialValue: ''
       },
       settlementType: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.settlementType',
           label: 'Тип населенного пункта',
@@ -807,7 +657,7 @@ const fieldset = ref({
         initialValue: ''
       },
       settlement: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.settlement',
           label: 'Населенный пункт',
@@ -829,7 +679,7 @@ const fieldset = ref({
         initialValue: ''
       },
       streetType: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.streetType',
           label: 'Тип улицы',
@@ -845,19 +695,19 @@ const fieldset = ref({
         initialValue: ''
       },
       street: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.street',
           label: 'Улица',
           placeholder: 'Выберите улицу',
           options: ['Центральная', 'Молодежная', 'Садовая', 'Лесная', 'Полевая'],
           filter: true,
-          disabled: isDisabledRegistrationAddressStreetSelect
+          disabled: computed(() => state.isDisabledRegistrationAddressStreetSelect)
         },
         initialValue: ''
       },
       noStreet: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'passportData.registrationAddress.noStreet',
           label: 'В адресе отсутствует название улицы',
@@ -865,31 +715,31 @@ const fieldset = ref({
         },
         handlers: {
           change: () => {
-            isDisabledRegistrationAddressStreetSelect.value =
-              !isDisabledRegistrationAddressStreetSelect.value
+            state.isDisabledRegistrationAddressStreetSelect =
+              !state.isDisabledRegistrationAddressStreetSelect
 
-            if (isDisabledRegistrationAddressStreetSelect.value) {
+            if (state.isDisabledRegistrationAddressStreetSelect) {
               setFieldValue(
-                'order.registrationAddress.street',
+                'passportData.registrationAddress.street',
                 'В адресе отсутствует название улицы'
               )
             } else {
-              setFieldValue('order.registrationAddress.street', '')
+              setFieldValue('passportData.registrationAddress.street', '')
             }
 
             setItemInLocalStorage(keyInLocalStorage, {
               ...getItemInLocalStorage(keyInLocalStorage),
               isDisabledRegistrationAddressStreetSelect:
-                isDisabledRegistrationAddressStreetSelect.value
+                state.isDisabledRegistrationAddressStreetSelect
             })
           }
         },
         initialValue: false
       },
       house: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
-          inputWrapperClassName: 'form__block-control',
+          inputWrapperClassName: 'form-block__control',
           name: 'passportData.registrationAddress.house',
           label: 'Дом',
           placeholder: '51В'
@@ -897,9 +747,9 @@ const fieldset = ref({
         initialValue: ''
       },
       building: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
-          inputWrapperClassName: 'form__block-control',
+          inputWrapperClassName: 'form-block__control',
           name: 'passportData.registrationAddress.building',
           label: 'Корпус / Строение',
           placeholder: '1'
@@ -907,7 +757,7 @@ const fieldset = ref({
         initialValue: ''
       },
       typeRoom: {
-        component: markRaw(AppSelect),
+        component: markRaw(UISelect),
         props: {
           name: 'passportData.registrationAddress.typeRoom',
           label: 'Тип помещения',
@@ -917,17 +767,17 @@ const fieldset = ref({
         initialValue: ''
       },
       room: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.registrationAddress.room',
           label: 'Помещение',
           placeholder: '196',
-          disabled: isDisabledRegistrationAddressRoomSelect
+          disabled: computed(() => state.isDisabledRegistrationAddressRoomSelect)
         },
         initialValue: ''
       },
       noRoom: {
-        component: markRaw(AppCheckbox),
+        component: markRaw(UICheckbox),
         props: {
           name: 'passportData.registrationAddress.noRoom',
           label: 'Это единое строение, помещения нет',
@@ -935,25 +785,28 @@ const fieldset = ref({
         },
         handlers: {
           change: () => {
-            isDisabledRegistrationAddressRoomSelect.value =
-              !isDisabledRegistrationAddressRoomSelect.value
+            state.isDisabledRegistrationAddressRoomSelect =
+              !state.isDisabledRegistrationAddressRoomSelect
 
-            if (isDisabledRegistrationAddressRoomSelect.value) {
-              setFieldValue('order.registrationAddress.room', 'Это единое строение, помещения нет')
+            if (state.isDisabledRegistrationAddressRoomSelect) {
+              setFieldValue(
+                'passportData.registrationAddress.room',
+                'Это единое строение, помещения нет'
+              )
             } else {
-              setFieldValue('order.registrationAddress.room', '')
+              setFieldValue('passportData.registrationAddress.room', '')
             }
 
             setItemInLocalStorage(keyInLocalStorage, {
               ...getItemInLocalStorage(keyInLocalStorage),
-              isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
+              isDisabledRegistrationAddressRoomSelect: state.isDisabledRegistrationAddressRoomSelect
             })
           }
         },
         initialValue: false
       },
       addressCommentary: {
-        component: markRaw(AppInput),
+        component: markRaw(UIInput),
         props: {
           name: 'passportData.registrationAddress.addressCommentary',
           label: 'Комментарий по адресу',
@@ -967,7 +820,7 @@ const fieldset = ref({
   },
   manager: {
     title: 'Ваш менеджер',
-    component: markRaw(AppSelect),
+    component: markRaw(UISelect),
     props: {
       name: 'passportData.manager',
       options: ['Да', 'Нет']
@@ -976,7 +829,7 @@ const fieldset = ref({
   },
   otherWishes: {
     title: 'Иные пожелания',
-    component: markRaw(AppInput),
+    component: markRaw(UIInput),
     props: {
       label: 'Комментарий',
       name: 'passportData.otherWishes',
@@ -986,7 +839,7 @@ const fieldset = ref({
     initialValue: ''
   },
   privacyPolicy: {
-    component: markRaw(AppCheckbox),
+    component: markRaw(UICheckbox),
     props: {
       label: 'Я ознакомился(-лась) с Политикой конфиденциальности',
       name: 'passportData.privacyPolicy',
@@ -997,7 +850,6 @@ const fieldset = ref({
   }
 })
 
-// validation schema
 const addressSchema = object({
   postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
   house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
@@ -1038,27 +890,24 @@ const schemas = [
   })
 ]
 
-// computed
 const currentSchema = computed(() => {
-  return schemas[currentStep.value]
+  return schemas[state.currentStep]
 })
 
 const isFirstStep = computed(() => {
-  return currentStep.value === 0
+  return state.currentStep === 0
 })
 
 const isLastStep = computed(() => {
-  return currentStep.value === schemas.length - 1
+  return state.currentStep === schemas.length - 1
 })
 
-const { handleSubmit, meta, setValues, setFieldValue, values, handleReset, setFieldError } =
-  useForm({
-    validationSchema: currentSchema
-  })
+const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
+  validationSchema: currentSchema
+})
 
-// handlers
 const changeText = () => {
-  emit('change-text', texts.value[currentStep.value])
+  emit('change-text', texts[state.currentStep])
 }
 
 const updateDataInLocalStorage = () => {
@@ -1071,28 +920,21 @@ const updateDataInLocalStorage = () => {
 const updateAllDataInLocalStorage = () => {
   setItemInLocalStorage(keyInLocalStorage, {
     data: values,
-    step: currentStep.value,
-    isDisabledConnectionAddressStreetSelect: isDisabledConnectionAddressStreetSelect.value,
-    isDisabledConnectionAddressRoomSelect: isDisabledConnectionAddressRoomSelect.value,
-    isResidentBelarus: isResidentBelarus.value,
-    isTemporaryRegistration: isTemporaryRegistration.value,
-    isSameAsConnectionAddress: isSameAsConnectionAddress.value,
-    isDisabledRegistrationAddressStreetSelect: isDisabledRegistrationAddressStreetSelect.value,
-    isDisabledRegistrationAddressRoomSelect: isDisabledRegistrationAddressRoomSelect.value
+    ...state
   })
 }
 
 const onClickNavButton = (value) => {
   if (!meta.value.valid) return
 
-  currentStep.value = value
+  state.currentStep = value
 
   changeText()
   updateAllDataInLocalStorage()
 }
 
 const onClickPreviousButton = () => {
-  currentStep.value -= 1
+  state.currentStep -= 1
 
   changeText()
   scrollUp()
@@ -1118,7 +960,7 @@ const onSuccessSubmit = (values) => {
       summaryData: values
     })
   } else {
-    currentStep.value += 1
+    state.currentStep += 1
 
     changeText()
     updateAllDataInLocalStorage()
@@ -1127,38 +969,28 @@ const onSuccessSubmit = (values) => {
 
 const onSubmit = handleSubmit(onSuccessSubmit)
 
-// watchers
 watch(
   () => props.responseData,
   () => {
-    currentStep.value = 0
+    Object.assign(state, defaultState)
     handleReset()
     updateAllDataInLocalStorage()
-
-    setTimeout(() => {
-      setFieldError('personalData.contacts.phone', undefined)
-    }, 50)
   }
 )
 
-// provide/inject
 provide('updateDataInLocalStorage', updateDataInLocalStorage)
 
-// lifecycle hooks
 onMounted(() => {
   const data = getItemInLocalStorage(keyInLocalStorage)
 
   if (!data) {
     updateAllDataInLocalStorage()
   } else {
-    currentStep.value = data.step
-    isDisabledConnectionAddressStreetSelect.value = data.isDisabledConnectionAddressStreetSelect
-    isDisabledConnectionAddressRoomSelect.value = data.isDisabledConnectionAddressRoomSelect
-    isResidentBelarus.value = data.isResidentBelarus
-    isTemporaryRegistration.value = data.isTemporaryRegistration
-    isSameAsConnectionAddress.value = data.isSameAsConnectionAddress
-    isDisabledRegistrationAddressStreetSelect.value = data.isDisabledRegistrationAddressStreetSelect
-    isDisabledRegistrationAddressRoomSelect.value = data.isDisabledRegistrationAddressRoomSelect
+    for (const key in data) {
+      if (key in state) {
+        state[key] = data[key]
+      }
+    }
 
     setValues(data.data, false)
   }
@@ -1171,121 +1003,15 @@ onMounted(() => {
 })
 </script>
 
-<style>
+<style scoped>
 .form {
   display: grid;
-
-  .form__nav {
-    margin-bottom: 40px;
-    padding-bottom: 10px;
-    white-space: nowrap;
-    border-bottom: 1px solid #ddd;
-
-    @media (width <= 600px) {
-      overflow-x: auto;
-    }
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .form__nav-button {
-    position: relative;
-    padding: 6px 18px;
-    font-size: 16px;
-    line-height: 1.375;
-    font-weight: 700;
-    color: rgba(0, 0, 0, 0.5);
-
-    &[aria-pressed='true'] {
-      color: #000;
-
-      &::after {
-        background-color: #00c4b3;
-      }
-    }
-
-    &::after {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -10px;
-      width: 46px;
-      height: 3px;
-      background-color: transparent;
-      transition: background-color 0.3s;
-      content: '';
-    }
-
-    &:hover {
-      color: #000;
-
-      &::after {
-        background-color: #00c4b3;
-      }
-    }
-  }
 
   .form__fields {
     max-width: 400px;
 
     @media (width <= 900px) {
       max-width: 100%;
-    }
-  }
-
-  .form__block {
-    display: grid;
-    gap: 20px;
-  }
-
-  .form__block--2 {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    > *:not(.form__block-control) {
-      grid-column: span 2;
-
-      @media (width <= 600px) {
-        grid-column: unset;
-      }
-    }
-
-    @media (width <= 600px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .form__block-title {
-    font-size: 21px;
-    line-height: 1.33;
-    font-weight: 600;
-  }
-
-  .form__buttons {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 20px;
-    margin-top: 40px;
-
-    @media (width <= 600px) {
-      flex-direction: column;
-      width: 100%;
-      margin-top: 20px;
-
-      > * {
-        width: 100%;
-      }
-    }
-  }
-
-  .form__button {
-    min-width: 191px;
-
-    @media (width <= 600px) {
-      min-width: 150px;
     }
   }
 }

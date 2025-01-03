@@ -6,8 +6,6 @@
     <component
       :is="tag"
       :value="value"
-      @input="value = $event.target.value"
-      @change="updateDataInLocalStorage"
       :id="name"
       :type="type"
       :required="required"
@@ -17,8 +15,10 @@
       :data-maska="mask"
       class="input__field"
       v-bind="$attrs"
+      @input="value = $event.target.value"
+      @change="onChange"
     />
-    <p v-show="errorMessage" class="input__error" role="status">
+    <p v-if="errorMessage" class="input__error" role="status">
       {{ errorMessage }}
     </p>
   </div>
@@ -73,15 +73,27 @@ const props = defineProps({
   },
   inputWrapperClassName: {
     type: String
+  },
+  isNeedUpdateLocalStorage: {
+    type: Boolean,
+    default: true
   }
 })
+
+defineEmits(['update:modelValue'])
 
 const { value, errorMessage } = useField(() => props.name, undefined, {
   syncVModel: true
 })
+
+const onChange = () => {
+  if (props.isNeedUpdateLocalStorage) {
+    updateDataInLocalStorage()
+  }
+}
 </script>
 
-<style>
+<style scoped>
 .input {
   display: flex;
   flex-direction: column;

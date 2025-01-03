@@ -17,7 +17,7 @@ defineProps({
 })
 </script>
 
-<style>
+<style scoped>
 .step {
   display: grid;
   row-gap: 30px;

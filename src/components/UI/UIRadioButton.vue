@@ -4,10 +4,10 @@
       <input
         :value="checkedValue"
         :checked="checked"
-        @change="onChange"
         class="radio-button__input"
         type="radio"
         v-bind="$attrs"
+        @change="onChange"
       />
       {{ label }}
     </label>
@@ -29,18 +29,24 @@ const props = defineProps({
     type: String,
     required: true
   },
-  checkedValue: {
+  label: {
     type: String,
     required: true
   },
-  label: {
+  checkedValue: {
     type: String,
     required: true
   },
   modelValue: {
     type: String
+  },
+  isNeedUpdateLocalStorage: {
+    type: Boolean,
+    default: true
   }
 })
+
+defineEmits(['update:modelValue'])
 
 const { handleChange, checked } = useField(() => props.name, undefined, {
   type: 'radio',
@@ -50,11 +56,14 @@ const { handleChange, checked } = useField(() => props.name, undefined, {
 
 const onChange = () => {
   handleChange()
-  updateDataInLocalStorage()
+
+  if (props.isNeedUpdateLocalStorage) {
+    updateDataInLocalStorage()
+  }
 }
 </script>
 
-<style>
+<style scoped>
 .radio-button {
   .radio-button__label {
     position: relative;

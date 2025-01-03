@@ -3,7 +3,6 @@
     <p v-if="label" class="select__text">{{ label }}</p>
     <Dropdown
       v-model="value"
-      @change="updateDataInLocalStorage"
       :name="name"
       :options="options"
       :placeholder="placeholder"
@@ -18,6 +17,7 @@
       }"
       class="select__header"
       empty-filter-message="Результатов не найдено"
+      @change="onChange"
     />
   </div>
 </template>
@@ -54,12 +54,22 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  isNeedUpdateLocalStorage: {
+    type: Boolean,
+    default: true
   }
 })
 
 const { value } = useField(() => props.name, undefined, {
   syncVModel: true
 })
+
+const onChange = () => {
+  if (props.isNeedUpdateLocalStorage) {
+    updateDataInLocalStorage()
+  }
+}
 </script>
 
 <style>

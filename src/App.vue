@@ -4,35 +4,37 @@
       <h1>Заявление на подключение</h1>
       <div v-html="text" class="text-block"></div>
     </div>
-    <AppFormWizard
+    <FormWizard
+      :response-data="responseData"
       @change-text="text = $event"
       @summary-data="summaryData = $event"
-      :response-data="responseData"
     />
   </div>
   <div v-show="summaryData" class="container">
-    <AppResultTable
+    <ResultTable
       :data="summaryData"
       @reset-data="summaryData = $event"
       @response-data="handleResponseData"
     />
   </div>
-  <AppModal
+  <UIModal
     :is-modal-visible="isModalVisible"
-    @modal-close="isModalVisible = false"
     :title="responseData?.title"
-  ></AppModal>
+    @modal-close="isModalVisible = false"
+  ></UIModal>
+  <CallbackLink />
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import AppFormWizard from '@/components/AppFormWizard.vue'
-import AppResultTable from '@/components/AppResultTable.vue'
-import AppModal from '@/components/AppModal.vue'
+import FormWizard from '@/components/form/FormWizard.vue'
+import ResultTable from '@/components/ResultTable.vue'
+import UIModal from '@/components/UI/UIModal.vue'
+import CallbackLink from '@/components/CallbackLink.vue'
 
 const text = ref('')
 const summaryData = ref(null)
-const responseData = ref({})
+const responseData = ref({ title: '', success: undefined })
 const isModalVisible = ref(false)
 
 const handleResponseData = (data) => {

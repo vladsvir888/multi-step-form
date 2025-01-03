@@ -4,17 +4,17 @@
       <input
         :value="checkedValue"
         :checked="checked"
-        @change="onChange"
         :required="required"
         class="checkbox__input"
         type="checkbox"
         v-bind="$attrs"
+        @change="onChange"
       />
       <p class="checkbox__label-text">{{ label }}</p>
       <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{ labelAdd }}</p>
     </label>
     <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
-    <p v-show="errorMessage" class="checkbox__error" role="status">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="checkbox__error" role="status">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -33,10 +33,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  checkedValue: {
-    type: [String, Boolean],
-    required: true
-  },
   label: {
     type: String,
     required: true
@@ -51,10 +47,20 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  checkedValue: {
+    type: [String, Boolean],
+    required: true
+  },
   modelValue: {
     type: [Boolean, Array]
+  },
+  isNeedUpdateLocalStorage: {
+    type: Boolean,
+    default: true
   }
 })
+
+defineEmits(['update:modelValue'])
 
 const { handleChange, checked, errorMessage } = useField(() => props.name, undefined, {
   type: 'checkbox',
@@ -65,11 +71,14 @@ const { handleChange, checked, errorMessage } = useField(() => props.name, undef
 
 const onChange = () => {
   handleChange()
-  updateDataInLocalStorage()
+
+  if (props.isNeedUpdateLocalStorage) {
+    updateDataInLocalStorage()
+  }
 }
 </script>
 
-<style>
+<style scoped>
 .checkbox {
   display: flex;
   flex-direction: column;

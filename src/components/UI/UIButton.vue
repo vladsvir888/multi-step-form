@@ -22,7 +22,7 @@ const props = defineProps({
 const className = computed(() => variants[props.variant])
 </script>
 
-<style>
+<style scoped>
 .button {
   display: inline-flex;
   justify-content: center;
