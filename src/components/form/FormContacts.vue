@@ -18,7 +18,6 @@
 
 <script setup>
 import { vMaska } from 'maska'
-import '@/assets/form-block.css'
 
 defineProps({
   data: {

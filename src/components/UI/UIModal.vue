@@ -7,12 +7,14 @@
     :show-header="false"
     class="modal"
     :pt="{
-      content: 'modal__content'
+      content: 'flex flex-col items-center p-6 max-w-[400px] w-full rounded-lg'
     }"
     @update:visible="$emit('modal-close')"
   >
-    <div class="modal__title">{{ title }}</div>
-    <UIButton class="modal__close" variant="primary" @click="$emit('modal-close')">Хорошо</UIButton>
+    <div class="mb-4 font-semibold text-[21px] leading-7">{{ title }}</div>
+    <UIButton class="min-w-[200px]" variant="primary" @click="$emit('modal-close')"
+      >Хорошо</UIButton
+    >
   </Dialog>
 </template>
 
@@ -34,34 +36,3 @@ defineProps({
   }
 })
 </script>
-
-<style>
-.modal {
-  .modal__content {
-    max-width: 400px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 25px;
-    border-radius: 10px;
-  }
-
-  .modal__title {
-    font-size: 21px;
-    line-height: 28px;
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
-
-  .modal__text {
-    font-size: 14px;
-    line-height: 19px;
-    margin-bottom: 40px;
-  }
-
-  .modal__close {
-    min-width: 200px;
-  }
-}
-</style>

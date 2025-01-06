@@ -1,15 +1,19 @@
 <template>
-  <nav class="form-nav">
+  <nav
+    class="whitespace-nowrap mb-10 pb-2.5 overflow-x-auto border-0 border-b border-solid border-alto hidden-scrollbar"
+  >
     <UIButton
       v-for="(tab, index) in tabs"
       :key="tab"
-      class="form-nav__button"
-      :class="{ active: currentStep === index }"
+      class="group relative font-bold py-1.5 px-[18px] !text-base !leading-snug text-black-50 hover:text-black aria-pressed:text-black aria-pressed:cursor-default bg-transparent border-none"
       :type="meta.valid ? 'button' : 'submit'"
       :aria-pressed="currentStep === index"
       @click="emit('change-step', index)"
     >
       {{ tab }}
+      <span
+        class="absolute bg-transparent group-hover:bg-robins-egg-blue group-aria-pressed:bg-robins-egg-blue left-1/2 -translate-x-1/2 -bottom-2.5 w-[46px] h-[3px] transition-[background-color] duration-300"
+      />
     </UIButton>
   </nav>
 </template>
@@ -32,58 +36,3 @@ const emit = defineEmits(['change-step'])
 
 const tabs = ['Личные данные', 'Заказ', 'Паспортные данные']
 </script>
-
-<style scoped>
-.form-nav {
-  margin-bottom: 40px;
-  padding-bottom: 10px;
-  white-space: nowrap;
-  border-bottom: 1px solid #ddd;
-
-  @media (width <= 600px) {
-    overflow-x: auto;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  .form-nav__button {
-    position: relative;
-    padding: 6px 18px;
-    font-size: 16px;
-    line-height: 1.375;
-    font-weight: 700;
-    color: rgba(0, 0, 0, 0.5);
-
-    &[aria-pressed='true'] {
-      color: #000;
-      cursor: default;
-
-      &::after {
-        background-color: #00c4b3;
-      }
-    }
-
-    &::after {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -10px;
-      width: 46px;
-      height: 3px;
-      background-color: transparent;
-      transition: background-color 0.3s;
-      content: '';
-    }
-
-    &:hover {
-      color: #000;
-
-      &::after {
-        background-color: #00c4b3;
-      }
-    }
-  }
-}
-</style>

@@ -1,8 +1,8 @@
 <template>
-  <div v-show="!summaryData" class="container container--two-cols">
-    <div class="container__wrapper">
+  <div v-show="!summaryData" class="container grid grid-cols-1 laptop:grid-cols-2 gap-5">
+    <div class="laptop:sticky laptop:top-5 laptop:self-start">
       <h1>Заявление на подключение</h1>
-      <div v-html="text" class="text-block"></div>
+      <div v-html="text" class="max-w-[380px] [&>:not(:last-child)]:mb-5"></div>
     </div>
     <FormWizard
       :response-data="responseData"

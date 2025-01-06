@@ -12,8 +12,6 @@
 </template>
 
 <script setup>
-import '@/assets/form-block.css'
-
 defineProps({
   data: {
     type: Object,

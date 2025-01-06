@@ -55,7 +55,6 @@
 
 <script setup>
 import { isSpecialKey } from '@/utils/isFunction'
-import '@/assets/form-block.css'
 
 defineProps({
   data: {

@@ -1,15 +1,17 @@
 <template>
-  <div class="form-buttons">
+  <div
+    class="flex flex-wrap items-center gap-x-2.5 gap-y-5 flex-col tablet:flex-row mt-5 tablet:mt-10"
+  >
     <UIButton
       v-if="!isFirstStep"
-      class="form-buttons__button"
+      class="min-w-full tablet:min-w-[191px]"
       variant="secondary"
       :disabled="!meta.valid"
       @click="emit('go-back')"
       >Назад</UIButton
     >
     <UIButton
-      class="form-buttons__button"
+      class="min-w-full tablet:min-w-[191px]"
       type="submit"
       :disabled="!meta.valid"
       variant="primary"
@@ -38,31 +40,3 @@ defineProps({
 
 const emit = defineEmits(['go-back'])
 </script>
-
-<style scoped>
-.form-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 20px;
-  margin-top: 40px;
-
-  @media (width <= 600px) {
-    flex-direction: column;
-    width: 100%;
-    margin-top: 20px;
-
-    > * {
-      width: 100%;
-    }
-  }
-
-  .form-buttons__button {
-    min-width: 191px;
-
-    @media (width <= 600px) {
-      min-width: 150px;
-    }
-  }
-}
-</style>

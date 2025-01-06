@@ -1,12 +1,12 @@
 <template>
-  <form class="form" novalidate @submit="onSubmit" @reset="handleReset">
+  <form class="grid" novalidate @submit="onSubmit" @reset="handleReset">
     <FormNav
       :current-step="state.currentStep"
       :meta="meta"
       @change-step="onClickNavButton($event)"
     />
 
-    <div class="form__fields">
+    <div class="laptop:max-w-[400px]">
       <FormStep :step-number="0" :current-step="state.currentStep">
         <FormContacts :data="fieldset.personalData" />
       </FormStep>
@@ -1002,17 +1002,3 @@ onMounted(() => {
   changeText()
 })
 </script>
-
-<style scoped>
-.form {
-  display: grid;
-
-  .form__fields {
-    max-width: 400px;
-
-    @media (width <= 900px) {
-      max-width: 100%;
-    }
-  }
-}
-</style>

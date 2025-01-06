@@ -1,89 +1,79 @@
-:root {
-  --font-family: 'Montserrat', sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    @apply box-border;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  dd,
+  dl {
+    @apply m-0;
+  }
+
+  body {
+    @apply font-montserrat text-blue-zodiac;
+  }
+
+  h1 {
+    @apply mb-[26px] text-[35px] tablet:text-[50px];
+  }
+
+  input,
+  textarea {
+    font: inherit;
+  }
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer components {
+  /* form-block */
+  .form-block {
+    @apply grid gap-5;
+  }
 
-html,
-body {
-  scrollbar-gutter: stable;
-}
+  .form-block--2 {
+    @apply grid-cols-1 tablet:grid-cols-2;
 
-body {
-  font-family: var(--font-family);
-  color: #13284a;
-}
-
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-dd,
-dl {
-  margin: 0;
-}
-
-fieldset {
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-legend {
-  padding: 0;
-}
-
-.container {
-  max-width: 1295px;
-  margin: 0 auto;
-  padding: 20px;
-
-  &.container--two-cols {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-
-    @media (width <=900px) {
-      grid-template-columns: 1fr;
+    > *:not(.form-block__control) {
+      @apply col-auto tablet:col-span-2;
     }
   }
 
-  .container__wrapper {
-    position: sticky;
-    top: 20px;
-    align-self: start;
-
-    @media (width <=900px) {
-      position: unset;
-    }
+  .form-block__title {
+    @apply font-semibold text-[21px] leading-[1.33];
   }
 
-  @media (width <=600px) {
-    padding: 20px 10px;
+  .form-block__inner-label {
+    @apply mb-3;
+  }
+
+  .form-block__inner-grid {
+    @apply grid grid-cols-2 gap-5;
   }
 }
 
-h1 {
-  font-size: 50px;
-  margin-bottom: 26px;
+@layer utilities {
+  .hidden-scrollbar {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 
-  @media (width <=600px) {
-    font-size: 35px;
+  .container {
+    @apply max-w-7xl mx-auto my-0 py-5 px-2.5 tablet:px-5;
   }
 }
 
-.text-block {
-  max-width: 380px;
-
-  > p {
-    &:not(:last-child) {
-      margin-bottom: 20px;
-    }
-  }
+.p-component,
+.p-inputtext {
+  @apply font-montserrat;
 }

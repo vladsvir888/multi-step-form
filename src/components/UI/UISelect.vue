@@ -1,6 +1,6 @@
 <template>
   <div class="select">
-    <p v-if="label" class="select__text">{{ label }}</p>
+    <p v-if="label" class="mb-3">{{ label }}</p>
     <Dropdown
       v-model="value"
       :name="name"
@@ -9,13 +9,13 @@
       :filter="filter"
       :disabled="disabled"
       :pt="{
-        input: 'select__input',
-        trigger: 'select__trigger',
-        panel: 'select-panel',
-        item: 'select-panel__item',
-        filterInput: 'select-panel__filter-input'
+        input: 'text-blue-zodiac py-3.5 px-2.5 tablet:px-5',
+        trigger: 'text-alto group-hover:text-scorpion transition-[color] duration-300',
+        panel: 'mt-1.5 border border-solid border-alto shadow-none text-blue-zodiac',
+        filterInput:
+          'border border-solid border-alto cursor-default rounded-lg enabled:hover:border-morning-glory enabled:focus:border-robins-egg-blue'
       }"
-      class="select__header"
+      class="group w-full border border-solid border-alto hover:border-morning-glory rounded-lg [&.p-overlay-open]:border-robins-egg-blue [&:not(.p-disabled).p-focus]:border-robins-egg-blue"
       empty-filter-message="Результатов не найдено"
       @change="onChange"
     />
@@ -71,85 +71,3 @@ const onChange = () => {
   }
 }
 </script>
-
-<style>
-.select {
-  .select__text {
-    margin-bottom: 12px;
-  }
-
-  .select__header {
-    width: 100%;
-    border-color: #ddd;
-    border-radius: 10px;
-
-    &:hover {
-      border-color: #9ee2dc;
-
-      .select__trigger {
-        color: #606060;
-      }
-    }
-
-    &:not(.p-disabled).p-focus {
-      box-shadow: 0px 0px 6px #00c4b329;
-      border-color: #00c4b3;
-    }
-
-    &.p-overlay-open {
-      box-shadow: 0px 0px 6px #00c4b329;
-      border-color: #00c4b3;
-
-      .select__trigger {
-        color: #606060;
-      }
-    }
-  }
-
-  .select__input {
-    padding: 14px 20px;
-    color: #13284a;
-
-    @media (width <= 600px) {
-      width: 200px;
-      padding: 14px 10px;
-    }
-  }
-
-  .select__trigger {
-    color: #ddd;
-    transition: color 0.3s;
-  }
-}
-
-.select-panel {
-  border: 1px solid #ddd;
-  box-shadow: none;
-  color: #13284a;
-
-  @media (width <= 600px) {
-    font-size: 14px;
-  }
-
-  .select-panel__item {
-    @media (width <= 600px) {
-      padding: 10px;
-    }
-  }
-
-  .select-panel__filter-input {
-    border-color: #ddd;
-    border-radius: 10px;
-    cursor: default;
-
-    &:enabled:hover {
-      border-color: #9ee2dc;
-    }
-
-    &:enabled:focus {
-      box-shadow: 0px 0px 6px #00c4b329;
-      border-color: #00c4b3;
-    }
-  }
-}
-</style>

@@ -1,20 +1,29 @@
 <template>
-  <div class="checkbox">
-    <label class="checkbox__label">
+  <div class="flex flex-col gap-y-3">
+    <label class="flex items-center">
       <input
         :value="checkedValue"
         :checked="checked"
         :required="required"
-        class="checkbox__input"
+        class="m-0 w-[30px] h-[30px] mr-3 flex-shrink-0 bg-white border border-solid border-alto rounded-lg appearance-none bg-no-repeat bg-center bg-[length:12px] transition-[border-color, background-color] duration-300 checked:bg-robins-egg-blue checked:border-transparent checked:bg-check hover:[&:not(:checked)]:border-morning-glory"
         type="checkbox"
         v-bind="$attrs"
         @change="onChange"
       />
-      <p class="checkbox__label-text">{{ label }}</p>
-      <p v-if="labelAdd" class="checkbox__label-text checkbox__label-text--add">{{ labelAdd }}</p>
+      <p>
+        {{ label }}
+        <span v-if="required" class="inline-flex text-amaranth ml-1 font-medium" aria-hidden="true"
+          >*</span
+        >
+      </p>
+      <p v-if="labelAdd" class="opacity-70 ml-auto">
+        {{ labelAdd }}
+      </p>
     </label>
-    <p v-if="helpText" class="checkbox__text">{{ helpText }}</p>
-    <p v-if="errorMessage" class="checkbox__error" role="status">{{ errorMessage }}</p>
+    <p v-if="helpText" class="opacity-70">{{ helpText }}</p>
+    <p v-if="errorMessage" class="text-amaranth text-[12px]" role="status">
+      {{ errorMessage }}
+    </p>
   </div>
 </template>
 
@@ -77,71 +86,3 @@ const onChange = () => {
   }
 }
 </script>
-
-<style scoped>
-.checkbox {
-  display: flex;
-  flex-direction: column;
-  row-gap: 12px;
-
-  .checkbox__input {
-    margin: 0;
-    width: 30px;
-    height: 30px;
-    margin-right: 12px;
-    flex-shrink: 0;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    appearance: none;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 12px;
-    transition-property: border-color, background-color;
-    transition-duration: 0.3s;
-
-    &:checked {
-      border-color: transparent;
-      background-color: #00c4b3;
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj4KICAgIDxwYXRoIGQ9Ik00MzguNiAxMDUuNGMxMi41IDEyLjUgMTIuNSAzMi44IDAgNDUuM2wtMjU2IDI1NmMtMTIuNSAxMi41LTMyLjggMTIuNS00NS4zIDBsLTEyOC0xMjhjLTEyLjUtMTIuNS0xMi41LTMyLjggMC00NS4zczMyLjgtMTIuNSA0NS4zIDBMMTYwIDMzOC43IDM5My40IDEwNS40YzEyLjUtMTIuNSAzMi44LTEyLjUgNDUuMyAweiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+');
-    }
-
-    &:not(:checked):has(~ .checkbox__label:hover) {
-      border-color: #9ee2dc;
-    }
-
-    &:hover:not(:checked) {
-      border-color: #9ee2dc;
-    }
-
-    &[required] ~ .checkbox__label-text {
-      &::after {
-        display: inline-flex;
-        margin-left: 5px;
-        color: #ec2b59;
-        font-weight: 500;
-        content: '*';
-      }
-    }
-  }
-
-  .checkbox__label {
-    display: flex;
-    align-items: center;
-  }
-
-  .checkbox__label-text--add {
-    margin-left: auto;
-    opacity: 0.7;
-  }
-
-  .checkbox__text {
-    opacity: 0.7;
-  }
-
-  .checkbox__error {
-    font-size: 12px;
-    color: #ec2b59;
-  }
-}
-</style>

@@ -3,10 +3,10 @@
     <AccordionTab
       :header="header"
       :pt="{
-        root: 'accordion-tab',
-        headerAction: 'accordion-tab__header-action',
-        headerIcon: 'accordion-tab__icon',
-        content: 'accordion-tab__content'
+        headerAction:
+          'bg-white border-none justify-between flex-row-reverse pr-0 pl-0 text-blue-zodiac font-semibold text-[21px]',
+        headerIcon: 'mr-0',
+        content: 'flex flex-col p-0 border-none gap-y-5 text-blue-zodiac'
       }"
     >
       <slot />
@@ -25,33 +25,3 @@ defineProps({
   }
 })
 </script>
-
-<style>
-.accordion-tab {
-  .accordion-tab__header-action {
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    padding-right: 0;
-    padding-left: 0;
-    color: #13284a;
-    font-size: 21px;
-    line-height: 1.33;
-    font-weight: 600;
-    border: none;
-    background-color: #fff;
-  }
-
-  .accordion-tab__icon {
-    margin-right: 0;
-  }
-
-  .accordion-tab__content {
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px;
-    padding: 0;
-    border: none;
-    color: inherit;
-  }
-}
-</style>

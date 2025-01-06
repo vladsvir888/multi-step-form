@@ -1,7 +1,11 @@
 <template>
-  <a class="callback-link" href="tel:174" aria-label="Позвонить">
+  <a
+    class="fixed bottom-5 left-5 flex justify-center items-center w-[50px] h-[50px] rounded-full animate-rotate text-white bg-persian-green"
+    href="tel:174"
+    aria-label="Позвонить"
+  >
     <svg
-      class="callback-link__icon"
+      class="fill-current"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
       width="20"
@@ -13,38 +17,3 @@
     </svg>
   </a>
 </template>
-
-<style scoped>
-.callback-link {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  background-color: #00a99a;
-  color: #fff;
-  border-radius: 50%;
-  animation: rotate 1s infinite;
-
-  .callback-link__icon {
-    fill: currentColor;
-  }
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(5deg);
-  }
-
-  50% {
-    transform: rotate(20deg);
-  }
-
-  100% {
-    transform: rotate(5deg);
-  }
-}
-</style>

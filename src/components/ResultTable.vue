@@ -1,10 +1,15 @@
 <template>
-  <section class="result-table">
-    <div class="result-table__header">
-      <h1 class="result-table__title result-table__title--main">
+  <section
+    class="max-w-[920px] mx-auto my-0 laptop:py-[37px] py-[25px] laptop:px-[50px] px-[25px] bg-white rounded-lg grid gap-y-7 shadow-[0_40px_40px_#0000000d]"
+  >
+    <div
+      class="fixed top-0 left-0 right-0 -z-[1] h-[739px] [clip-path:polygon(100%_0%,0%_0%,0%_100%)] bg-result-table-gradient"
+    />
+    <div class="max-w-[400px]">
+      <h1 class="uppercase text-[24px] leading-[1.21]">
         ЗАЯВКА НА ПОДКЛЮЧЕНИЕ ИНТЕРНЕТА «ДЕЛОВОЙ СЕТИ»
       </h1>
-      <div class="result-table__text">
+      <div class="mt-5 [&>:not(:last-child)]:mb-4">
         <p>Пожалуйста, проверьте правильность заполненной информации.</p>
         <p>
           Если информация верна – нажмите "Отправить". Если вы хотите внести изменения – нажмите
@@ -12,49 +17,57 @@
         </p>
       </div>
     </div>
-    <div class="result-table__main">
+    <div>
       <template v-for="(blockValue, blockKey) in data" :key="blockKey">
-        <div v-if="checkValues(blockValue)" class="result-table__block">
-          <h2 class="result-table__title">
+        <div
+          v-if="checkValues(blockValue)"
+          class="grid grid-cols-1 laptop:grid-cols-[1fr_536px] gap-7 py-6 laptop:py-12 border-0 border-b border-solid border-[#e4e4e4]"
+        >
+          <h2
+            class="uppercase text-[24px] leading-[1.21] laptop:sticky laptop:top-5 laptop:self-start"
+          >
             {{ resultTableDictionary[blockKey] }}
           </h2>
-          <div class="result-table__content-wrapper">
+          <div>
             <template v-for="(contentValue, contentKey) in blockValue" :key="contentKey">
-              <div v-if="checkValues(contentValue)" class="result-table__content">
-                <h3 class="result-table__content-title">
+              <div v-if="checkValues(contentValue)" class="py-[30px] first:pt-0 last:pb-0">
+                <h3 class="mb-6 text-[18px] leading-6 font-bold">
                   {{ resultTableDictionary[contentKey] }}
                 </h3>
                 <template v-if="isString(contentValue)">
-                  <div class="result-table__list">
-                    <div class="result-table__list-item">
-                      <div class="result-table__term">
+                  <div class="grid gap-4">
+                    <div class="grid grid-cols-1 tablet:grid-cols-2 gap-[10px]">
+                      <div class="text-scorpion">
                         {{ resultTableDictionary[contentKey] }}
                       </div>
-                      <div class="result-table__descr">
+                      <div>
                         {{ contentValue }}
                       </div>
                     </div>
                   </div>
                 </template>
                 <template v-else-if="isArray(contentValue)">
-                  <div class="result-table__list">
+                  <div class="grid gap-4">
                     <div
                       v-for="arrayValue in contentValue"
                       :key="arrayValue"
-                      class="result-table__list-item"
+                      class="grid grid-cols-1 tablet:grid-cols-2 gap-[10px]"
                     >
                       {{ arrayValue }}
                     </div>
                   </div>
                 </template>
                 <template v-else-if="isObject(contentValue)">
-                  <dl class="result-table__list">
+                  <dl class="grid gap-4">
                     <template v-for="(valueObj, valueKey) in contentValue" :key="valueKey">
-                      <div v-if="checkValues(valueObj)" class="result-table__list-item">
-                        <dt class="result-table__term">
+                      <div
+                        v-if="checkValues(valueObj)"
+                        class="grid grid-cols-1 tablet:grid-cols-2 gap-[10px]"
+                      >
+                        <dt class="text-scorpion">
                           {{ resultTableDictionary[valueKey] }}
                         </dt>
-                        <dd class="result-table__descr">
+                        <dd>
                           {{ valueObj }}
                         </dd>
                       </div>
@@ -67,19 +80,11 @@
         </div>
       </template>
     </div>
-    <div class="result-table__buttons">
-      <UIButton
-        class="result-table__button"
-        variant="secondary"
-        :disabled="isLoading"
-        @click="resetData"
+    <div class="flex justify-end gap-2 tablet:gap-5 flex-col tablet:flex-row">
+      <UIButton class="min-w-[225px]" variant="secondary" :disabled="isLoading" @click="resetData"
         >Вернуться к редактированию</UIButton
       >
-      <UIButton
-        class="result-table__button"
-        variant="primary"
-        :disabled="isLoading"
-        @click="fetchData"
+      <UIButton class="min-w-[225px]" variant="primary" :disabled="isLoading" @click="fetchData"
         ><span>{{ isLoading ? 'Отправка...' : 'Отправить' }}</span></UIButton
       >
     </div>
@@ -176,130 +181,3 @@ const fetchData = async () => {
   }
 }
 </script>
-
-<style scoped>
-.result-table {
-  max-width: 920px;
-  margin: 0 auto;
-  background: #fff;
-  box-shadow: 0px 40px 40px #0000000d;
-  border-radius: 10px;
-  padding: 37px 50px;
-  display: grid;
-  row-gap: 30px;
-
-  @media (width <= 900px) {
-    padding: 25px;
-  }
-
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    background: linear-gradient(180deg, #00c4b3 0%, #13284a00 100%);
-    height: 739px;
-    clip-path: polygon(100% 0%, 0% 0%, 0% 100%);
-  }
-
-  .result-table__header {
-    max-width: 400px;
-  }
-
-  .result-table__title {
-    font-size: 24px;
-    line-height: 121%;
-    text-transform: uppercase;
-
-    &:not(.result-table__title--main) {
-      align-self: start;
-      position: sticky;
-      top: 20px;
-
-      @media (width <= 900px) {
-        position: static;
-      }
-    }
-  }
-
-  .result-table__text {
-    margin-top: 20px;
-
-    > *:not(:last-child) {
-      margin-bottom: 15px;
-    }
-  }
-
-  .result-table__block {
-    display: grid;
-    grid-template-columns: 1fr 536px;
-    gap: 30px;
-    padding: 50px 0;
-    border-bottom: 1px solid #e4e4e4;
-
-    @media (width <= 900px) {
-      grid-template-columns: 1fr;
-      padding: 25px 0;
-    }
-  }
-
-  .result-table__content:not(:last-child) {
-    border-bottom: 1px solid #e4e4e4;
-  }
-
-  .result-table__content:first-child {
-    padding-top: 0;
-  }
-
-  .result-table__content {
-    padding: 30px 0;
-  }
-
-  .result-table__content:last-child {
-    padding-bottom: 0;
-  }
-
-  .result-table__content-title {
-    margin-bottom: 25px;
-    font-size: 18px;
-    line-height: 24px;
-    font-weight: 700;
-  }
-
-  .result-table__list {
-    display: grid;
-    gap: 15px;
-  }
-
-  .result-table__list-item {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-
-    @media (width <= 600px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .result-table__term {
-    color: #606060;
-  }
-
-  .result-table__buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-
-    @media (width <= 600px) {
-      flex-direction: column;
-      gap: 10px;
-    }
-  }
-
-  .result-table__button {
-    min-width: 225px;
-  }
-}
-</style>
