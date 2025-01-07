@@ -109,12 +109,6 @@ const props = defineProps({
   }
 })
 
-const texts = [
-  '<p><b>Не уверены, какой тариф лучше выбрать?</b></p><p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>',
-  'В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.',
-  '<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>'
-]
-
 const defaultState = {
   currentStep: 0,
   isDisabledConnectionAddressStreetSelect: false,
@@ -125,7 +119,6 @@ const defaultState = {
   isDisabledRegistrationAddressRoomSelect: false,
   isSameAsConnectionAddress: undefined
 }
-
 const state = reactive({
   ...defaultState
 })
@@ -850,62 +843,83 @@ const fieldset = ref({
   }
 })
 
-const addressSchema = object({
-  postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
-  house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
-  building: string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
-  room: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
-})
-const schemas = [
-  object({
-    personalData: object({
-      contacts: object({
-        surname: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-        name: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-        patronymic: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
-        phone: string().required().matches(phoneRegexp, phoneMessage),
-        email: string().required().email()
+const useSchema = (state) => {
+  const addressSchema = object({
+    postalCode: string().trim().matches(exactlySixNumbersRegexp, exactlySixNumbersMessage),
+    house: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage),
+    building: string().trim().matches(onlyNumbersRegexp, onlyNumbersMessage),
+    room: string().trim().matches(cyrillicAndNumbersRegexp, cyrillicAndNumbersMessage)
+  })
+  const schemas = [
+    object({
+      personalData: object({
+        contacts: object({
+          surname: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+          name: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+          patronymic: string().required().trim().matches(onlyLettersRegexp, onlyLettersMessage),
+          phone: string().required().matches(phoneRegexp, phoneMessage),
+          email: string().required().email()
+        })
+      })
+    }),
+    object({
+      order: object({
+        connectionAddress: addressSchema
+      })
+    }),
+    object({
+      passportData: object({
+        passportData: object({
+          series: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+          number: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+          identificationNumber: string()
+            .trim()
+            .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
+          dateOfIssue: date(),
+          dateOfExpiry: date().min(yup_ref('dateOfIssue'), endDateMessages)
+        }),
+        registrationAddress: addressSchema,
+        privacyPolicy: boolean().required().oneOf([true], privacyPolicyMessages)
       })
     })
-  }),
-  object({
-    order: object({
-      connectionAddress: addressSchema
-    })
-  }),
-  object({
-    passportData: object({
-      passportData: object({
-        series: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        number: string().trim().matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        identificationNumber: string()
-          .trim()
-          .matches(latinAndNumbersRegexp, latinAndNumbersMessage),
-        dateOfIssue: date(),
-        dateOfExpiry: date().min(yup_ref('dateOfIssue'), endDateMessages)
-      }),
-      registrationAddress: addressSchema,
-      privacyPolicy: boolean().required().oneOf([true], privacyPolicyMessages)
-    })
+  ]
+
+  const currentSchema = computed(() => {
+    return schemas[state.currentStep]
   })
-]
 
-const currentSchema = computed(() => {
-  return schemas[state.currentStep]
-})
+  return {
+    schemas,
+    currentSchema
+  }
+}
+const { schemas, currentSchema } = useSchema(state)
 
-const isFirstStep = computed(() => {
-  return state.currentStep === 0
-})
+const useStep = (state, schemas) => {
+  const isFirstStep = computed(() => {
+    return state.currentStep === 0
+  })
 
-const isLastStep = computed(() => {
-  return state.currentStep === schemas.length - 1
-})
+  const isLastStep = computed(() => {
+    return state.currentStep === schemas.length - 1
+  })
+
+  return {
+    isFirstStep,
+    isLastStep
+  }
+}
+const { isFirstStep, isLastStep } = useStep(state, schemas)
 
 const { handleSubmit, meta, setValues, setFieldValue, values, handleReset } = useForm({
   validationSchema: currentSchema
 })
 
+const texts = [
+  '<p><b>Не уверены, какой тариф лучше выбрать?</b></p><p>Обратитесь за консультацией в контакт-центр по телефону <b>174</b>.</p>',
+  'В этом разделе вам нужно выбрать желаемый тариф и указать адрес подключения.',
+  '<p>Введите, пожалуйста, паспортные данные и адрес регистрации.</p><p>Корректное и подробное заполнение поможет ускорить процесс подключения и устранить возможные ошибки.</p>'
+]
 const changeText = () => {
   emit('change-text', texts[state.currentStep])
 }
@@ -916,13 +930,13 @@ const updateDataInLocalStorage = () => {
     data: values
   })
 }
-
 const updateAllDataInLocalStorage = () => {
   setItemInLocalStorage(keyInLocalStorage, {
     data: values,
     ...state
   })
 }
+provide('updateDataInLocalStorage', updateDataInLocalStorage)
 
 const onClickNavButton = (value) => {
   if (!meta.value.valid) return
@@ -932,7 +946,6 @@ const onClickNavButton = (value) => {
   changeText()
   updateAllDataInLocalStorage()
 }
-
 const onClickPreviousButton = () => {
   state.currentStep -= 1
 
@@ -966,7 +979,6 @@ const onSuccessSubmit = (values) => {
     updateAllDataInLocalStorage()
   }
 }
-
 const onSubmit = handleSubmit(onSuccessSubmit)
 
 watch(
@@ -978,9 +990,7 @@ watch(
   }
 )
 
-provide('updateDataInLocalStorage', updateDataInLocalStorage)
-
-onMounted(() => {
+const init = () => {
   const data = getItemInLocalStorage(keyInLocalStorage)
 
   if (!data) {
@@ -1000,5 +1010,6 @@ onMounted(() => {
   }
 
   changeText()
-})
+}
+onMounted(init)
 </script>

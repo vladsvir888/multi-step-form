@@ -107,8 +107,6 @@ const props = defineProps({
   }
 })
 
-const isLoading = ref(false)
-
 const checkValues = (value) => {
   const values = []
 
@@ -134,6 +132,7 @@ const checkValues = (value) => {
   return values.some((value) => value)
 }
 
+const isLoading = ref(false)
 const resetData = () => {
   emit('reset-data', null)
 
@@ -143,7 +142,6 @@ const resetData = () => {
   data = { ...data, summaryData: undefined }
   setItemInLocalStorage(keyInLocalStorage, data)
 }
-
 const fetchData = async () => {
   try {
     isLoading.value = true

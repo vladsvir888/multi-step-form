@@ -27,8 +27,6 @@ import Dropdown from 'primevue/dropdown'
 import { useField } from 'vee-validate'
 import { inject } from 'vue'
 
-const updateDataInLocalStorage = inject('updateDataInLocalStorage')
-
 const props = defineProps({
   label: {
     type: String
@@ -65,6 +63,7 @@ const { value } = useField(() => props.name, undefined, {
   syncVModel: true
 })
 
+const updateDataInLocalStorage = inject('updateDataInLocalStorage')
 const onChange = () => {
   if (props.isNeedUpdateLocalStorage) {
     updateDataInLocalStorage()
